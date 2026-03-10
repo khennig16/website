@@ -165,13 +165,157 @@
       to   { opacity:1; transform:translateY(0); }
     }
 
+    /* ── SIDE NAV ── */
+    /* Invisible trigger zone on the left edge */
+    .side-trigger {
+      position: fixed;
+      left: 0; top: 0;
+      width: 20px; height: 100vh;
+      z-index: 200;
+    }
+
+    .side-nav {
+      position: fixed;
+      left: 0; top: 0;
+      width: 220px; height: 100vh;
+      z-index: 199;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 3rem 2.5rem;
+      background: linear-gradient(to right, rgba(7,18,26,0.97), rgba(7,18,26,0.85));
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      transform: translateX(-100%);
+      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+      pointer-events: none;
+    }
+    .side-nav.open {
+      transform: translateX(0);
+      pointer-events: all;
+    }
+
+    /* Floating NAV hint tab on left edge */
+    .nav-hint {
+      position: fixed;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      z-index: 198;
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 0.7rem 0.9rem 0.5rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-left: none;
+      border-radius: 0 6px 6px 0;
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+      transition: opacity 0.4s, transform 0.45s cubic-bezier(0.16,1,0.3,1);
+    }
+    .nav-hint.hidden {
+      opacity: 0;
+      transform: translateY(-50%) translateX(-16px);
+    }
+    .nav-hint-arrow {
+      color: rgba(168,216,238,0.55);
+      font-size: 0.75rem;
+      animation: nudge 2.5s ease-in-out infinite;
+    }
+    .nav-hint-label {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      font-size: 0.48rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      line-height: 1;
+    }
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      50%       { transform: translateX(3px); }
+    }
+
+    /* Thin glowing edge indicator when closed */
+    .side-nav::before {
+      content: '';
+      position: absolute;
+      right: -1px; top: 50%;
+      transform: translateY(-50%);
+      width: 2px; height: 60px;
+      background: linear-gradient(to bottom, transparent, rgba(168,216,238,0.4), transparent);
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .side-nav.peek::before { opacity: 1; }
+
+    .side-nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; font-weight: 300;
+      letter-spacing: 0.45em; color: rgba(255,255,255,0.3);
+      text-transform: lowercase; margin-bottom: 3rem;
+    }
+
+    .side-nav-links {
+      display: flex; flex-direction: column; gap: 0;
+    }
+
+    .side-nav-links a {
+      display: flex; align-items: center; gap: 1rem;
+      font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); text-decoration: none;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: color 0.3s, padding-left 0.3s;
+      cursor: none;
+      position: relative;
+    }
+    .side-nav-links a:last-child { border-bottom: none; }
+    .side-nav-links a .n-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: rgba(168,216,238,0.4);
+      flex-shrink: 0;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .side-nav-links a:hover {
+      color: rgba(255,255,255,0.85);
+      padding-left: 0.4rem;
+    }
+    .side-nav-links a:hover .n-dot {
+      background: rgba(168,216,238,1);
+      transform: scale(1.6);
+    }
+
+    .side-nav-footer {
+      margin-top: 3rem;
+      font-size: 0.55rem; letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.15); text-transform: uppercase;
+    }
+
     @media (max-width: 540px) {
       nav, .contact { padding-left: 1.5rem; padding-right: 1.5rem; }
       footer { padding: 1.5rem; }
+      .side-nav { width: 200px; }
     }
   </style>
 </head>
 <body>
+
+<!-- SIDE NAV -->
+<div class="side-trigger" id="sideTrigger"></div>
+<div class="nav-hint" id="navHint">
+  <div class="nav-hint-arrow">›</div>
+  <div class="nav-hint-label">nav</div>
+</div>
+<nav class="side-nav" id="sideNav">
+  <div class="side-nav-logo">khennig</div>
+  <div class="side-nav-links">
+    <a href="index.html" cursor="none"><span class="n-dot"></span>Home</a>
+    <a href="about.html"><span class="n-dot"></span>About</a>
+    <a href="work.html"><span class="n-dot"></span>Work</a>
+    <a href="faith.html"><span class="n-dot"></span>Thoughts</a>
+    <a href="#contact"><span class="n-dot"></span>Contact</a>
+  </div>
+  <div class="side-nav-footer">khennig.com</div>
+</nav>
 
 <div class="cur" id="cur"></div>
 <div class="cur-ring" id="crng"></div>
@@ -201,7 +345,7 @@
       2. Create a free account and add kelly_hennig16@hotmail.com as recipient
       3. Copy the form ID (looks like: xpwzgkla) and replace YOUR_FORM_ID
     -->
-    <form id="cf" action="https://formspree.io/f/mbdzgrwg" method="POST">
+    <form id="cf" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
       <div class="field">
         <input type="text" name="name" placeholder="Name" required autocomplete="off"/>
       </div>
@@ -293,6 +437,44 @@ function frame(){
   requestAnimationFrame(frame);
 }
 frame();
+
+/* ── SIDE NAV ── */
+const sideNav = document.getElementById('sideNav');
+const sideTrigger = document.getElementById('sideTrigger');
+const navHint = document.getElementById('navHint');
+let navOpen = false, navTimeout;
+
+function openNav() {
+  clearTimeout(navTimeout);
+  sideNav.classList.add('open');
+  sideNav.classList.remove('peek');
+  navHint.classList.add('hidden');
+  navOpen = true;
+}
+function closeNav() {
+  navTimeout = setTimeout(() => {
+    sideNav.classList.remove('open');
+    navHint.classList.remove('hidden');
+    navOpen = false;
+  }, 280);
+}
+function peekNav() {
+  if (!navOpen) sideNav.classList.add('peek');
+}
+function unpeekNav() {
+  sideNav.classList.remove('peek');
+}
+
+sideTrigger.addEventListener('mouseenter', openNav);
+sideNav.addEventListener('mouseenter', () => { clearTimeout(navTimeout); navOpen = true; });
+sideNav.addEventListener('mouseleave', closeNav);
+
+// Show peek glow when cursor is near left edge
+document.addEventListener('mousemove', e => {
+  if (e.clientX < 40 && !navOpen) peekNav();
+  else if (e.clientX >= 40) unpeekNav();
+  if (e.clientX < 20 && !navOpen) openNav();
+});
 
 /* ── CURSOR ── */
 const c=document.getElementById('cur'), r=document.getElementById('crng');
