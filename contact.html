@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>khennig · contact</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Outfit:wght@200;300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #091f2c;
+      color: rgba(255,255,255,0.55);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    .cur { position: fixed; width: 7px; height: 7px; background: rgba(255,255,255,0.8); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: overlay; transition: width .25s, height .25s; }
+    .cur-ring { position: fixed; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
+
+    #wc { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+    .veil { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(9,31,44,0.55) 0%, rgba(9,31,44,0.15) 40%, rgba(9,31,44,0.65) 100%); }
+    .grain { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.45; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"); }
+
+    /* LAYOUT */
+    .page {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .logo {
+      position: fixed; top: 2.2rem; left: 3rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 300;
+      letter-spacing: 0.45em; color: rgba(255,255,255,0.5);
+      text-transform: lowercase; text-decoration: none;
+      z-index: 20;
+      transition: color .3s;
+    }
+    .logo:hover { color: rgba(255,255,255,0.85); }
+
+    /* FORM CARD */
+    .form-wrap {
+      width: 100%; max-width: 480px;
+      animation: up 1.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .form-label {
+      font-size: 0.55rem; letter-spacing: 0.5em; text-transform: uppercase;
+      color: rgba(123,191,212,0.45); margin-bottom: 2.2rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .form-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, rgba(123,191,212,0.2), transparent);
+    }
+
+    .field { margin-bottom: 1rem; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+
+    input, textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 0.75rem 0;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 200;
+      color: white; outline: none; resize: none;
+      transition: border-color .3s;
+    }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.18); }
+    input:focus, textarea:focus { border-color: rgba(123,191,212,0.45); }
+    textarea { min-height: 110px; }
+
+    .send-btn {
+      margin-top: 1.8rem;
+      display: inline-flex; align-items: center; gap: 0.8rem;
+      background: none; border: none;
+      font-family: 'Outfit', sans-serif; font-size: 0.6rem;
+      letter-spacing: 0.4em; text-transform: uppercase;
+      color: rgba(168,216,238,0.55); cursor: none; padding: 0;
+      transition: color .3s;
+    }
+    .send-btn:hover { color: rgba(168,216,238,1); }
+    .send-btn .arr { display: inline-block; transition: transform .35s cubic-bezier(0.16,1,0.3,1); }
+    .send-btn:hover .arr { transform: translateX(5px); }
+
+    .msg {
+      margin-top: 1.4rem; font-size: 0.7rem; letter-spacing: 0.15em;
+      color: rgba(123,191,212,0.7); opacity: 0; transition: opacity .5s;
+    }
+    .msg.show { opacity: 1; }
+
+    @keyframes up { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+
+    /* SIDE NAV */
+    .side-trigger { position: fixed; left: 0; top: 0; width: 20px; height: 100vh; z-index: 200; }
+    .side-nav { position: fixed; left: 0; top: 0; width: 220px; height: 100vh; z-index: 199; display: flex; flex-direction: column; justify-content: center; padding: 3rem 2.5rem; background: linear-gradient(to right, rgba(7,18,26,0.97), rgba(7,18,26,0.85)); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.06); transform: translateX(-100%); transition: transform 0.45s cubic-bezier(0.16,1,0.3,1); pointer-events: none; }
+    .side-nav.open { transform: translateX(0); pointer-events: all; }
+    .nav-hint { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 198; display: flex; align-items: center; gap: 0.5rem; padding: 0.9rem 0.7rem 0.9rem 0.5rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-left: none; border-radius: 0 6px 6px 0; backdrop-filter: blur(10px); pointer-events: none; transition: opacity 0.4s, transform 0.45s cubic-bezier(0.16,1,0.3,1); }
+    .nav-hint.hidden { opacity: 0; transform: translateY(-50%) translateX(-16px); }
+    .nav-hint-arrow { color: rgba(168,216,238,0.55); font-size: 0.75rem; animation: nudge 2.5s ease-in-out infinite; }
+    .nav-hint-label { writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); font-size: 0.48rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.2); line-height: 1; }
+    @keyframes nudge { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
+    .side-nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; letter-spacing: 0.45em; color: rgba(255,255,255,0.3); text-transform: lowercase; margin-bottom: 3rem; }
+    .side-nav-links { display: flex; flex-direction: column; }
+    .side-nav-links a { display: flex; align-items: center; gap: 1rem; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: color 0.3s, padding-left 0.3s; cursor: none; }
+    .side-nav-links a:last-child { border-bottom: none; }
+    .side-nav-links a.active { color: rgba(168,216,238,0.8); }
+    .n-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(168,216,238,0.4); flex-shrink: 0; transition: background 0.3s, transform 0.3s; }
+    .side-nav-links a:hover { color: rgba(255,255,255,0.85); padding-left: 0.4rem; }
+    .side-nav-links a:hover .n-dot, .side-nav-links a.active .n-dot { background: rgba(168,216,238,1); transform: scale(1.6); }
+    .side-nav-footer { margin-top: 3rem; font-size: 0.55rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.15); text-transform: uppercase; }
+
+    @media (max-width: 540px) {
+      .logo { left: 1.5rem; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="side-trigger" id="sideTrigger"></div>
+<div class="nav-hint" id="navHint"><div class="nav-hint-arrow">›</div><div class="nav-hint-label">nav</div></div>
+<nav class="side-nav" id="sideNav">
+  <div class="side-nav-logo">khennig</div>
+  <div class="side-nav-links">
+    <a href="index.html"><span class="n-dot"></span>Home</a>
+    <a href="about.html"><span class="n-dot"></span>About</a>
+    <a href="work.html"><span class="n-dot"></span>Work</a>
+    <a href="thoughts.html"><span class="n-dot"></span>Thoughts</a>
+    <a href="contact.html" class="active"><span class="n-dot"></span>Contact</a>
+  </div>
+  <div class="side-nav-footer">khennig.com</div>
+</nav>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="crng"></div>
+<canvas id="wc"></canvas>
+<div class="veil"></div>
+<div class="grain"></div>
+
+<a href="index.html" class="logo">khennig</a>
+
+<div class="page">
+  <div class="form-wrap">
+    <div class="form-label">reach out</div>
+    <form id="cf" action="https://formspree.io/f/mbdzgrwg" method="POST">
+      <div class="two-col">
+        <div class="field"><input type="text" name="name" placeholder="Name" required autocomplete="off"/></div>
+        <div class="field"><input type="email" name="email" placeholder="Email" required autocomplete="off"/></div>
+      </div>
+      <div class="field"><textarea name="message" placeholder="Message" required></textarea></div>
+      <button type="submit" class="send-btn">
+        <span>Send</span><span class="arr">→</span>
+      </button>
+      <p class="msg" id="msg"></p>
+    </form>
+  </div>
+</div>
+
+<script>
+const cv=document.getElementById('wc'),cx=cv.getContext('2d');
+function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+rsz();window.addEventListener('resize',rsz);
+const ST=110,st=[];
+function mkS(t){return{x:Math.random()*cv.width,y:t?-250-Math.random()*cv.height:Math.random()*cv.height,spd:0.8+Math.random()*2.2,len:60+Math.random()*240,op:0.04+Math.random()*0.18,w:0.4+Math.random()*1.5};}
+for(let i=0;i<ST;i++)st.push(mkS(false));
+const rp=[];
+function mkR(){return{x:Math.random()*cv.width,y:cv.height*(0.68+Math.random()*0.32),r:0,max:25+Math.random()*95,spd:0.4+Math.random()*0.8,op:0.1+Math.random()*0.18};}
+for(let i=0;i<14;i++){const r=mkR();r.r=Math.random()*r.max;rp.push(r);}
+const ms=[];
+function mkM(){return{x:cv.width*.28+Math.random()*cv.width*.44,y:cv.height*.55+Math.random()*cv.height*.45,vx:(Math.random()-.5)*.35,vy:-(0.15+Math.random()*.48),r:20+Math.random()*85,op:.025+Math.random()*.09,life:0,max:200+Math.random()*340};}
+for(let i=0;i<55;i++){const m=mkM();m.life=Math.random()*m.max;ms.push(m);}
+function frame(){cx.clearRect(0,0,cv.width,cv.height);const bg=cx.createLinearGradient(0,0,0,cv.height);bg.addColorStop(0,'#07191f');bg.addColorStop(.3,'#0c2e3f');bg.addColorStop(.55,'#114d68');bg.addColorStop(.75,'#177090');bg.addColorStop(1,'#2295b5');cx.fillStyle=bg;cx.fillRect(0,0,cv.width,cv.height);const t=Date.now()*.00013,w=cv.width,h=cv.height,ccx=w*.5;for(let i=0;i<7;i++){const ang=(-.4+i*.13)+Math.sin(t+i)*.055,x2=ccx+Math.tan(ang)*h,sp=w*.04;const rg=cx.createLinearGradient(ccx,0,x2,h);rg.addColorStop(0,'rgba(185,230,252,0.065)');rg.addColorStop(.6,'rgba(185,230,252,0.02)');rg.addColorStop(1,'rgba(185,230,252,0)');cx.save();cx.beginPath();cx.moveTo(ccx-sp,0);cx.lineTo(ccx+sp,0);cx.lineTo(x2+sp*2.2,h);cx.lineTo(x2-sp*2.2,h);cx.closePath();cx.fillStyle=rg;cx.fill();cx.restore();}const tt=Date.now()*.001,fw=w*.18;const gc=cx.createLinearGradient(0,0,0,h*.78);gc.addColorStop(0,'rgba(210,245,255,0.22)');gc.addColorStop(.55,'rgba(170,228,250,0.12)');gc.addColorStop(1,'rgba(100,200,240,0.03)');cx.beginPath();cx.moveTo(ccx-fw/2,0);for(let y=0;y<=h*.75;y+=7)cx.lineTo(ccx+fw/2+Math.sin(y*.027+tt)*7,y);for(let y=h*.75;y>=0;y-=7)cx.lineTo(ccx-fw/2+Math.sin(y*.027+tt+1.2)*7,y);cx.closePath();cx.fillStyle=gc;cx.fill();st.forEach(s=>{const sg=cx.createLinearGradient(s.x,s.y,s.x,s.y+s.len);sg.addColorStop(0,'rgba(200,242,255,0)');sg.addColorStop(.4,`rgba(215,248,255,${s.op})`);sg.addColorStop(1,'rgba(180,235,252,0)');cx.beginPath();cx.moveTo(s.x,s.y);cx.lineTo(s.x,s.y+s.len);cx.strokeStyle=sg;cx.lineWidth=s.w;cx.stroke();s.y+=s.spd;if(s.y>cv.height+s.len)Object.assign(s,mkS(true));});rp.forEach(r=>{cx.beginPath();cx.ellipse(r.x,r.y,r.r,r.r*.25,0,0,Math.PI*2);cx.strokeStyle=`rgba(210,248,255,${r.op*(1-r.r/r.max)})`;cx.lineWidth=.8;cx.stroke();r.r+=r.spd;if(r.r>r.max)Object.assign(r,mkR());});ms.forEach(m=>{const f=Math.sin((m.life/m.max)*Math.PI);const mg=cx.createRadialGradient(m.x,m.y,0,m.x,m.y,m.r);mg.addColorStop(0,`rgba(200,238,252,${m.op*f})`);mg.addColorStop(1,'rgba(200,238,252,0)');cx.beginPath();cx.arc(m.x,m.y,m.r,0,Math.PI*2);cx.fillStyle=mg;cx.fill();m.x+=m.vx;m.y+=m.vy;m.life++;if(m.life>m.max)Object.assign(m,mkM());});requestAnimationFrame(frame);}
+frame();
+const sideNav=document.getElementById('sideNav'),sideTrigger=document.getElementById('sideTrigger'),navHint=document.getElementById('navHint');
+let navOpen=false,navTimeout;
+function openNav(){clearTimeout(navTimeout);sideNav.classList.add('open');navHint.classList.add('hidden');navOpen=true;}
+function closeNav(){navTimeout=setTimeout(()=>{sideNav.classList.remove('open');navHint.classList.remove('hidden');navOpen=false;},280);}
+sideTrigger.addEventListener('mouseenter',openNav);
+sideNav.addEventListener('mouseenter',()=>{clearTimeout(navTimeout);navOpen=true;});
+sideNav.addEventListener('mouseleave',closeNav);
+document.addEventListener('mousemove',e=>{if(e.clientX<40&&!navOpen)sideNav.classList.add('peek');else if(e.clientX>=40)sideNav.classList.remove('peek');if(e.clientX<20&&!navOpen)openNav();});
+const c=document.getElementById('cur'),r=document.getElementById('crng');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function ac(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;c.style.left=mx+'px';c.style.top=my+'px';r.style.left=rx+'px';r.style.top=ry+'px';requestAnimationFrame(ac);})();
+document.querySelectorAll('a,button,input,textarea').forEach(el=>{el.addEventListener('mouseenter',()=>{c.style.width='14px';c.style.height='14px';r.style.width='44px';r.style.height='44px';});el.addEventListener('mouseleave',()=>{c.style.width='7px';c.style.height='7px';r.style.width='28px';r.style.height='28px';});});
+const form=document.getElementById('cf'),msgEl=document.getElementById('msg');
+form.addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=form.querySelector('button');btn.style.opacity='0.4';
+  try{
+    const res=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
+    if(res.ok){msgEl.textContent='Message received.';msgEl.classList.add('show');form.reset();}
+    else{msgEl.textContent='Something went wrong — try again.';msgEl.classList.add('show');}
+  }catch{msgEl.textContent='Could not send — check your connection.';msgEl.classList.add('show');}
+  btn.style.opacity='1';
+});
+</script>
+</body>
+</html>
