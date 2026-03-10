@@ -1,58 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="/favicon.ico">
   <meta charset="UTF-8"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>khennig · about</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Outfit:wght@200;300&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Outfit', sans-serif; background: #091f2c; color: rgba(255,255,255,0.55); overflow-x: hidden; cursor: none; }
-    .cur { position: fixed; width: 7px; height: 7px; background: rgba(255,255,255,0.8); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: overlay; transition: width .25s, height .25s; }
-    .cur-ring { position: fixed; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
-    #wc { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
-    .veil { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(9,31,44,0.55) 0%, rgba(9,31,44,0.15) 40%, rgba(9,31,44,0.65) 100%); }
-    .grain { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.45; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"); }
-    .page { position: relative; z-index: 10; min-height: 100vh; display: flex; flex-direction: column; }
-    nav.top { padding: 2.2rem 3rem; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; letter-spacing: 0.45em; color: rgba(255,255,255,0.7); text-transform: lowercase; text-decoration: none; }
-    .page-tag { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(200,232,245,0.35); }
 
-    /* CONTENT */
-    .content {
-      flex: 1; display: flex; flex-direction: column; justify-content: center;
-      padding: 4rem 3rem 6rem; max-width: 680px; margin: 0 auto; width: 100%;
+    body {
+      background: #07191f;
+      overflow: hidden;
+      cursor: none;
+      width: 100vw; height: 100vh;
     }
-    .eyebrow {
-      font-size: 0.55rem; letter-spacing: 0.5em; text-transform: uppercase;
-      color: rgba(123,191,212,0.5); margin-bottom: 1.8rem;
-      display: flex; align-items: center; gap: 1rem;
-      animation: up 1.6s cubic-bezier(0.16,1,0.3,1) both;
+
+    /* Full-screen whirlpool canvas */
+    #pool {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
     }
-    .eyebrow::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(123,191,212,0.2), transparent); }
-    h1 {
+
+    /* Grain */
+    .grain {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.5;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    }
+
+    /* The NO. text */
+    #no-text {
+      position: fixed;
+      inset: 0; z-index: 5;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    #no-text span {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3.5rem, 10vw, 7rem);
-      font-weight: 300; line-height: 0.9; color: white;
-      letter-spacing: -0.02em; margin-bottom: 2.5rem;
-      animation: up 1.6s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+      font-weight: 300;
+      font-style: italic;
+      color: white;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      /* starts tiny and far away, animates in */
+      font-size: 6vw;
+      text-shadow:
+        0 0 80px rgba(123,191,212,0.6),
+        0 0 160px rgba(123,191,212,0.3);
+      animation: emerge 4s 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-    h1 em { font-style: italic; color: #a8d8ee; }
-    .divider { width: 32px; height: 1px; background: rgba(123,191,212,0.3); margin-bottom: 2rem; animation: up 1.6s 0.2s cubic-bezier(0.16,1,0.3,1) both; }
-    p {
-      font-size: 0.95rem; line-height: 1.95; font-weight: 200;
-      color: rgba(255,255,255,0.48); margin-bottom: 1.4rem;
-      animation: up 1.6s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+    @keyframes emerge {
+      0%   { opacity: 0; font-size: 0.5vw; filter: blur(18px); }
+      40%  { opacity: 0.7; filter: blur(4px); }
+      70%  { opacity: 1; filter: blur(0); }
+      85%  { font-size: 7.5vw; }
+      100% { opacity: 1; font-size: 6.5vw; filter: blur(0); }
     }
-    p:last-child { margin-bottom: 0; }
 
-    footer { position: relative; z-index: 10; padding: 1.5rem 3rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+    /* Nav elements */
+    nav.top {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 2.2rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 10;
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 300;
+      letter-spacing: 0.45em; color: rgba(255,255,255,0.7);
+      text-transform: lowercase; text-decoration: none;
+    }
+    .page-tag {
+      font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(200,232,245,0.35);
+    }
+    footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 1.5rem 3rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 10;
+    }
     footer span { font-size: 0.6rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.15); }
 
-    @keyframes up { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    /* Cursor */
+    #cur  { position: fixed; width: 7px; height: 7px; background: white; border-radius: 50%; pointer-events: none; z-index: 99999; left:-20px; top:-20px; transform: translate(-50%,-50%); mix-blend-mode: difference; transition: width .2s, height .2s; }
+    #crng { position: fixed; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: none; z-index: 99998; left:-20px; top:-20px; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
 
-    /* SIDE NAV */
+    /* Side nav */
     .side-trigger { position: fixed; left: 0; top: 0; width: 20px; height: 100vh; z-index: 200; }
     .side-nav { position: fixed; left: 0; top: 0; width: 220px; height: 100vh; z-index: 199; display: flex; flex-direction: column; justify-content: center; padding: 3rem 2.5rem; background: linear-gradient(to right, rgba(7,18,26,0.97), rgba(7,18,26,0.85)); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.06); transform: translateX(-100%); transition: transform 0.45s cubic-bezier(0.16,1,0.3,1); pointer-events: none; }
     .side-nav.open { transform: translateX(0); pointer-events: all; }
@@ -60,9 +97,8 @@
     .nav-hint.hidden { opacity: 0; transform: translateY(-50%) translateX(-16px); }
     .nav-hint-arrow { color: rgba(168,216,238,0.55); font-size: 0.75rem; animation: nudge 2.5s ease-in-out infinite; }
     .nav-hint-label { writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); font-size: 0.48rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.2); line-height: 1; }
-    @keyframes nudge { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
     .side-nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; letter-spacing: 0.45em; color: rgba(255,255,255,0.3); text-transform: lowercase; margin-bottom: 3rem; }
-    .side-nav-links { display: flex; flex-direction: column; gap: 0; }
+    .side-nav-links { display: flex; flex-direction: column; }
     .side-nav-links a { display: flex; align-items: center; gap: 1rem; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: color 0.3s, padding-left 0.3s; cursor: none; }
     .side-nav-links a:last-child { border-bottom: none; }
     .side-nav-links a.active { color: rgba(168,216,238,0.8); }
@@ -70,14 +106,39 @@
     .side-nav-links a:hover { color: rgba(255,255,255,0.85); padding-left: 0.4rem; }
     .side-nav-links a:hover .n-dot, .side-nav-links a.active .n-dot { background: rgba(168,216,238,1); transform: scale(1.6); }
     .side-nav-footer { margin-top: 3rem; font-size: 0.55rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.15); text-transform: uppercase; }
-
-    @media (max-width: 540px) { nav.top, .content, footer { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @keyframes nudge { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
   </style>
 </head>
 <body>
 
+<canvas id="pool"></canvas>
+<div class="grain"></div>
+
+<!-- The dramatic NO. -->
+<div id="no-text"><span>no.</span></div>
+
+<!-- Top nav -->
+<nav class="top">
+  <a href="index.html" class="logo">khennig</a>
+  <span class="page-tag">about</span>
+</nav>
+
+<!-- Footer -->
+<footer>
+  <span>khennig.com</span>
+  <span>&copy; 2026</span>
+</footer>
+
+<!-- Cursor -->
+<div id="cur"></div>
+<div id="crng"></div>
+
+<!-- Side nav -->
 <div class="side-trigger" id="sideTrigger"></div>
-<div class="nav-hint" id="navHint"><div class="nav-hint-arrow">›</div><div class="nav-hint-label">nav</div></div>
+<div class="nav-hint" id="navHint">
+  <div class="nav-hint-arrow">&#8250;</div>
+  <div class="nav-hint-label">nav</div>
+</div>
 <nav class="side-nav" id="sideNav">
   <div class="side-nav-logo">khennig</div>
   <div class="side-nav-links">
@@ -90,73 +151,238 @@
   <div class="side-nav-footer">khennig.com</div>
 </nav>
 
-<div class="cur" id="cur"></div>
-<div class="cur-ring" id="crng"></div>
-<canvas id="wc"></canvas>
-<div class="veil"></div>
-<div class="grain"></div>
-
-<div class="page">
-  <nav class="top">
-    <a href="index.html" class="logo">khennig</a>
-    <span class="page-tag">about</span>
-  </nav>
-
-  <div class="content">
-    <div class="eyebrow">about</div>
-    <h1>a little<br/><em>about me</em></h1>
-    <div class="divider"></div>
-    <p>I'm someone who finds connection in the spaces between things — between people, between systems, between the digital and the everyday. Networking, to me, isn't just technical; it's about building something that holds.</p>
-    <p>When I'm not thinking about infrastructure and how things communicate, I'm usually deep in a game — the kind that asks something of you. Strategy, story, the long play. Gaming has always been a way I make sense of complex systems, and I've never stopped finding it fascinating.</p>
-    <p>And then there are the dogs. Loyal, honest, and entirely uncomplicated. They remind me what actually matters.</p>
-  </div>
-</div>
-
-<footer>
-  <span>khennig.com</span>
-  <span>© 2026</span>
-</footer>
-
 <script>
-const cv=document.getElementById('wc'),cx=cv.getContext('2d');
-function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-rsz();window.addEventListener('resize',rsz);
-const ST=110,st=[];
-function mkS(top){return{x:Math.random()*cv.width,y:top?-250-Math.random()*cv.height:Math.random()*cv.height,spd:0.8+Math.random()*2.2,len:60+Math.random()*240,op:0.04+Math.random()*0.18,w:0.4+Math.random()*1.5};}
-for(let i=0;i<ST;i++)st.push(mkS(false));
-const rp=[];
-function mkR(){return{x:Math.random()*cv.width,y:cv.height*(0.68+Math.random()*0.32),r:0,max:25+Math.random()*95,spd:0.4+Math.random()*0.8,op:0.1+Math.random()*0.18};}
-for(let i=0;i<14;i++){const r=mkR();r.r=Math.random()*r.max;rp.push(r);}
-const ms=[];
-function mkM(){return{x:cv.width*.28+Math.random()*cv.width*.44,y:cv.height*.55+Math.random()*cv.height*.45,vx:(Math.random()-.5)*.35,vy:-(0.15+Math.random()*.48),r:20+Math.random()*85,op:.025+Math.random()*.09,life:0,max:200+Math.random()*340};}
-for(let i=0;i<55;i++){const m=mkM();m.life=Math.random()*m.max;ms.push(m);}
-function frame(){
-  cx.clearRect(0,0,cv.width,cv.height);
-  const bg=cx.createLinearGradient(0,0,0,cv.height);
-  bg.addColorStop(0,'#07191f');bg.addColorStop(.3,'#0c2e3f');bg.addColorStop(.55,'#114d68');bg.addColorStop(.75,'#177090');bg.addColorStop(1,'#2295b5');
-  cx.fillStyle=bg;cx.fillRect(0,0,cv.width,cv.height);
-  const t=Date.now()*.00013,w=cv.width,h=cv.height,ccx=w*.5;
-  for(let i=0;i<7;i++){const ang=(-.4+i*.13)+Math.sin(t+i)*.055,x2=ccx+Math.tan(ang)*h,sp=w*.04;const rg=cx.createLinearGradient(ccx,0,x2,h);rg.addColorStop(0,'rgba(185,230,252,0.065)');rg.addColorStop(.6,'rgba(185,230,252,0.02)');rg.addColorStop(1,'rgba(185,230,252,0)');cx.save();cx.beginPath();cx.moveTo(ccx-sp,0);cx.lineTo(ccx+sp,0);cx.lineTo(x2+sp*2.2,h);cx.lineTo(x2-sp*2.2,h);cx.closePath();cx.fillStyle=rg;cx.fill();cx.restore();}
-  const tt=Date.now()*.001,fw=w*.18;const gc=cx.createLinearGradient(0,0,0,h*.78);gc.addColorStop(0,'rgba(210,245,255,0.22)');gc.addColorStop(.55,'rgba(170,228,250,0.12)');gc.addColorStop(1,'rgba(100,200,240,0.03)');cx.beginPath();cx.moveTo(ccx-fw/2,0);for(let y=0;y<=h*.75;y+=7)cx.lineTo(ccx+fw/2+Math.sin(y*.027+tt)*7,y);for(let y=h*.75;y>=0;y-=7)cx.lineTo(ccx-fw/2+Math.sin(y*.027+tt+1.2)*7,y);cx.closePath();cx.fillStyle=gc;cx.fill();
-  st.forEach(s=>{const sg=cx.createLinearGradient(s.x,s.y,s.x,s.y+s.len);sg.addColorStop(0,'rgba(200,242,255,0)');sg.addColorStop(.4,`rgba(215,248,255,${s.op})`);sg.addColorStop(1,'rgba(180,235,252,0)');cx.beginPath();cx.moveTo(s.x,s.y);cx.lineTo(s.x,s.y+s.len);cx.strokeStyle=sg;cx.lineWidth=s.w;cx.stroke();s.y+=s.spd;if(s.y>cv.height+s.len)Object.assign(s,mkS(true));});
-  rp.forEach(r=>{cx.beginPath();cx.ellipse(r.x,r.y,r.r,r.r*.25,0,0,Math.PI*2);cx.strokeStyle=`rgba(210,248,255,${r.op*(1-r.r/r.max)})`;cx.lineWidth=.8;cx.stroke();r.r+=r.spd;if(r.r>r.max)Object.assign(r,mkR());});
-  ms.forEach(m=>{const f=Math.sin((m.life/m.max)*Math.PI);const mg=cx.createRadialGradient(m.x,m.y,0,m.x,m.y,m.r);mg.addColorStop(0,`rgba(200,238,252,${m.op*f})`);mg.addColorStop(1,'rgba(200,238,252,0)');cx.beginPath();cx.arc(m.x,m.y,m.r,0,Math.PI*2);cx.fillStyle=mg;cx.fill();m.x+=m.vx;m.y+=m.vy;m.life++;if(m.life>m.max)Object.assign(m,mkM());});
+'use strict';
+
+/* ═══════════════════════════════════════
+   WHIRLPOOL CANVAS
+═══════════════════════════════════════ */
+const canvas = document.getElementById('pool');
+const ctx    = canvas.getContext('2d');
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── Spiral ring particles ──
+// Each ring is a circle of particles that rotates and spirals inward/outward
+// creating a 3D tunnel / whirlpool illusion
+
+const RINGS     = 48;    // number of rings in the tunnel
+const PTS       = 64;    // points per ring
+const MAX_DEPTH = 800;   // depth of the tunnel
+
+let rings = [];
+
+function buildRings() {
+  rings = [];
+  for (let i = 0; i < RINGS; i++) {
+    const depth   = (i / RINGS) * MAX_DEPTH;          // 0 = close, MAX = far
+    const radius  = 60 + (1 - i / RINGS) * Math.min(canvas.width, canvas.height) * 0.52;
+    const opacity = 0.06 + (1 - i / RINGS) * 0.28;
+    const speed   = 0.0008 + (i / RINGS) * 0.0022;    // far rings spin slower
+    const offset  = (i / RINGS) * Math.PI * 3;        // phase stagger
+    rings.push({ depth, radius, opacity, speed, offset, phase: offset });
+  }
+}
+buildRings();
+window.addEventListener('resize', buildRings);
+
+// ── Color palette ──
+function ringColor(t, alpha) {
+  // t: 0 (near) → 1 (far)
+  // Near: bright sky blue  →  far: deep ocean dark
+  const r = Math.round(7  + t * (14 - 7));
+  const g = Math.round(112 + t * (25 - 112));
+  const b = Math.round(149 + t * (44 - 149));
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ── Draw a single ring ──
+function drawRing(ring, t) {
+  const cx = canvas.width  * 0.5;
+  const cy = canvas.height * 0.5;
+
+  // Perspective scale: far rings appear smaller
+  const scale = 1 - (ring.depth / MAX_DEPTH) * 0.85;
+
+  const r   = ring.radius * scale;
+  const col = ringColor(ring.depth / MAX_DEPTH, ring.opacity * scale);
+
+  ctx.beginPath();
+  for (let p = 0; p <= PTS; p++) {
+    const angle = (p / PTS) * Math.PI * 2 + ring.phase;
+    // Add a subtle wave ripple to the radius — makes it feel like water
+    const wobble = 1 + Math.sin(angle * 3 + t * 2.5 + ring.depth * 0.008) * 0.04;
+    const x = cx + Math.cos(angle) * r * wobble;
+    const y = cy + Math.sin(angle) * r * wobble * 0.38; // flatten Y for perspective
+    p === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = col;
+  ctx.lineWidth   = Math.max(0.4, 1.6 * scale);
+  ctx.stroke();
+
+  // Spoke lines radiating from centre on every Nth point — network feel
+  if (ring.depth < MAX_DEPTH * 0.55) {
+    const spokeStep = 8;
+    for (let p = 0; p < PTS; p += spokeStep) {
+      const angle = (p / PTS) * Math.PI * 2 + ring.phase;
+      const wobble = 1 + Math.sin(angle * 3 + t * 2.5 + ring.depth * 0.008) * 0.04;
+      const x = cx + Math.cos(angle) * r * wobble;
+      const y = cy + Math.sin(angle) * r * wobble * 0.38;
+      const innerR = r * 0.35;
+      const ix = cx + Math.cos(angle) * innerR;
+      const iy = cy + Math.sin(angle) * innerR * 0.38;
+
+      const spokeAlpha = ring.opacity * scale * 0.35;
+      ctx.beginPath();
+      ctx.moveTo(ix, iy);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = `rgba(168,216,238,${spokeAlpha})`;
+      ctx.lineWidth   = Math.max(0.2, 0.6 * scale);
+      ctx.stroke();
+    }
+  }
+}
+
+// ── Background gradient ──
+function drawBg() {
+  const g = ctx.createRadialGradient(
+    canvas.width * .5, canvas.height * .5, 0,
+    canvas.width * .5, canvas.height * .5, Math.max(canvas.width, canvas.height) * 0.7
+  );
+  g.addColorStop(0,   '#0d3548');
+  g.addColorStop(0.4, '#091f2c');
+  g.addColorStop(1,   '#040e14');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+// ── Mist glow at centre ──
+function drawGlow(t) {
+  const cx = canvas.width  * .5;
+  const cy = canvas.height * .5;
+  const pulse = 1 + Math.sin(t * 1.1) * 0.12;
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 180 * pulse);
+  g.addColorStop(0,   'rgba(123,191,212,0.18)');
+  g.addColorStop(0.4, 'rgba(40,120,160,0.07)');
+  g.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 300 * pulse, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ── Falling water streaks (matching site theme) ──
+const STREAKS = 55;
+const streaks = [];
+function mkStreak() {
+  return {
+    x:   Math.random() * canvas.width,
+    y:   Math.random() * canvas.height,
+    len: 50 + Math.random() * 180,
+    spd: 0.6 + Math.random() * 1.8,
+    op:  0.03 + Math.random() * 0.1,
+    w:   0.4 + Math.random() * 1.2
+  };
+}
+for (let i = 0; i < STREAKS; i++) streaks.push(mkStreak());
+
+function drawStreaks() {
+  streaks.forEach(s => {
+    const g = ctx.createLinearGradient(s.x, s.y, s.x, s.y + s.len);
+    g.addColorStop(0,   `rgba(200,240,255,0)`);
+    g.addColorStop(0.5, `rgba(200,240,255,${s.op})`);
+    g.addColorStop(1,   `rgba(200,240,255,0)`);
+    ctx.beginPath();
+    ctx.moveTo(s.x, s.y);
+    ctx.lineTo(s.x, s.y + s.len);
+    ctx.strokeStyle = g;
+    ctx.lineWidth   = s.w;
+    ctx.stroke();
+    s.y += s.spd;
+    if (s.y > canvas.height + s.len) {
+      s.y = -s.len;
+      s.x = Math.random() * canvas.width;
+    }
+  });
+}
+
+// ── Main animation loop ──
+let startTime = null;
+
+function frame(ts) {
+  if (!startTime) startTime = ts;
+  const t = (ts - startTime) / 1000; // seconds
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBg();
+  drawGlow(t);
+  drawStreaks();
+
+  // Update and draw rings — sorted back to front (far first)
+  for (let i = rings.length - 1; i >= 0; i--) {
+    rings[i].phase += rings[i].speed;
+    drawRing(rings[i], t);
+  }
+
+  // Vignette overlay
+  const vig = ctx.createRadialGradient(
+    canvas.width*.5, canvas.height*.5, canvas.height * 0.25,
+    canvas.width*.5, canvas.height*.5, canvas.height * 0.85
+  );
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(4,14,20,0.75)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   requestAnimationFrame(frame);
 }
-frame();
-const sideNav=document.getElementById('sideNav'),sideTrigger=document.getElementById('sideTrigger'),navHint=document.getElementById('navHint');
-let navOpen=false,navTimeout;
-function openNav(){clearTimeout(navTimeout);sideNav.classList.add('open');navHint.classList.add('hidden');navOpen=true;}
-function closeNav(){navTimeout=setTimeout(()=>{sideNav.classList.remove('open');navHint.classList.remove('hidden');navOpen=false;},280);}
-sideTrigger.addEventListener('mouseenter',openNav);
-sideNav.addEventListener('mouseenter',()=>{clearTimeout(navTimeout);navOpen=true;});
-sideNav.addEventListener('mouseleave',closeNav);
-document.addEventListener('mousemove',e=>{if(e.clientX<40&&!navOpen)sideNav.classList.add('peek');else if(e.clientX>=40)sideNav.classList.remove('peek');if(e.clientX<20&&!navOpen)openNav();});
-const c=document.getElementById('cur'),r=document.getElementById('crng');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-(function ac(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;c.style.left=mx+'px';c.style.top=my+'px';r.style.left=rx+'px';r.style.top=ry+'px';requestAnimationFrame(ac);})();
-document.querySelectorAll('a,button,input,textarea').forEach(el=>{el.addEventListener('mouseenter',()=>{c.style.width='14px';c.style.height='14px';r.style.width='44px';r.style.height='44px';});el.addEventListener('mouseleave',()=>{c.style.width='7px';c.style.height='7px';r.style.width='28px';r.style.height='28px';});});
+requestAnimationFrame(frame);
+
+/* ═══════════════════════════════════════
+   CURSOR
+═══════════════════════════════════════ */
+(function() {
+  const dot  = document.getElementById('cur');
+  const ring = document.getElementById('crng');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick(){
+    rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
+    dot.style.left=mx+'px';  dot.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick);
+  })();
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ dot.style.width='14px'; dot.style.height='14px'; ring.style.width='44px'; ring.style.height='44px'; });
+    el.addEventListener('mouseleave',()=>{ dot.style.width='7px';  dot.style.height='7px';  ring.style.width='28px'; ring.style.height='28px'; });
+  });
+})();
+
+/* ═══════════════════════════════════════
+   SIDE NAV
+═══════════════════════════════════════ */
+(function() {
+  const sideNav  = document.getElementById('sideNav');
+  const sideTrig = document.getElementById('sideTrigger');
+  const navHint  = document.getElementById('navHint');
+  let open=false, timer;
+  function openNav()  { clearTimeout(timer); sideNav.classList.add('open'); navHint.classList.add('hidden'); open=true; }
+  function closeNav() { timer=setTimeout(()=>{ sideNav.classList.remove('open'); navHint.classList.remove('hidden'); open=false; },280); }
+  sideTrig.addEventListener('mouseenter', openNav);
+  sideNav.addEventListener('mouseenter', ()=>{ clearTimeout(timer); open=true; });
+  sideNav.addEventListener('mouseleave', closeNav);
+  document.addEventListener('mousemove', e=>{
+    if (e.clientX<20 && !open) openNav();
+    if (e.clientX>=40) sideNav.classList.remove('peek');
+    else if (!open) sideNav.classList.add('peek');
+  });
+})();
 </script>
 </body>
 </html>
