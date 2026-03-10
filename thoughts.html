@@ -8,78 +8,121 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Outfit:wght@200;300&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Outfit', sans-serif; background: #091f2c; color: rgba(255,255,255,0.55); overflow-x: hidden; cursor: none; }
-    .cur { position: fixed; width: 7px; height: 7px; background: rgba(255,255,255,0.8); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: overlay; transition: width .25s, height .25s; }
-    .cur-ring { position: fixed; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #091f2c;
+      color: rgba(255,255,255,0.55);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR — high z-index, no pointer-events interference */
+    #cur {
+      position: fixed; width: 7px; height: 7px;
+      background: white; border-radius: 50%;
+      pointer-events: none; z-index: 99999;
+      left: -20px; top: -20px;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: difference;
+      transition: width .2s, height .2s;
+    }
+    #crng {
+      position: fixed; width: 28px; height: 28px;
+      border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
+      pointer-events: none; z-index: 99998;
+      left: -20px; top: -20px;
+      transform: translate(-50%,-50%);
+      transition: width .3s, height .3s;
+    }
+
+    /* CANVAS BG */
     #wc { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
-    .veil { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(9,31,44,0.7) 0%, rgba(9,31,44,0.4) 40%, rgba(9,31,44,0.75) 100%); }
-    .grain { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.45; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"); }
+    .veil { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(9,31,44,0.7) 0%, rgba(9,31,44,0.35) 45%, rgba(9,31,44,0.75) 100%); }
+    .grain { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.4;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"); }
+
+    /* LAYOUT */
     .page { position: relative; z-index: 10; min-height: 100vh; display: flex; flex-direction: column; }
-    nav.top { padding: 2.2rem 3rem; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+
+    nav.top {
+      padding: 2.2rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-shrink: 0;
+    }
     .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; letter-spacing: 0.45em; color: rgba(255,255,255,0.7); text-transform: lowercase; text-decoration: none; }
     .page-tag { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(200,232,245,0.35); }
 
-    /* BLOG LAYOUT */
+    /* BLOG */
     .blog-wrap { flex: 1; padding: 2rem 3rem 5rem; max-width: 760px; margin: 0 auto; width: 100%; animation: up 1.4s cubic-bezier(0.16,1,0.3,1) both; }
+
     .blog-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .blog-title-block h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 300; line-height: 0.9; color: white; letter-spacing: -0.02em; }
     .blog-title-block h1 em { font-style: italic; color: #a8d8ee; }
     .blog-title-block p { font-size: 0.65rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.25); margin-top: 0.6rem; }
 
-    /* COMPOSE */
+    /* COMPOSE BOX */
     .compose {
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
       backdrop-filter: blur(16px);
       padding: 2rem; margin-bottom: 3rem;
     }
     .compose-label { font-size: 0.55rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(123,191,212,0.5); margin-bottom: 1.5rem; }
-    .compose input, .compose textarea {
-      width: 100%; background: rgba(255,255,255,0.04); border: none;
+
+    .compose input,
+    .compose textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
       border-bottom: 1px solid rgba(255,255,255,0.1);
-      padding: 0.7rem 0; font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem; font-weight: 200; color: white; outline: none; resize: none;
-      transition: border-color .3s; margin-bottom: 1rem;
+      padding: 0.7rem 0;
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 200;
+      color: white; outline: none; resize: none;
+      transition: border-color .3s;
+      margin-bottom: 1.2rem;
+      display: block;
     }
-    .compose input::placeholder, .compose textarea::placeholder { color: rgba(255,255,255,0.18); }
-    .compose input:focus, .compose textarea:focus { border-color: rgba(123,191,212,0.45); }
+    .compose input::placeholder,
+    .compose textarea::placeholder { color: rgba(255,255,255,0.2); }
+    .compose input:focus,
+    .compose textarea:focus { border-color: rgba(123,191,212,0.5); }
     .compose textarea { min-height: 90px; }
+
     .post-btn {
       display: inline-flex; align-items: center; gap: 0.6rem;
-      background: none; border: none; font-family: 'Outfit', sans-serif;
-      font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase;
-      color: rgba(168,216,238,0.7); cursor: none; padding: 0; transition: color .3s;
+      background: none; border: none;
+      font-family: 'Outfit', sans-serif; font-size: 0.6rem;
+      letter-spacing: 0.4em; text-transform: uppercase;
+      color: rgba(168,216,238,0.7); cursor: none;
+      padding: 0; transition: color .3s;
     }
     .post-btn:hover { color: rgba(168,216,238,1); }
-    .post-btn .arr { display: inline-block; transition: transform .35s cubic-bezier(0.16,1,0.3,1); }
-    .post-btn:hover .arr { transform: translateX(5px); }
-    .post-btn:disabled { opacity: 0.3; }
-    .post-status { font-size: 0.65rem; letter-spacing: 0.15em; color: rgba(123,191,212,0.6); margin-top: 0.8rem; min-height: 1rem; }
+    .post-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .post-btn .arr { transition: transform .3s cubic-bezier(0.16,1,0.3,1); }
+    .post-btn:hover .arr { transform: translateX(4px); }
+
+    .post-status {
+      margin-top: 0.8rem; font-size: 0.65rem; letter-spacing: 0.15em;
+      color: rgba(123,191,212,0.6); min-height: 1.2rem;
+    }
+    .post-status.err { color: rgba(255,120,120,0.7); }
 
     /* POSTS */
-    .posts-loading { text-align: center; padding: 4rem 0; font-size: 0.7rem; letter-spacing: 0.3em; color: rgba(255,255,255,0.2); text-transform: uppercase; }
-    .posts-empty { text-align: center; padding: 5rem 0; font-size: 0.8rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.15); }
-    .post { padding: 1.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); animation: up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
-    .post:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    #postsList { min-height: 100px; }
+    .posts-loading { text-align: center; padding: 4rem 0; font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.18); }
+    .posts-empty { text-align: center; padding: 5rem 0; font-size: 0.75rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.15); }
+
+    .post { padding: 1.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); animation: up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+    .post:first-child { border-top: 1px solid rgba(255,255,255,0.05); }
     .post-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
-    .post-who { display: flex; align-items: center; gap: 0.8rem; }
-    .post-username { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(168,216,238,0.6); }
-    .post-date { font-size: 0.55rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.18); }
-    .post p { font-size: 0.9rem; line-height: 1.85; font-weight: 200; color: rgba(255,255,255,0.5); white-space: pre-wrap; word-break: break-word; }
+    .post-username { font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(168,216,238,0.55); }
+    .post-date { font-size: 0.55rem; letter-spacing: 0.18em; color: rgba(255,255,255,0.18); }
+    .post-body { font-size: 0.9rem; line-height: 1.85; font-weight: 200; color: rgba(255,255,255,0.5); white-space: pre-wrap; word-break: break-word; }
 
-    /* SETUP NOTICE */
-    .setup-notice {
-      background: rgba(123,191,212,0.06);
-      border: 1px solid rgba(123,191,212,0.2);
-      padding: 1.2rem 1.5rem; margin-bottom: 2rem;
-      font-size: 0.72rem; line-height: 1.7; color: rgba(168,216,238,0.6);
-      display: none;
-    }
-    .setup-notice code { background: rgba(255,255,255,0.08); padding: 0.1em 0.4em; font-size: 0.85em; color: rgba(200,240,255,0.8); }
-
+    /* FOOTER */
     footer { position: relative; z-index: 10; padding: 1.5rem 3rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     footer span { font-size: 0.6rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.15); }
-    @keyframes up { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
     /* SIDE NAV */
     .side-trigger { position: fixed; left: 0; top: 0; width: 20px; height: 100vh; z-index: 200; }
@@ -89,7 +132,6 @@
     .nav-hint.hidden { opacity: 0; transform: translateY(-50%) translateX(-16px); }
     .nav-hint-arrow { color: rgba(168,216,238,0.55); font-size: 0.75rem; animation: nudge 2.5s ease-in-out infinite; }
     .nav-hint-label { writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); font-size: 0.48rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.2); line-height: 1; }
-    @keyframes nudge { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
     .side-nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; letter-spacing: 0.45em; color: rgba(255,255,255,0.3); text-transform: lowercase; margin-bottom: 3rem; }
     .side-nav-links { display: flex; flex-direction: column; }
     .side-nav-links a { display: flex; align-items: center; gap: 1rem; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: color 0.3s, padding-left 0.3s; cursor: none; }
@@ -99,13 +141,27 @@
     .side-nav-links a:hover { color: rgba(255,255,255,0.85); padding-left: 0.4rem; }
     .side-nav-links a:hover .n-dot, .side-nav-links a.active .n-dot { background: rgba(168,216,238,1); transform: scale(1.6); }
     .side-nav-footer { margin-top: 3rem; font-size: 0.55rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.15); text-transform: uppercase; }
-    @media (max-width: 540px) { nav.top, .blog-wrap, footer { padding-left: 1.5rem; padding-right: 1.5rem; } }
+
+    @keyframes up { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes nudge { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
+
+    @media (max-width: 540px) {
+      nav.top, .blog-wrap, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
   </style>
 </head>
 <body>
 
+<!-- Custom cursor -->
+<div id="cur"></div>
+<div id="crng"></div>
+
+<!-- Side nav -->
 <div class="side-trigger" id="sideTrigger"></div>
-<div class="nav-hint" id="navHint"><div class="nav-hint-arrow">›</div><div class="nav-hint-label">nav</div></div>
+<div class="nav-hint" id="navHint">
+  <div class="nav-hint-arrow">›</div>
+  <div class="nav-hint-label">nav</div>
+</div>
 <nav class="side-nav" id="sideNav">
   <div class="side-nav-logo">khennig</div>
   <div class="side-nav-links">
@@ -118,8 +174,7 @@
   <div class="side-nav-footer">khennig.com</div>
 </nav>
 
-<div class="cur" id="cur"></div>
-<div class="cur-ring" id="crng"></div>
+<!-- Canvas waterfall bg -->
 <canvas id="wc"></canvas>
 <div class="veil"></div>
 <div class="grain"></div>
@@ -138,135 +193,116 @@
       </div>
     </div>
 
-    <!-- SETUP NOTICE — shown if not configured -->
-    <div class="setup-notice" id="setupNotice">
-      <strong>One-time setup needed:</strong> To enable cross-device posts, create a free bin at
-      <a href="https://jsonbin.io" target="_blank" style="color:rgba(168,216,238,0.8)">jsonbin.io</a>,
-      then replace <code>YOUR_BIN_ID</code> and <code>YOUR_API_KEY</code> in this file's script section.
-    </div>
-
-    <!-- COMPOSE — always open -->
+    <!-- COMPOSE -->
     <div class="compose">
       <div class="compose-label">leave a thought</div>
-      <input type="text" id="postUsername" placeholder="username" maxlength="32" autocomplete="off"/>
-      <textarea id="postBody" placeholder="say something..." maxlength="500"></textarea>
-      <button class="post-btn" id="publishBtn"><span>Post</span><span class="arr">→</span></button>
+      <input type="text" id="inUser" placeholder="username (optional)" maxlength="32" autocomplete="off"/>
+      <textarea id="inBody" placeholder="say something..." maxlength="500"></textarea>
+      <button class="post-btn" id="postBtn">
+        <span>Post</span><span class="arr">→</span>
+      </button>
       <div class="post-status" id="postStatus"></div>
     </div>
 
-    <!-- POSTS LIST -->
-    <div id="postsList"><div class="posts-loading">loading…</div></div>
+    <!-- POSTS -->
+    <div id="postsList">
+      <div class="posts-loading">loading…</div>
+    </div>
   </div>
 </div>
 
-<footer><span>khennig.com</span><span>© 2026</span></footer>
+<footer>
+  <span>khennig.com</span>
+  <span>© 2026</span>
+</footer>
 
 <script>
-/* ════════════════════════════════════════════
-   STORAGE CONFIG
-   ─────────────────────────────────────────
-   Option A (recommended, free, cross-device):
-     1. Go to https://jsonbin.io and sign up free
-     2. Create a new bin with content: {"posts":[]}
-     3. Copy the Bin ID and your Master Key below
-     4. Set USE_JSONBIN = true
+'use strict';
 
-   Option B: Falls back to localStorage
-   (works but posts are device-specific)
-════════════════════════════════════════════ */
-const USE_JSONBIN  = false;          // ← set true after setup
-const BIN_ID       = 69b098b4864efc355b5e9108; // ← paste your bin ID here
-const API_KEY      = $2a$10$3BtAmvbpY.zFLhsYLvV.ZexRneqCtTZwfM1OvXXjyQsVpI3JxDzKC;// ← paste your master key here
+/* ══ JSONBIN CONFIG ══ */
+const BIN_ID  = '69b098b4864efc355b5e9108';
+const API_KEY = '$2a$10$3BtAmvbpY.zFLhsYLvV.ZexRneqCtTZwfM1OvXXjyQsVpI3JxDzKC';
+const BIN_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
 
-const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-const HEADERS  = { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY, 'X-Bin-Versioning': 'false' };
-
-// Show setup notice if not configured
-if (!USE_JSONBIN) document.getElementById('setupNotice').style.display = 'block';
-
-/* ── LOCAL FALLBACK ── */
-function localGet() {
-  try { return JSON.parse(localStorage.getItem('kh_thoughts') || '[]'); } catch { return []; }
-}
-function localSave(posts) {
-  localStorage.setItem('kh_thoughts', JSON.stringify(posts));
+/* ══ JSONBIN HELPERS ══ */
+async function fetchPosts() {
+  const res = await fetch(BIN_URL + '/latest', {
+    headers: { 'X-Master-Key': API_KEY }
+  });
+  if (!res.ok) throw new Error('fetch ' + res.status);
+  const json = await res.json();
+  return Array.isArray(json.record.posts) ? json.record.posts : [];
 }
 
-/* ── JSONBIN ── */
-async function remoteGet() {
-  const res = await fetch(BASE_URL + '/latest', { headers: { 'X-Master-Key': API_KEY } });
-  if (!res.ok) throw new Error('fetch failed');
-  const data = await res.json();
-  return data.record.posts || [];
-}
-async function remoteSave(posts) {
-  const res = await fetch(BASE_URL, {
+async function savePosts(posts) {
+  const res = await fetch(BIN_URL, {
     method: 'PUT',
-    headers: HEADERS,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': API_KEY,
+      'X-Bin-Versioning': 'false'
+    },
     body: JSON.stringify({ posts })
   });
-  if (!res.ok) throw new Error('save failed');
+  if (!res.ok) throw new Error('save ' + res.status);
 }
 
-async function getPosts() {
-  if (USE_JSONBIN) return await remoteGet();
-  return localGet();
-}
-async function addPost(post) {
-  if (USE_JSONBIN) {
-    const posts = await remoteGet();
-    posts.unshift(post); // newest first
-    await remoteSave(posts);
-  } else {
-    const posts = localGet();
-    posts.unshift(post);
-    localSave(posts);
-  }
+/* ══ HELPERS ══ */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
 }
 
-/* ── RENDER ── */
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 function timeAgo(ts) {
   const s = Math.floor((Date.now() - ts) / 1000);
-  if (s < 60) return 'just now';
-  if (s < 3600) return Math.floor(s/60) + 'm ago';
-  if (s < 86400) return Math.floor(s/3600) + 'h ago';
-  if (s < 604800) return Math.floor(s/86400) + 'd ago';
+  if (s < 60)     return 'just now';
+  if (s < 3600)   return Math.floor(s / 60) + 'm ago';
+  if (s < 86400)  return Math.floor(s / 3600) + 'h ago';
+  if (s < 604800) return Math.floor(s / 86400) + 'd ago';
   return new Date(ts).toLocaleDateString('en-CA', { month:'short', day:'numeric', year:'numeric' });
 }
 
-async function renderPosts() {
-  const list = document.getElementById('postsList');
-  try {
-    const posts = await getPosts();
-    if (!posts.length) {
-      list.innerHTML = '<div class="posts-empty">no thoughts yet — be the first</div>';
-      return;
-    }
-    list.innerHTML = posts.map(p => `
-      <div class="post">
-        <div class="post-meta">
-          <div class="post-who">
-            <span class="post-username">${escHtml(p.username || 'anon')}</span>
-          </div>
-          <span class="post-date">${timeAgo(p.ts)}</span>
-        </div>
-        <p>${escHtml(p.body)}</p>
-      </div>
-    `).join('');
-  } catch(e) {
-    list.innerHTML = '<div class="posts-empty">could not load — try refreshing</div>';
+/* ══ RENDER ══ */
+function renderPosts(posts) {
+  const el = document.getElementById('postsList');
+  if (!posts || !posts.length) {
+    el.innerHTML = '<div class="posts-empty">no thoughts yet — be the first</div>';
+    return;
   }
+  el.innerHTML = posts.map(p => `
+    <div class="post">
+      <div class="post-meta">
+        <span class="post-username">${esc(p.username || 'anon')}</span>
+        <span class="post-date">${timeAgo(p.ts)}</span>
+      </div>
+      <div class="post-body">${esc(p.body)}</div>
+    </div>
+  `).join('');
 }
 
-/* ── SUBMIT ── */
-document.getElementById('publishBtn').addEventListener('click', async () => {
-  const username = document.getElementById('postUsername').value.trim() || 'anon';
-  const body     = document.getElementById('postBody').value.trim();
+/* ══ LOAD ON PAGE OPEN ══ */
+(async function load() {
+  try {
+    const posts = await fetchPosts();
+    renderPosts(posts);
+  } catch(e) {
+    document.getElementById('postsList').innerHTML =
+      '<div class="posts-empty">could not load — try refreshing</div>';
+    console.error('load error:', e);
+  }
+})();
+
+/* ══ POST SUBMIT ══ */
+async function submitPost() {
+  const username = (document.getElementById('inUser').value.trim() || 'anon').slice(0, 32);
+  const body     = document.getElementById('inBody').value.trim();
   const status   = document.getElementById('postStatus');
-  const btn      = document.getElementById('publishBtn');
+  const btn      = document.getElementById('postBtn');
+
+  status.className = 'post-status';
 
   if (!body) {
     status.textContent = 'write something first.';
@@ -277,59 +313,151 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
   status.textContent = 'posting…';
 
   try {
-    await addPost({ username, body, ts: Date.now() });
-    document.getElementById('postUsername').value = '';
-    document.getElementById('postBody').value = '';
+    const posts = await fetchPosts();
+    posts.unshift({ username, body, ts: Date.now() });
+    await savePosts(posts);
+    document.getElementById('inUser').value = '';
+    document.getElementById('inBody').value = '';
     status.textContent = 'posted.';
-    await renderPosts();
-    setTimeout(() => { status.textContent = ''; }, 2000);
+    renderPosts(posts);
+    setTimeout(() => { status.textContent = ''; }, 2500);
   } catch(e) {
+    status.className = 'post-status err';
     status.textContent = 'something went wrong — try again.';
+    console.error('post error:', e);
   }
+
   btn.disabled = false;
+}
+
+document.getElementById('postBtn').addEventListener('click', submitPost);
+document.getElementById('inBody').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') submitPost();
 });
 
-// Post on Ctrl/Cmd+Enter in textarea
-document.getElementById('postBody').addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    document.getElementById('publishBtn').click();
+/* ══ WATERFALL ══ */
+(function() {
+  const cv = document.getElementById('wc');
+  const cx = cv.getContext('2d');
+
+  function rsz() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+  rsz(); window.addEventListener('resize', rsz);
+
+  const ST = 110, st = [];
+  function mkS(top) { return { x: Math.random()*cv.width, y: top ? -250-Math.random()*cv.height : Math.random()*cv.height, spd: 0.8+Math.random()*2.2, len: 60+Math.random()*240, op: 0.04+Math.random()*0.18, w: 0.4+Math.random()*1.5 }; }
+  for (let i=0;i<ST;i++) st.push(mkS(false));
+
+  const rp = [];
+  function mkR() { return { x: Math.random()*cv.width, y: cv.height*(0.68+Math.random()*0.32), r: 0, max: 25+Math.random()*95, spd: 0.4+Math.random()*0.8, op: 0.1+Math.random()*0.18 }; }
+  for (let i=0;i<14;i++) { const r=mkR(); r.r=Math.random()*r.max; rp.push(r); }
+
+  const ms = [];
+  function mkM() { return { x: cv.width*.28+Math.random()*cv.width*.44, y: cv.height*.55+Math.random()*cv.height*.45, vx: (Math.random()-.5)*.35, vy: -(0.15+Math.random()*.48), r: 20+Math.random()*85, op: .025+Math.random()*.09, life: 0, max: 200+Math.random()*340 }; }
+  for (let i=0;i<55;i++) { const m=mkM(); m.life=Math.random()*m.max; ms.push(m); }
+
+  function frame() {
+    cx.clearRect(0,0,cv.width,cv.height);
+    const bg=cx.createLinearGradient(0,0,0,cv.height);
+    bg.addColorStop(0,'#07191f'); bg.addColorStop(.3,'#0c2e3f'); bg.addColorStop(.55,'#114d68'); bg.addColorStop(.75,'#177090'); bg.addColorStop(1,'#2295b5');
+    cx.fillStyle=bg; cx.fillRect(0,0,cv.width,cv.height);
+    const t=Date.now()*.00013, w=cv.width, h=cv.height, ccx=w*.5;
+    for (let i=0;i<7;i++) {
+      const ang=(-.4+i*.13)+Math.sin(t+i)*.055, x2=ccx+Math.tan(ang)*h, sp=w*.04;
+      const rg=cx.createLinearGradient(ccx,0,x2,h);
+      rg.addColorStop(0,'rgba(185,230,252,0.065)'); rg.addColorStop(.6,'rgba(185,230,252,0.02)'); rg.addColorStop(1,'rgba(185,230,252,0)');
+      cx.save(); cx.beginPath(); cx.moveTo(ccx-sp,0); cx.lineTo(ccx+sp,0); cx.lineTo(x2+sp*2.2,h); cx.lineTo(x2-sp*2.2,h); cx.closePath(); cx.fillStyle=rg; cx.fill(); cx.restore();
+    }
+    const tt=Date.now()*.001, fw=w*.18;
+    const gc=cx.createLinearGradient(0,0,0,h*.78);
+    gc.addColorStop(0,'rgba(210,245,255,0.22)'); gc.addColorStop(.55,'rgba(170,228,250,0.12)'); gc.addColorStop(1,'rgba(100,200,240,0.03)');
+    cx.beginPath(); cx.moveTo(ccx-fw/2,0);
+    for (let y=0;y<=h*.75;y+=7) cx.lineTo(ccx+fw/2+Math.sin(y*.027+tt)*7,y);
+    for (let y=h*.75;y>=0;y-=7) cx.lineTo(ccx-fw/2+Math.sin(y*.027+tt+1.2)*7,y);
+    cx.closePath(); cx.fillStyle=gc; cx.fill();
+    st.forEach(s=>{
+      const sg=cx.createLinearGradient(s.x,s.y,s.x,s.y+s.len);
+      sg.addColorStop(0,'rgba(200,242,255,0)'); sg.addColorStop(.4,`rgba(215,248,255,${s.op})`); sg.addColorStop(1,'rgba(180,235,252,0)');
+      cx.beginPath(); cx.moveTo(s.x,s.y); cx.lineTo(s.x,s.y+s.len); cx.strokeStyle=sg; cx.lineWidth=s.w; cx.stroke();
+      s.y+=s.spd; if(s.y>cv.height+s.len) Object.assign(s,mkS(true));
+    });
+    rp.forEach(r=>{
+      cx.beginPath(); cx.ellipse(r.x,r.y,r.r,r.r*.25,0,0,Math.PI*2);
+      cx.strokeStyle=`rgba(210,248,255,${r.op*(1-r.r/r.max)})`; cx.lineWidth=.8; cx.stroke();
+      r.r+=r.spd; if(r.r>r.max) Object.assign(r,mkR());
+    });
+    ms.forEach(m=>{
+      const f=Math.sin((m.life/m.max)*Math.PI);
+      const mg=cx.createRadialGradient(m.x,m.y,0,m.x,m.y,m.r);
+      mg.addColorStop(0,`rgba(200,238,252,${m.op*f})`); mg.addColorStop(1,'rgba(200,238,252,0)');
+      cx.beginPath(); cx.arc(m.x,m.y,m.r,0,Math.PI*2); cx.fillStyle=mg; cx.fill();
+      m.x+=m.vx; m.y+=m.vy; m.life++; if(m.life>m.max) Object.assign(m,mkM());
+    });
+    requestAnimationFrame(frame);
   }
-});
+  frame();
+})();
 
-renderPosts();
+/* ══ CURSOR ══ */
+(function() {
+  const dot  = document.getElementById('cur');
+  const ring = document.getElementById('crng');
+  let mx=0, my=0, rx=0, ry=0;
 
-/* ── WATERFALL ── */
-const cv=document.getElementById('wc'),cx=cv.getContext('2d');
-function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-rsz();window.addEventListener('resize',rsz);
-const ST=110,st=[];
-function mkS(top){return{x:Math.random()*cv.width,y:top?-250-Math.random()*cv.height:Math.random()*cv.height,spd:0.8+Math.random()*2.2,len:60+Math.random()*240,op:0.04+Math.random()*0.18,w:0.4+Math.random()*1.5};}
-for(let i=0;i<ST;i++)st.push(mkS(false));
-const rp=[];
-function mkR(){return{x:Math.random()*cv.width,y:cv.height*(0.68+Math.random()*0.32),r:0,max:25+Math.random()*95,spd:0.4+Math.random()*0.8,op:0.1+Math.random()*0.18};}
-for(let i=0;i<14;i++){const r=mkR();r.r=Math.random()*r.max;rp.push(r);}
-const ms=[];
-function mkM(){return{x:cv.width*.28+Math.random()*cv.width*.44,y:cv.height*.55+Math.random()*cv.height*.45,vx:(Math.random()-.5)*.35,vy:-(0.15+Math.random()*.48),r:20+Math.random()*85,op:.025+Math.random()*.09,life:0,max:200+Math.random()*340};}
-for(let i=0;i<55;i++){const m=mkM();m.life=Math.random()*m.max;ms.push(m);}
-function frame(){cx.clearRect(0,0,cv.width,cv.height);const bg=cx.createLinearGradient(0,0,0,cv.height);bg.addColorStop(0,'#07191f');bg.addColorStop(.3,'#0c2e3f');bg.addColorStop(.55,'#114d68');bg.addColorStop(.75,'#177090');bg.addColorStop(1,'#2295b5');cx.fillStyle=bg;cx.fillRect(0,0,cv.width,cv.height);const t=Date.now()*.00013,w=cv.width,h=cv.height,ccx=w*.5;for(let i=0;i<7;i++){const ang=(-.4+i*.13)+Math.sin(t+i)*.055,x2=ccx+Math.tan(ang)*h,sp=w*.04;const rg=cx.createLinearGradient(ccx,0,x2,h);rg.addColorStop(0,'rgba(185,230,252,0.065)');rg.addColorStop(.6,'rgba(185,230,252,0.02)');rg.addColorStop(1,'rgba(185,230,252,0)');cx.save();cx.beginPath();cx.moveTo(ccx-sp,0);cx.lineTo(ccx+sp,0);cx.lineTo(x2+sp*2.2,h);cx.lineTo(x2-sp*2.2,h);cx.closePath();cx.fillStyle=rg;cx.fill();cx.restore();}const tt=Date.now()*.001,fw=w*.18;const gc=cx.createLinearGradient(0,0,0,h*.78);gc.addColorStop(0,'rgba(210,245,255,0.22)');gc.addColorStop(.55,'rgba(170,228,250,0.12)');gc.addColorStop(1,'rgba(100,200,240,0.03)');cx.beginPath();cx.moveTo(ccx-fw/2,0);for(let y=0;y<=h*.75;y+=7)cx.lineTo(ccx+fw/2+Math.sin(y*.027+tt)*7,y);for(let y=h*.75;y>=0;y-=7)cx.lineTo(ccx-fw/2+Math.sin(y*.027+tt+1.2)*7,y);cx.closePath();cx.fillStyle=gc;cx.fill();st.forEach(s=>{const sg=cx.createLinearGradient(s.x,s.y,s.x,s.y+s.len);sg.addColorStop(0,'rgba(200,242,255,0)');sg.addColorStop(.4,`rgba(215,248,255,${s.op})`);sg.addColorStop(1,'rgba(180,235,252,0)');cx.beginPath();cx.moveTo(s.x,s.y);cx.lineTo(s.x,s.y+s.len);cx.strokeStyle=sg;cx.lineWidth=s.w;cx.stroke();s.y+=s.spd;if(s.y>cv.height+s.len)Object.assign(s,mkS(true));});rp.forEach(r=>{cx.beginPath();cx.ellipse(r.x,r.y,r.r,r.r*.25,0,0,Math.PI*2);cx.strokeStyle=`rgba(210,248,255,${r.op*(1-r.r/r.max)})`;cx.lineWidth=.8;cx.stroke();r.r+=r.spd;if(r.r>r.max)Object.assign(r,mkR());});ms.forEach(m=>{const f=Math.sin((m.life/m.max)*Math.PI);const mg=cx.createRadialGradient(m.x,m.y,0,m.x,m.y,m.r);mg.addColorStop(0,`rgba(200,238,252,${m.op*f})`);mg.addColorStop(1,'rgba(200,238,252,0)');cx.beginPath();cx.arc(m.x,m.y,m.r,0,Math.PI*2);cx.fillStyle=mg;cx.fill();m.x+=m.vx;m.y+=m.vy;m.life++;if(m.life>m.max)Object.assign(m,mkM());});requestAnimationFrame(frame);}
-frame();
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 
-/* ── SIDE NAV ── */
-const sideNav=document.getElementById('sideNav'),sideTrigger=document.getElementById('sideTrigger'),navHint=document.getElementById('navHint');
-let navOpen=false,navTimeout;
-function openNav(){clearTimeout(navTimeout);sideNav.classList.add('open');navHint.classList.add('hidden');navOpen=true;}
-function closeNav(){navTimeout=setTimeout(()=>{sideNav.classList.remove('open');navHint.classList.remove('hidden');navOpen=false;},280);}
-sideTrigger.addEventListener('mouseenter',openNav);
-sideNav.addEventListener('mouseenter',()=>{clearTimeout(navTimeout);navOpen=true;});
-sideNav.addEventListener('mouseleave',closeNav);
-document.addEventListener('mousemove',e=>{if(e.clientX<40&&!navOpen)sideNav.classList.add('peek');else if(e.clientX>=40)sideNav.classList.remove('peek');if(e.clientX<20&&!navOpen)openNav();});
+  function tick() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    dot.style.left  = mx + 'px';
+    dot.style.top   = my + 'px';
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(tick);
+  }
+  tick();
 
-/* ── CURSOR ── */
-const c=document.getElementById('cur'),r=document.getElementById('crng');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-(function ac(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;c.style.left=mx+'px';c.style.top=my+'px';r.style.left=rx+'px';r.style.top=ry+'px';requestAnimationFrame(ac);})();
-document.querySelectorAll('a,button,input,textarea').forEach(el=>{el.addEventListener('mouseenter',()=>{c.style.width='14px';c.style.height='14px';r.style.width='44px';r.style.height='44px';});el.addEventListener('mouseleave',()=>{c.style.width='7px';c.style.height='7px';r.style.width='28px';r.style.height='28px';});});
+  document.querySelectorAll('a, button, input, textarea').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      dot.style.width  = '14px'; dot.style.height  = '14px';
+      ring.style.width = '44px'; ring.style.height = '44px';
+    });
+    el.addEventListener('mouseleave', () => {
+      dot.style.width  = '7px'; dot.style.height  = '7px';
+      ring.style.width = '28px'; ring.style.height = '28px';
+    });
+  });
+})();
+
+/* ══ SIDE NAV ══ */
+(function() {
+  const sideNav    = document.getElementById('sideNav');
+  const sideTrig   = document.getElementById('sideTrigger');
+  const navHint    = document.getElementById('navHint');
+  let open = false, timer;
+
+  function openNav() {
+    clearTimeout(timer);
+    sideNav.classList.add('open');
+    navHint.classList.add('hidden');
+    open = true;
+  }
+  function closeNav() {
+    timer = setTimeout(() => {
+      sideNav.classList.remove('open');
+      navHint.classList.remove('hidden');
+      open = false;
+    }, 280);
+  }
+
+  sideTrig.addEventListener('mouseenter', openNav);
+  sideNav.addEventListener('mouseenter', () => { clearTimeout(timer); open = true; });
+  sideNav.addEventListener('mouseleave', closeNav);
+  document.addEventListener('mousemove', e => {
+    if (e.clientX < 20 && !open) openNav();
+    if (e.clientX >= 40) sideNav.classList.remove('peek');
+    else if (!open) sideNav.classList.add('peek');
+  });
+})();
 </script>
 </body>
 </html>
