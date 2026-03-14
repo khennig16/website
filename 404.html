@@ -1,60 +1,696 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>404 - Khennig</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Outfit:wght@200;300&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
-  body {
-    font-family: 'Outfit', sans-serif;
-    background: #091f2c;
-    color: rgba(255,255,255,0.55);
-    overflow-x: hidden;
-    cursor: none;
-  }
-  /* CURSOR */
-  .cur { position: fixed; width: 7px; height: 7px; background: rgba(255,255,255,0.8); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: overlay; transition: width .25s, height .25s; }
-  .cur-ring { position: fixed; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
-  /* CANVAS EFFECT */
-  #wc { position: fixed; inset:0; width:100%; height:100%; z-index:0; }
-  .veil { position: fixed; inset:0; z-index:1; pointer-events:none; background: linear-gradient(to bottom, rgba(9,31,44,0.55) 0%, rgba(9,31,44,0.15) 40%, rgba(9,31,44,0.65) 100%); }
-  .grain { position: fixed; inset:0; z-index:2; pointer-events:none; opacity:0.45; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"); }
-  .page { position: relative; z-index:10; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
-  h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(5rem, 18vw, 12rem); font-weight:300; color:white; text-shadow:0 8px 80px rgba(9,31,44,0.6); margin-bottom:1rem; }
-  h1 em { color:#a8d8ee; font-style:italic; }
-  p { font-size:1.1rem; color: rgba(255,255,255,0.3); margin-bottom:2rem; letter-spacing:0.2em; }
-  a { color:#a8d8ee; text-decoration:none; font-weight:500; }
-  a:hover { color:#fff; }
-  img { max-width: 250px; margin-top: 2rem; animation: float 3s ease-in-out infinite; }
-  @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-15px);} }
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>khennig · 404</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* BUTTON */
-  .btn-home { display:inline-block; padding:0.8rem 1.6rem; border:1px solid rgba(168,216,238,0.6); color:#a8d8ee; text-transform:uppercase; letter-spacing:0.3em; font-size:0.7rem; border-radius:4px; transition: all 0.3s; }
-  .btn-home:hover { background:rgba(168,216,238,0.1); border-color:#a8d8ee; color:#fff; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #07191f;
+      overflow: hidden;
+      width: 100vw; height: 100vh;
+      cursor: none;
+    }
 
-</style>
+    #bg  { position: fixed; inset: 0; z-index: 0; }
+    #fx  { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+    .grain {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.45;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    }
+
+    /* UI layer */
+    .ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+
+    /* Nav */
+    nav.top {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 2.2rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 20; pointer-events: all;
+    }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; letter-spacing: 0.45em; color: rgba(255,255,255,0.7); text-transform: lowercase; text-decoration: none; }
+    .page-tag { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(200,232,245,0.35); }
+
+    /* 404 headline */
+    .headline {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -62%);
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+      animation: fadeIn 1s 0.3s both;
+    }
+    .headline .four {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(6rem, 18vw, 14rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.08);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      user-select: none;
+    }
+    .headline .sub {
+      font-size: 0.65rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: rgba(123,191,212,0.5);
+      margin-top: 0.5rem;
+    }
+    .headline .hint {
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.18);
+      margin-top: 1.2rem;
+      font-style: italic;
+    }
+    .go-home {
+      display: inline-block;
+      margin-top: 1.8rem;
+      font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(168,216,238,0.55);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(168,216,238,0.2);
+      padding-bottom: 2px;
+      pointer-events: all;
+      transition: color .3s, border-color .3s;
+      cursor: none;
+    }
+    .go-home:hover { color: rgba(168,216,238,1); border-color: rgba(168,216,238,0.6); }
+
+    /* Speech bubble */
+    .bubble {
+      position: fixed;
+      background: rgba(7,25,37,0.92);
+      border: 1px solid rgba(123,191,212,0.25);
+      backdrop-filter: blur(10px);
+      padding: 0.6rem 0.9rem;
+      font-size: 0.68rem;
+      color: rgba(168,216,238,0.8);
+      letter-spacing: 0.08em;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 15;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 14px;
+      width: 10px; height: 6px;
+      background: rgba(7,25,37,0.92);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      border-left: 1px solid rgba(123,191,212,0.25);
+      border-right: 1px solid rgba(123,191,212,0.25);
+    }
+
+    /* Footer */
+    footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 1.5rem 3rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 20; pointer-events: none;
+    }
+    footer span { font-size: 0.6rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.15); }
+
+    /* Cursor */
+    #cur  { position: fixed; width: 7px; height: 7px; background: white; border-radius: 50%; pointer-events: none; z-index: 99999; left:-20px; top:-20px; transform: translate(-50%,-50%); mix-blend-mode: difference; transition: width .2s, height .2s; }
+    #crng { position: fixed; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: none; z-index: 99998; left:-20px; top:-20px; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
+
+    /* Side nav */
+    .side-trigger { position: fixed; left: 0; top: 0; width: 20px; height: 100vh; z-index: 200; }
+    .side-nav { position: fixed; left: 0; top: 0; width: 220px; height: 100vh; z-index: 199; display: flex; flex-direction: column; justify-content: center; padding: 3rem 2.5rem; background: linear-gradient(to right, rgba(7,18,26,0.97), rgba(7,18,26,0.85)); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.06); transform: translateX(-100%); transition: transform 0.45s cubic-bezier(0.16,1,0.3,1); pointer-events: none; }
+    .side-nav.open { transform: translateX(0); pointer-events: all; }
+    .nav-hint { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 198; display: flex; align-items: center; gap: 0.5rem; padding: 0.9rem 0.7rem 0.9rem 0.5rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-left: none; border-radius: 0 6px 6px 0; backdrop-filter: blur(10px); pointer-events: none; transition: opacity 0.4s, transform 0.45s cubic-bezier(0.16,1,0.3,1); }
+    .nav-hint.hidden { opacity: 0; transform: translateY(-50%) translateX(-16px); }
+    .nav-hint-arrow { color: rgba(168,216,238,0.55); font-size: 0.75rem; animation: nudge 2.5s ease-in-out infinite; }
+    .nav-hint-label { writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); font-size: 0.48rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.2); line-height: 1; }
+    .side-nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; letter-spacing: 0.45em; color: rgba(255,255,255,0.3); text-transform: lowercase; margin-bottom: 3rem; }
+    .side-nav-links { display: flex; flex-direction: column; }
+    .side-nav-links a { display: flex; align-items: center; gap: 1rem; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: color 0.3s, padding-left 0.3s; cursor: none; }
+    .side-nav-links a:last-child { border-bottom: none; }
+    .n-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(168,216,238,0.4); flex-shrink: 0; transition: background 0.3s, transform 0.3s; }
+    .side-nav-links a:hover { color: rgba(255,255,255,0.85); padding-left: 0.4rem; }
+    .side-nav-links a:hover .n-dot { background: rgba(168,216,238,1); transform: scale(1.6); }
+    .side-nav-footer { margin-top: 3rem; font-size: 0.55rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.15); text-transform: uppercase; }
+
+    @keyframes nudge  { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
+    @keyframes fadeIn { from{opacity:0;transform:translate(-50%,-65%)} to{opacity:1;transform:translate(-50%,-62%)} }
+  </style>
 </head>
 <body>
-<div class="cur" id="cur"></div>
-<div class="cur-ring" id="crng"></div>
-<canvas id="wc"></canvas>
-<div class="veil"></div>
+
+<!-- Background waterfall canvas -->
+<canvas id="bg"></canvas>
+<!-- Interactive FX canvas (aliens + cable) -->
+<canvas id="fx"></canvas>
+
 <div class="grain"></div>
 
-<div class="page">
-  <h1>404 <em>unfound</em></h1>
-  <p>Looks like an alien hijacked the network and your page went missing!</p>
-  <img src="https://i.imgur.com/6YQk5sO.png" alt="funny alien">
-  <p>Try going back <a class="btn-home" href="index.html">home</a> before they beam you up!</p>
+<!-- 404 text -->
+<div class="headline">
+  <div class="four">404</div>
+  <div class="sub">signal lost</div>
+  <div class="hint">the aliens chewed through the cable again</div>
+  <a href="index.html" class="go-home">return home &rarr;</a>
 </div>
 
+<!-- Speech bubble (JS-controlled) -->
+<div class="bubble" id="bubble"></div>
+
+<!-- Nav -->
+<nav class="top">
+  <a href="index.html" class="logo">khennig</a>
+  <span class="page-tag">404</span>
+</nav>
+<footer>
+  <span>khennig.com</span>
+  <span>&copy; 2026</span>
+</footer>
+
+<!-- Cursor -->
+<div id="cur"></div>
+<div id="crng"></div>
+
+<!-- Side nav -->
+<div class="side-trigger" id="sideTrigger"></div>
+<div class="nav-hint" id="navHint">
+  <div class="nav-hint-arrow">&#8250;</div>
+  <div class="nav-hint-label">nav</div>
+</div>
+<nav class="side-nav" id="sideNav">
+  <div class="side-nav-logo">khennig</div>
+  <div class="side-nav-links">
+    <a href="index.html"><span class="n-dot"></span>Home</a>
+    <a href="about.html"><span class="n-dot"></span>About</a>
+    <a href="work.html"><span class="n-dot"></span>Work</a>
+    <a href="thoughts.html"><span class="n-dot"></span>Thoughts</a>
+    <a href="contact.html"><span class="n-dot"></span>Contact</a>
+  </div>
+  <div class="side-nav-footer">khennig.com</div>
+</nav>
+
 <script>
-// CURSOR
-const c=document.getElementById('cur'), r=document.getElementById('crng'); let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-(function ac(){rx+=(mx-rx)*.12; ry+=(my-ry)*.12; c.style.left=mx+'px'; c.style.top=my+'px'; r.style.left=rx+'px'; r.style.top=ry+'px'; requestAnimationFrame(ac);})();
+'use strict';
+
+const W = () => window.innerWidth;
+const H = () => window.innerHeight;
+
+/* ════════════════════════════════
+   BACKGROUND WATERFALL
+════════════════════════════════ */
+const bgC = document.getElementById('bg');
+const bgX = bgC.getContext('2d');
+bgC.width = W(); bgC.height = H();
+window.addEventListener('resize', () => { bgC.width=W(); bgC.height=H(); fxC.width=W(); fxC.height=H(); });
+
+const ST=90, st=[];
+function mkS(){ return {x:Math.random()*W(), y:Math.random()*H(), spd:0.6+Math.random()*1.8, len:50+Math.random()*200, op:0.03+Math.random()*0.12, w:0.4+Math.random()*1.2}; }
+for(let i=0;i<ST;i++) st.push(mkS());
+
+function drawBg(t) {
+  const g = bgX.createLinearGradient(0,0,0,H());
+  g.addColorStop(0,'#07191f'); g.addColorStop(.35,'#0c2e3f'); g.addColorStop(.65,'#114d68'); g.addColorStop(1,'#177090');
+  bgX.fillStyle=g; bgX.fillRect(0,0,W(),H());
+
+  // light rays
+  const cx=W()*.5;
+  for(let i=0;i<6;i++){
+    const ang=(-.35+i*.14)+Math.sin(t*.00013+i)*.05, x2=cx+Math.tan(ang)*H(), sp=W()*.04;
+    const rg=bgX.createLinearGradient(cx,0,x2,H());
+    rg.addColorStop(0,'rgba(185,230,252,0.055)'); rg.addColorStop(1,'rgba(185,230,252,0)');
+    bgX.save(); bgX.beginPath(); bgX.moveTo(cx-sp,0); bgX.lineTo(cx+sp,0); bgX.lineTo(x2+sp*2,H()); bgX.lineTo(x2-sp*2,H()); bgX.closePath(); bgX.fillStyle=rg; bgX.fill(); bgX.restore();
+  }
+
+  // streaks
+  st.forEach(s=>{
+    const sg=bgX.createLinearGradient(s.x,s.y,s.x,s.y+s.len);
+    sg.addColorStop(0,'rgba(210,248,255,0)'); sg.addColorStop(.5,`rgba(210,248,255,${s.op})`); sg.addColorStop(1,'rgba(210,248,255,0)');
+    bgX.beginPath(); bgX.moveTo(s.x,s.y); bgX.lineTo(s.x,s.y+s.len);
+    bgX.strokeStyle=sg; bgX.lineWidth=s.w; bgX.stroke();
+    s.y+=s.spd; if(s.y>H()+s.len){ s.y=-s.len; s.x=Math.random()*W(); }
+  });
+
+  // vignette
+  const v=bgX.createRadialGradient(W()*.5,H()*.5,H()*.2,W()*.5,H()*.5,H()*.9);
+  v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(4,14,20,0.8)');
+  bgX.fillStyle=v; bgX.fillRect(0,0,W(),H());
+}
+
+/* ════════════════════════════════
+   INTERACTIVE FX CANVAS
+   – broken cable
+   – aliens that wander, notice cursor, react
+════════════════════════════════ */
+const fxC = document.getElementById('fx');
+const fxX = fxC.getContext('2d');
+fxC.width = W(); fxC.height = H();
+
+let mouseX = W()/2, mouseY = H()/2;
+document.addEventListener('mousemove', e => { mouseX=e.clientX; mouseY=e.clientY; });
+
+/* ── CABLE ── */
+// Cable goes from left anchor to break point, dangles, then resumes to right anchor
+// Break point is centre-ish
+const cable = {
+  lx: () => W()*.08,  ly: () => H()*.52,   // left plug
+  rx: () => W()*.92,  ry: () => H()*.52,   // right plug
+  bx: () => W()*.48,  by: () => H()*.5,    // break left end
+  b2x:() => W()*.52,  b2y:() => H()*.5,    // break right end
+  dangle: 0,   // oscillation phase for dangling broken end
+  spark: 0,    // spark timer
+};
+
+function drawCable(t) {
+  const lx=cable.lx(), ly=cable.ly();
+  const rx=cable.rx(), ry=cable.ry();
+  const bx=cable.bx(), by=cable.by();
+  const b2x=cable.b2x(), b2y=cable.b2y();
+
+  // Left segment: left plug → break point
+  // Sag in middle
+  const lmx = (lx+bx)/2, lmy = (ly+by)/2 + 28;
+  fxX.beginPath();
+  fxX.moveTo(lx, ly);
+  fxX.quadraticCurveTo(lmx, lmy, bx, by);
+  fxX.strokeStyle='rgba(123,191,212,0.7)';
+  fxX.lineWidth=3; fxX.lineCap='round'; fxX.stroke();
+
+  // Cable highlight
+  fxX.beginPath();
+  fxX.moveTo(lx, ly);
+  fxX.quadraticCurveTo(lmx, lmy-5, bx, by);
+  fxX.strokeStyle='rgba(200,240,255,0.15)';
+  fxX.lineWidth=1.5; fxX.stroke();
+
+  // Right segment: break → right plug (sagging more, broken feel)
+  const rmx=(b2x+rx)/2, rmy=(b2y+ry)/2+22;
+  fxX.beginPath();
+  fxX.moveTo(b2x, b2y);
+  fxX.quadraticCurveTo(rmx, rmy, rx, ry);
+  fxX.strokeStyle='rgba(123,191,212,0.7)';
+  fxX.lineWidth=3; fxX.lineCap='round'; fxX.stroke();
+
+  // Dangling broken left end — sways
+  const dangle = Math.sin(t*0.0018)*18;
+  const d1x=bx-12+dangle*.4, d1y=by+22+Math.cos(t*0.0014)*6;
+  const d2x=bx-6+dangle*.6,  d2y=by+38+Math.cos(t*0.0011)*8;
+  fxX.beginPath();
+  fxX.moveTo(bx, by);
+  fxX.quadraticCurveTo(d1x, d1y, d2x, d2y);
+  fxX.strokeStyle='rgba(123,191,212,0.55)';
+  fxX.lineWidth=2.5; fxX.stroke();
+
+  // Dangling broken right end
+  const e1x=b2x+10-dangle*.3, e1y=b2y+20+Math.sin(t*0.0016)*7;
+  const e2x=b2x+5-dangle*.5,  e2y=b2y+35+Math.sin(t*0.0013)*9;
+  fxX.beginPath();
+  fxX.moveTo(b2x, b2y);
+  fxX.quadraticCurveTo(e1x, e1y, e2x, e2y);
+  fxX.strokeStyle='rgba(123,191,212,0.55)';
+  fxX.lineWidth=2.5; fxX.stroke();
+
+  // Exposed wires at break — little frayed lines
+  const wires = [
+    {a:-0.6, c:'rgba(168,216,238,0.9)'},
+    {a: 0.0, c:'rgba(255,200,100,0.7)'},
+    {a: 0.6, c:'rgba(200,240,255,0.8)'},
+    {a:-0.2, c:'rgba(100,200,180,0.7)'},
+  ];
+  wires.forEach((w,i) => {
+    const wx = bx + Math.cos(Math.PI+w.a)*14;
+    const wy = by + Math.sin(Math.PI+w.a)*14;
+    fxX.beginPath(); fxX.moveTo(bx, by); fxX.lineTo(wx, wy);
+    fxX.strokeStyle=w.c; fxX.lineWidth=1.5; fxX.stroke();
+    const wx2 = b2x + Math.cos(w.a)*14;
+    const wy2 = b2y + Math.sin(w.a)*14;
+    fxX.beginPath(); fxX.moveTo(b2x, b2y); fxX.lineTo(wx2, wy2);
+    fxX.strokeStyle=w.c; fxX.lineWidth=1.5; fxX.stroke();
+  });
+
+  // Spark at break
+  cable.spark += 1;
+  if (cable.spark % 8 < 3) {
+    const sx=bx+Math.random()*20-10, sy=by+Math.random()*10-5;
+    const sg2=fxX.createRadialGradient(sx,sy,0,sx,sy,8);
+    sg2.addColorStop(0,'rgba(168,216,238,0.9)');
+    sg2.addColorStop(1,'rgba(168,216,238,0)');
+    fxX.fillStyle=sg2; fxX.beginPath(); fxX.arc(sx,sy,8,0,Math.PI*2); fxX.fill();
+  }
+  if ((cable.spark+4) % 11 < 2) {
+    const sx=b2x+Math.random()*20-10, sy=b2y+Math.random()*10-5;
+    const sg3=fxX.createRadialGradient(sx,sy,0,sx,sy,6);
+    sg3.addColorStop(0,'rgba(200,240,255,0.85)');
+    sg3.addColorStop(1,'rgba(200,240,255,0)');
+    fxX.fillStyle=sg3; fxX.beginPath(); fxX.arc(sx,sy,6,0,Math.PI*2); fxX.fill();
+  }
+
+  // Plugs
+  [[lx,ly],[rx,ry]].forEach(([px,py]) => {
+    fxX.fillStyle='rgba(123,191,212,0.6)';
+    fxX.fillRect(px-10, py-5, 20, 10);
+    fxX.fillStyle='rgba(200,240,255,0.3)';
+    fxX.fillRect(px-8, py-3, 16, 6);
+    // LED dot
+    fxX.beginPath(); fxX.arc(px, py, 3, 0, Math.PI*2);
+    fxX.fillStyle='rgba(255,100,100,0.8)'; fxX.fill();
+  });
+}
+
+/* ── ALIENS ── */
+const ALIEN_QUOTES = [
+  'tasty cable...',
+  'nom nom nom',
+  'no signal = party',
+  'earth internet = weak',
+  'we come in pieces',
+  '*chewing noises*',
+  'oops.',
+  'what is a 404?',
+  'signal? never heard of it',
+  'our bad lol',
+  'try turning it off',
+  'we ate the packets',
+];
+
+class Alien {
+  constructor(x, y, scale, speed) {
+    this.x     = x;
+    this.y     = y;
+    this.tx    = x;  // target x
+    this.ty    = y;  // target y
+    this.scale = scale;
+    this.speed = speed;
+    this.angle = 0;  // walk bob phase
+    this.scared= false;
+    this.scaredTimer = 0;
+    this.blinkTimer  = 0;
+    this.blinking    = false;
+    this.eyeOpen     = 1;
+    this.wanderTimer = 0;
+    this.facingLeft  = Math.random() > 0.5;
+    this.quote       = '';
+    this.quoteTimer  = 0;
+    this.chewing     = Math.abs(this.x - cable.bx()) < 120;
+    this.color       = `hsl(${170 + Math.random()*40}, ${55+Math.random()*20}%, ${45+Math.random()*15}%)`;
+  }
+
+  update(t) {
+    // Wander
+    this.wanderTimer--;
+    if (this.wanderTimer <= 0) {
+      this.wanderTimer = 90 + Math.random()*180;
+      // stay in lower 40% of screen
+      this.tx = W()*.1 + Math.random()*W()*.8;
+      this.ty = H()*.55 + Math.random()*H()*.3;
+    }
+
+    // Flee from cursor if close
+    const dx = this.x - mouseX, dy = this.y - mouseY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 120) {
+      this.scared = true;
+      this.scaredTimer = 60;
+      this.tx = this.x + (dx/dist)*180;
+      this.ty = this.y + (dy/dist)*80;
+      this.ty = Math.min(this.ty, H()*.9);
+    }
+    if (this.scaredTimer > 0) this.scaredTimer--;
+    else this.scared = false;
+
+    // Move toward target
+    const spd = this.scared ? this.speed*2.8 : this.speed;
+    this.x += (this.tx - this.x) * spd;
+    this.y += (this.ty - this.y) * spd;
+
+    // Clamp
+    this.x = Math.max(20, Math.min(W()-20, this.x));
+    this.y = Math.max(H()*.5, Math.min(H()*.92, this.y));
+
+    this.facingLeft = this.tx < this.x;
+    this.angle = t * 0.008 * this.speed * 60;
+
+    // Blink
+    this.blinkTimer--;
+    if (this.blinkTimer <= 0) {
+      this.blinkTimer = 80 + Math.random()*120;
+      this.blinking = true;
+    }
+    if (this.blinking) {
+      this.eyeOpen = Math.max(0, this.eyeOpen - 0.25);
+      if (this.eyeOpen <= 0) { this.blinking=false; }
+    } else {
+      this.eyeOpen = Math.min(1, this.eyeOpen + 0.2);
+    }
+
+    // Quote
+    if (this.quoteTimer > 0) this.quoteTimer--;
+  }
+
+  showQuote(q) {
+    this.quote      = q;
+    this.quoteTimer = 180;
+  }
+
+  draw(ctx, t) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    if (this.facingLeft) ctx.scale(-1,1);
+
+    const s   = this.scale;
+    const bob = Math.sin(this.angle) * (this.scared ? 5 : 2) * s;
+
+    // Shadow
+    ctx.save();
+    ctx.scale(1, 0.3);
+    ctx.beginPath(); ctx.ellipse(0, 20*s, 14*s, 6*s, 0, 0, Math.PI*2);
+    ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.fill();
+    ctx.restore();
+
+    // Body — teardrop alien shape
+    ctx.save(); ctx.translate(0, bob);
+
+    // Body fill
+    ctx.beginPath();
+    ctx.ellipse(0, 2*s, 11*s, 14*s, 0, 0, Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+
+    // Body sheen
+    ctx.beginPath();
+    ctx.ellipse(-3*s, -4*s, 5*s, 7*s, -0.4, 0, Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.12)';
+    ctx.fill();
+
+    // Head
+    ctx.beginPath();
+    ctx.ellipse(0, -13*s, 10*s, 10*s, 0, 0, Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+
+    // Antennae
+    [-1,1].forEach(side => {
+      const ax = side*5*s, ay = -21*s;
+      const bx2 = side*9*s + Math.sin(this.angle*0.5)*2*s;
+      const by2 = -28*s;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.quadraticCurveTo(ax+side*3*s, -25*s, bx2, by2);
+      ctx.strokeStyle = this.color;
+      ctx.lineWidth = 1.5*s; ctx.stroke();
+      ctx.beginPath(); ctx.arc(bx2, by2, 2.5*s, 0, Math.PI*2);
+      ctx.fillStyle='rgba(168,216,238,0.9)'; ctx.fill();
+    });
+
+    // Eyes
+    const eyeY = -14*s;
+    [-1,1].forEach(side => {
+      const ex = side*4.5*s, ey = eyeY;
+      // Eye white
+      ctx.beginPath(); ctx.ellipse(ex, ey, 4*s, 4*s*this.eyeOpen, 0, 0, Math.PI*2);
+      ctx.fillStyle='rgba(220,245,255,0.95)'; ctx.fill();
+      if (this.eyeOpen > 0.3) {
+        // Pupil — tracks cursor direction
+        const pd = this.facingLeft ? -1 : 1;
+        const px2 = ex + pd*1.2*s, py2 = ey + 0.8*s;
+        ctx.beginPath(); ctx.arc(px2, py2, 2.2*s, 0, Math.PI*2);
+        ctx.fillStyle='rgba(10,40,55,0.95)'; ctx.fill();
+        // Shine
+        ctx.beginPath(); ctx.arc(px2+1*s, py2-1*s, 0.8*s, 0, Math.PI*2);
+        ctx.fillStyle='white'; ctx.fill();
+      }
+    });
+
+    // Mouth — chewing or scared grin
+    if (this.scared) {
+      ctx.beginPath();
+      ctx.arc(0, -10*s, 3.5*s, 0, Math.PI);
+      ctx.strokeStyle='rgba(10,40,55,0.7)';
+      ctx.lineWidth=1.5*s; ctx.stroke();
+    } else {
+      // wavy smile
+      ctx.beginPath();
+      ctx.moveTo(-3.5*s, -9*s);
+      ctx.quadraticCurveTo(0, -7*s + Math.sin(t*0.005)*1.5*s, 3.5*s, -9*s);
+      ctx.strokeStyle='rgba(10,40,55,0.6)';
+      ctx.lineWidth=1.5*s; ctx.stroke();
+    }
+
+    // Little arms
+    const armBob = Math.sin(this.angle*1.3);
+    ctx.beginPath();
+    ctx.moveTo(-10*s, -2*s);
+    ctx.quadraticCurveTo(-17*s, 2*s+armBob*3*s, -14*s, 8*s);
+    ctx.strokeStyle=this.color; ctx.lineWidth=2.5*s; ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(10*s, -2*s);
+    ctx.quadraticCurveTo(17*s, 2*s-armBob*3*s, 14*s, 8*s);
+    ctx.strokeStyle=this.color; ctx.lineWidth=2.5*s; ctx.stroke();
+
+    // Legs
+    [-1,1].forEach(side => {
+      const legBob = Math.sin(this.angle + side*1.2) * 4*s;
+      ctx.beginPath();
+      ctx.moveTo(side*5*s, 13*s);
+      ctx.lineTo(side*7*s, 20*s+legBob);
+      ctx.strokeStyle=this.color; ctx.lineWidth=2.5*s; ctx.stroke();
+      // Foot
+      ctx.beginPath(); ctx.ellipse(side*7*s, 22*s+legBob, 4*s, 2*s, 0, 0, Math.PI*2);
+      ctx.fillStyle=this.color; ctx.fill();
+    });
+
+    ctx.restore(); // bob
+    ctx.restore(); // main
+  }
+}
+
+// Create aliens — clustered near cable break, a few wandering
+const aliens = [
+  new Alien(W()*.42, H()*.68, 1.3, 0.03),   // big one at break, chewing
+  new Alien(W()*.55, H()*.72, 1.0, 0.04),
+  new Alien(W()*.35, H()*.75, 0.85,0.05),
+  new Alien(W()*.65, H()*.65, 0.9, 0.045),
+  new Alien(W()*.25, H()*.7,  0.7, 0.06),
+  new Alien(W()*.75, H()*.78, 0.75,0.055),
+  new Alien(W()*.48, H()*.82, 0.6, 0.07),
+];
+
+// Pre-assign some quotes
+aliens[0].showQuote('nom nom nom');
+aliens[2].showQuote('*chewing noises*');
+
+// Click on alien to get quote
+fxC.addEventListener('click', e => {
+  aliens.forEach(a => {
+    const dx=e.clientX-a.x, dy=e.clientY-a.y;
+    if (Math.sqrt(dx*dx+dy*dy) < 30*a.scale) {
+      a.showQuote(ALIEN_QUOTES[Math.floor(Math.random()*ALIEN_QUOTES.length)]);
+    }
+  });
+});
+
+/* ── SPEECH BUBBLES ── */
+const bubbleEl = document.getElementById('bubble');
+let activeBubbleAlien = null;
+
+function updateBubble() {
+  // Find alien with active quote
+  let found = null;
+  let maxT  = 0;
+  aliens.forEach(a => {
+    if (a.quoteTimer > maxT) { maxT=a.quoteTimer; found=a; }
+  });
+
+  if (found && found.quoteTimer > 0) {
+    bubbleEl.textContent = found.quote;
+    bubbleEl.style.left  = (found.x - bubbleEl.offsetWidth/2 - (found.facingLeft?-20:20)) + 'px';
+    bubbleEl.style.top   = (found.y - 70*found.scale) + 'px';
+    bubbleEl.style.opacity = Math.min(1, found.quoteTimer/20);
+  } else {
+    bubbleEl.style.opacity = '0';
+  }
+}
+
+// Periodically trigger random quotes
+setInterval(() => {
+  const a = aliens[Math.floor(Math.random()*aliens.length)];
+  if (a.quoteTimer <= 0) {
+    a.showQuote(ALIEN_QUOTES[Math.floor(Math.random()*ALIEN_QUOTES.length)]);
+  }
+}, 3000);
+
+/* ── MAIN LOOP ── */
+let start = null;
+function loop(ts) {
+  if (!start) start = ts;
+  const t = ts - start;
+
+  // Background
+  drawBg(t);
+
+  // FX canvas clear
+  fxX.clearRect(0,0,W(),H());
+
+  // Cable
+  drawCable(t);
+
+  // Aliens (back to front by y)
+  aliens.sort((a,b) => a.y-b.y);
+  aliens.forEach(a => { a.update(t); a.draw(fxX, t); });
+
+  // Bubble
+  updateBubble();
+
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ════════════════════════════════
+   CURSOR
+════════════════════════════════ */
+(function() {
+  const dot=document.getElementById('cur'), ring=document.getElementById('crng');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  (function tick(){
+    rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+    dot.style.left=mx+'px'; dot.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick);
+  })();
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{dot.style.width='14px';dot.style.height='14px';ring.style.width='44px';ring.style.height='44px';});
+    el.addEventListener('mouseleave',()=>{dot.style.width='7px';dot.style.height='7px';ring.style.width='28px';ring.style.height='28px';});
+  });
+})();
+
+/* ════════════════════════════════
+   SIDE NAV
+════════════════════════════════ */
+(function(){
+  const sn=document.getElementById('sideNav'),st2=document.getElementById('sideTrigger'),nh=document.getElementById('navHint');
+  let open=false,timer;
+  function openNav(){clearTimeout(timer);sn.classList.add('open');nh.classList.add('hidden');open=true;}
+  function closeNav(){timer=setTimeout(()=>{sn.classList.remove('open');nh.classList.remove('hidden');open=false;},280);}
+  st2.addEventListener('mouseenter',openNav);
+  sn.addEventListener('mouseenter',()=>{clearTimeout(timer);open=true;});
+  sn.addEventListener('mouseleave',closeNav);
+  document.addEventListener('mousemove',e=>{
+    if(e.clientX<20&&!open)openNav();
+    if(e.clientX>=40)sn.classList.remove('peek');
+    else if(!open)sn.classList.add('peek');
+  });
+})();
 </script>
 </body>
 </html>
