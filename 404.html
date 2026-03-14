@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 - Khennig</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Outfit:wght@200;300&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: #091f2c;
+    color: rgba(255,255,255,0.55);
+    overflow-x: hidden;
+    cursor: none;
+  }
+  /* CURSOR */
+  .cur { position: fixed; width: 7px; height: 7px; background: rgba(255,255,255,0.8); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: overlay; transition: width .25s, height .25s; }
+  .cur-ring { position: fixed; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
+  /* CANVAS EFFECT */
+  #wc { position: fixed; inset:0; width:100%; height:100%; z-index:0; }
+  .veil { position: fixed; inset:0; z-index:1; pointer-events:none; background: linear-gradient(to bottom, rgba(9,31,44,0.55) 0%, rgba(9,31,44,0.15) 40%, rgba(9,31,44,0.65) 100%); }
+  .grain { position: fixed; inset:0; z-index:2; pointer-events:none; opacity:0.45; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"); }
+  .page { position: relative; z-index:10; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(5rem, 18vw, 12rem); font-weight:300; color:white; text-shadow:0 8px 80px rgba(9,31,44,0.6); margin-bottom:1rem; }
+  h1 em { color:#a8d8ee; font-style:italic; }
+  p { font-size:1.1rem; color: rgba(255,255,255,0.3); margin-bottom:2rem; letter-spacing:0.2em; }
+  a { color:#a8d8ee; text-decoration:none; font-weight:500; }
+  a:hover { color:#fff; }
+  img { max-width: 250px; margin-top: 2rem; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-15px);} }
+
+  /* BUTTON */
+  .btn-home { display:inline-block; padding:0.8rem 1.6rem; border:1px solid rgba(168,216,238,0.6); color:#a8d8ee; text-transform:uppercase; letter-spacing:0.3em; font-size:0.7rem; border-radius:4px; transition: all 0.3s; }
+  .btn-home:hover { background:rgba(168,216,238,0.1); border-color:#a8d8ee; color:#fff; }
+
+</style>
+</head>
+<body>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="crng"></div>
+<canvas id="wc"></canvas>
+<div class="veil"></div>
+<div class="grain"></div>
+
+<div class="page">
+  <h1>404 <em>unfound</em></h1>
+  <p>Looks like an alien hijacked the network and your page went missing!</p>
+  <img src="https://i.imgur.com/6YQk5sO.png" alt="funny alien">
+  <p>Try going back <a class="btn-home" href="index.html">home</a> before they beam you up!</p>
+</div>
+
+<script>
+// CURSOR
+const c=document.getElementById('cur'), r=document.getElementById('crng'); let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function ac(){rx+=(mx-rx)*.12; ry+=(my-ry)*.12; c.style.left=mx+'px'; c.style.top=my+'px'; r.style.left=rx+'px'; r.style.top=ry+'px'; requestAnimationFrame(ac);})();
+</script>
+</body>
+</html>
