@@ -6,370 +6,565 @@
 <title>Homelab Blueprint — Kel</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+:root {
+  --bg:        #0b0d14;
+  --bg2:       #131620;
+  --bg3:       #1a1e2e;
+  --border:    #252a3d;
+  --border2:   #2e3450;
+  --text:      #cdd6f4;
+  --muted:     #6c7595;
+  --accent:    #7c8cff;
 
-/* ══ TOOLBAR ══ */
-#toolbar {
-  position: sticky; top: 0; z-index: 200;
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  padding: 8px 16px; background: #1a1d27;
-  border-bottom: 1px solid #2d3148; user-select: none;
+  --c-current:  #1db87a;
+  --c-progress: #f5a623;
+  --c-planned:  #7c8cff;
+  --c-done:     #22d468;
+
+  --bg-current:  #071a12;
+  --bg-progress: #1c1205;
+  --bg-planned:  #0e0f22;
+  --bg-done:     #051510;
+
+  --bd-current:  #1db87a;
+  --bd-progress: #f5a623;
+  --bd-planned:  #4a52bb;
+  --bd-done:     #22d468;
 }
-#toolbar-title { font-size: 13px; font-weight: 700; color: #a5b4fc; letter-spacing: .5px; white-space: nowrap; }
-.sep { width: 1px; height: 22px; background: #2d3148; flex-shrink: 0; }
-.legend { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #64748b; white-space: nowrap; }
-.ldot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 13px; }
+body {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  background: var(--bg); color: var(--text);
+  height: 100vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  user-select: none;
+}
+
+/* ══ TOPBAR ══ */
+#topbar {
+  flex-shrink: 0; display: flex; align-items: center; gap: 0;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  height: 42px; padding: 0 12px;
+}
+#topbar-logo {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  color: var(--accent); text-transform: uppercase; padding-right: 16px;
+  border-right: 1px solid var(--border); margin-right: 8px; white-space: nowrap;
+}
+.tb-sep { width: 1px; height: 20px; background: var(--border); margin: 0 6px; }
+
+/* View tabs */
+#view-tabs { display: flex; gap: 2px; margin-right: 8px; }
+.vtab {
+  padding: 4px 12px; border-radius: 5px; font-size: 10px; font-weight: 700;
+  letter-spacing: .8px; text-transform: uppercase; cursor: pointer;
+  border: 1px solid transparent; transition: all .15s; white-space: nowrap;
+}
+.vtab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.vtab:not(.active) { color: var(--muted); border-color: var(--border); }
+.vtab:not(.active):hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+
+/* Toolbar buttons */
 .tbtn {
-  padding: 5px 12px; border-radius: 6px; border: 1px solid #2d3148;
-  font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 5px; font-size: 10px; font-weight: 700;
+  letter-spacing: .5px; cursor: pointer; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); transition: all .15s; white-space: nowrap;
+  font-family: inherit;
 }
-#btn-export { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-#btn-export:hover { background: #4338ca; }
-.tbtn-ghost { background: transparent; color: #94a3b8; }
-.tbtn-ghost:hover { background: #1e2030; color: #e2e8f0; }
-.tbtn-danger { background: transparent; color: #f87171; border-color: #7f1d1d; }
-.tbtn-danger:hover { background: #2a1515; }
-.prog-wrap { margin-left: auto; display: flex; align-items: center; gap: 7px; }
-.prog-label { font-size: 11px; color: #64748b; min-width: 32px; text-align: right; }
-#prog-bg { width: 100px; height: 5px; background: #2d3148; border-radius: 3px; overflow: hidden; }
-#prog-fill { height: 5px; background: #22c55e; border-radius: 3px; transition: width .4s; width: 0%; }
-#hint-bar {
-  position: sticky; top: 44px; z-index: 190;
-  background: #12151e; border-bottom: 1px solid #1e2030;
-  padding: 4px 16px; font-size: 10px; color: #334155; user-select: none;
-}
+.tbtn:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+.tbtn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.tbtn.primary:hover { background: #6b7ef0; }
+.tbtn.danger { color: #f87171; border-color: #5c1c1c; }
+.tbtn.danger:hover { background: #200f0f; }
+.tbtn.save-btn { color: #4ade80; border-color: #1a4a2a; }
+.tbtn.save-btn:hover { background: #051a0f; }
 
-/* ══ CANVAS ══ */
+/* Progress */
+#prog-wrap { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+#prog-track { width: 90px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+#prog-fill { height: 4px; background: var(--c-done); border-radius: 2px; transition: width .5s; width: 0; }
+#prog-pct { font-size: 10px; color: var(--muted); min-width: 28px; text-align: right; }
+
+/* Legend pills */
+.leg { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; }
+.ldot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* ══ CANVAS AREA ══ */
+#canvas-wrap {
+  flex: 1; overflow: auto; position: relative;
+}
 #canvas {
-  position: relative; min-width: 1100px; min-height: 1600px;
-  padding: 48px 40px 100px;
-  background-color: #0f1117;
-  background-image: radial-gradient(#1e2030 1px, transparent 1px);
-  background-size: 24px 24px;
+  position: relative; min-width: 1200px; min-height: 1700px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: -1px -1px;
+  opacity: 1;
 }
 
-/* ══ SECTION DIVIDERS ══ */
+/* ══ SECTION LABELS ══ */
 .sec-label {
-  position: absolute; font-size: 9px; font-weight: 700;
-  letter-spacing: 1.8px; text-transform: uppercase; color: #2d3a50;
-  pointer-events: none; user-select: none; white-space: nowrap;
+  position: absolute; font-size: 8px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase; color: #232840;
+  pointer-events: none; white-space: nowrap;
 }
-.sec-line {
-  position: absolute; height: 1px; background: #1a2030;
-  pointer-events: none; left: 0; right: 0;
+.sec-rule {
+  position: absolute; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, #1a1f35 0%, transparent 80%);
+  pointer-events: none;
 }
 
 /* ══ NODE ══ */
 .node {
-  position: absolute; border-radius: 10px; border: 1.5px solid;
-  padding: 10px 12px 10px 12px; min-width: 168px; max-width: 260px;
-  cursor: grab; user-select: none;
-  transition: box-shadow .15s, border-color .2s, background .2s;
-  z-index: 10;
+  position: absolute; border-radius: 8px; border: 1px solid;
+  min-width: 175px; max-width: 270px;
+  cursor: grab; transition: box-shadow .15s;
+  z-index: 10; overflow: hidden;
 }
 .node:active { cursor: grabbing; }
-.node:hover  { z-index: 50; box-shadow: 0 0 0 2px rgba(165,180,252,.3), 0 4px 24px rgba(0,0,0,.5); }
+.node:hover { z-index: 60; box-shadow: 0 0 0 1.5px var(--accent), 0 6px 28px rgba(0,0,0,.6); }
+.node.selected { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent) !important; z-index: 80; }
 
-.s-current  { background: #07201a; border-color: #1D9E75; }
-.s-planned  { background: #141230; border-color: #6b64c8; }
-.s-progress { background: #1e1608; border-color: #BA7517; }
-.s-done     { background: #061a0e; border-color: #22c55e !important; opacity: .85; }
-
+.node-header { padding: 8px 10px 6px; border-bottom: 1px solid rgba(255,255,255,.04); }
 .node-title {
-  font-size: 12px; font-weight: 700; line-height: 1.3; margin-bottom: 4px;
-  outline: none; border-bottom: 1px dashed transparent; transition: border-color .15s;
+  font-size: 11.5px; font-weight: 700; line-height: 1.3;
+  outline: none; display: block;
 }
-.node-title[contenteditable="true"] { cursor: text; border-bottom-color: rgba(165,180,252,.4); }
-.node-title[contenteditable="false"]:hover { border-bottom-color: rgba(165,180,252,.15); }
-
+.node-body { padding: 6px 10px 8px; }
 .node-sub {
-  font-size: 10.5px; line-height: 1.45; opacity: .7;
-  outline: none; border-bottom: 1px dashed transparent; transition: border-color .15s;
+  font-size: 10px; line-height: 1.55; color: var(--muted);
+  outline: none; display: block;
 }
-.node-sub[contenteditable="true"] { cursor: text; border-bottom-color: rgba(165,180,252,.4); }
-.node-sub[contenteditable="false"]:hover { border-bottom-color: rgba(165,180,252,.15); }
+.node-title[contenteditable="true"],
+.node-sub[contenteditable="true"] {
+  cursor: text;
+  background: rgba(124,140,255,.08);
+  border-radius: 3px; padding: 1px 3px;
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* State colours */
+.s-current  { background: var(--bg-current);  border-color: var(--bd-current);  }
+.s-progress { background: var(--bg-progress); border-color: var(--bd-progress); }
+.s-planned  { background: var(--bg-planned);  border-color: var(--bd-planned);  }
+.s-done     { background: var(--bg-done);     border-color: var(--bd-done);     }
 
 .s-current  .node-title { color: #4ade80; }
-.s-planned  .node-title { color: #a5b4fc; }
 .s-progress .node-title { color: #fbbf24; }
+.s-planned  .node-title { color: #a5b4fc; }
 .s-done     .node-title { color: #86efac; }
 
-.done-badge {
-  display: inline-block; margin-top: 5px;
-  font-size: 9px; font-weight: 700; color: #22c55e;
-  background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
-  border-radius: 4px; padding: 1px 6px;
+/* Node footer bar */
+.node-foot {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px 5px; border-top: 1px solid rgba(255,255,255,.04);
+  opacity: 0; transition: opacity .15s; pointer-events: none;
 }
+.node:hover .node-foot { opacity: 1; pointer-events: all; }
+.nfbtn {
+  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+  cursor: pointer; border: 1px solid; background: transparent; font-family: inherit;
+  letter-spacing: .3px; transition: all .12s;
+}
+.nfbtn-done  { color: #22d468; border-color: #1a4a28; }
+.nfbtn-done:hover { background: var(--bg-done); }
+.nfbtn-cycle { color: var(--muted); border-color: var(--border); }
+.nfbtn-cycle:hover { color: var(--text); background: var(--bg3); }
+.nfbtn-dup   { color: var(--muted); border-color: var(--border); }
+.nfbtn-dup:hover { color: var(--text); background: var(--bg3); }
+.state-badge {
+  margin-left: auto; font-size: 8px; font-weight: 700; letter-spacing: .8px;
+  text-transform: uppercase; padding: 1px 5px; border-radius: 3px;
+}
+.s-current  .state-badge { color: var(--c-current);  background: rgba(29,184,122,.1); }
+.s-progress .state-badge { color: var(--c-progress); background: rgba(245,166,35,.1); }
+.s-planned  .state-badge { color: var(--c-planned);  background: rgba(124,140,255,.1); }
+.s-done     .state-badge { color: var(--c-done);     background: rgba(34,212,104,.1); }
 
-.node-controls {
-  display: flex; gap: 5px; margin-top: 7px; opacity: 0;
-  transition: opacity .15s; pointer-events: none;
-}
-.node:hover .node-controls { opacity: 1; pointer-events: all; }
-.nc-btn {
-  font-size: 9px; padding: 2px 7px; border-radius: 4px; cursor: pointer;
-  border: 1px solid; font-weight: 600; background: transparent; transition: all .12s;
-}
-.nc-done  { color: #22c55e; border-color: #1a5c30; }
-.nc-done:hover { background: #052e10; }
-.nc-state { color: #94a3b8; border-color: #2d3148; }
-.nc-state:hover { background: #1e2030; color: #e2e8f0; }
-
-.state-chip {
+/* Done checkmark overlay */
+.done-mark {
   position: absolute; top: 7px; right: 8px;
-  font-size: 8px; padding: 1px 5px; border-radius: 3px; font-weight: 700;
-  pointer-events: none;
+  font-size: 10px; color: #22d468; font-weight: 900; pointer-events: none;
 }
-.s-current  .state-chip { background: rgba(29,158,117,.15); color: #1D9E75; }
-.s-planned  .state-chip { background: rgba(127,119,221,.15); color: #7F77DD; }
-.s-progress .state-chip { background: rgba(186,117,23,.15); color: #BA7517; }
-.s-done     .state-chip { background: rgba(34,197,94,.15); color: #22c55e; }
 
-/* ══ ARROWS ══ */
-#arrows {
-  position: absolute; top: 0; left: 0;
-  pointer-events: none; overflow: visible;
-  width: 100%; height: 100%;
+/* ══ ARROWS SVG ══ */
+#arrow-svg {
+  position: absolute; top: 0; left: 0; pointer-events: none;
+  width: 100%; height: 100%; overflow: visible;
 }
 
 /* ══ CONTEXT MENU ══ */
-#ctx-menu {
-  position: fixed; z-index: 500;
-  background: #1a1d27; border: 1px solid #2d3148; border-radius: 8px;
-  padding: 4px; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,.6);
-  display: none;
+#ctx {
+  position: fixed; z-index: 1000;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 5px; min-width: 190px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.7);
+  display: none; animation: ctxin .1s ease;
 }
-#ctx-menu.show { display: block; }
+#ctx.show { display: block; }
+@keyframes ctxin { from { opacity:0; transform:scale(.95) translateY(-4px); } to { opacity:1; transform:none; } }
+.ctx-group { padding: 2px 0; }
+.ctx-group + .ctx-group { border-top: 1px solid var(--border); margin-top: 3px; padding-top: 5px; }
 .ctx-item {
-  padding: 7px 12px; font-size: 12px; border-radius: 5px; cursor: pointer; color: #94a3b8;
   display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; font-size: 11px; border-radius: 5px;
+  cursor: pointer; color: var(--muted); transition: all .1s;
 }
-.ctx-item:hover { background: #252840; color: #e2e8f0; }
-.ctx-item.danger { color: #f87171; }
-.ctx-item.danger:hover { background: #2a1515; }
-.ctx-sep { height: 1px; background: #2d3148; margin: 3px 0; }
+.ctx-item:hover { background: var(--border); color: var(--text); }
+.ctx-item.ctx-accent { color: var(--accent); }
+.ctx-item.ctx-danger { color: #f87171; }
+.ctx-item.ctx-danger:hover { background: #200f0f; }
+.ctx-icon { width: 14px; text-align: center; font-size: 12px; flex-shrink: 0; }
+.ctx-sub { font-size: 9px; color: var(--muted); margin-left: auto; }
+
+/* ══ CLIPBOARD TOAST ══ */
+#toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px;
+  padding: 7px 16px; font-size: 11px; color: var(--text);
+  box-shadow: 0 4px 20px rgba(0,0,0,.5); opacity: 0;
+  transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ══ MODAL ══ */
-#modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 600;
-  background: rgba(0,0,0,.65); align-items: center; justify-content: center;
+#modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,.7); align-items: center; justify-content: center;
 }
-#modal-overlay.show { display: flex; }
+#modal-bg.show { display: flex; }
 #modal {
-  background: #1a1d27; border: 1px solid #2d3148; border-radius: 12px;
-  padding: 24px 28px; width: 420px; max-width: 95vw;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 24px 28px; width: 440px; max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  animation: ctxin .15s ease;
 }
-#modal h2 { font-size: 15px; color: #a5b4fc; margin-bottom: 14px; }
-#modal p  { font-size: 12px; color: #64748b; margin-bottom: 8px; line-height: 1.7; }
-#modal kbd { background: #0f1117; border: 1px solid #2d3148; border-radius: 3px; padding: 1px 5px; font-size: 11px; }
-.modal-footer { display: flex; gap: 8px; margin-top: 18px; }
-.modal-footer button { flex: 1; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-#btn-close-modal { background: #4f46e5; color: #fff; border: none; }
+#modal h2 { font-size: 14px; color: var(--accent); margin-bottom: 14px; letter-spacing: .5px; }
+#modal p  { font-size: 11px; color: var(--muted); margin-bottom: 7px; line-height: 1.7; }
+#modal kbd { background: var(--bg); border: 1px solid var(--border2); border-radius: 3px; padding: 1px 5px; font-family: inherit; font-size: 10px; }
+#modal .row { display: flex; gap: 8px; margin-top: 18px; }
+#modal .row button { flex: 1; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: inherit; border: 1px solid var(--border2); }
+#modal-ok { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ══ SAVE INDICATOR ══ */
+#save-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #22d468; flex-shrink: 0;
+  transition: background .3s;
+}
+#save-dot.dirty { background: var(--c-progress); animation: pulse .8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ══ ADD NODE FORM (inline in ctx) ══ */
+.ctx-input {
+  width: 100%; background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 4px; color: var(--text); font-family: inherit; font-size: 11px;
+  padding: 5px 8px; margin: 3px 0; outline: none;
+}
+.ctx-input:focus { border-color: var(--accent); }
+.ctx-select {
+  width: 100%; background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 4px; color: var(--text); font-family: inherit; font-size: 11px;
+  padding: 5px 8px; margin: 3px 0; outline: none; cursor: pointer;
+}
 </style>
 </head>
 <body>
 
-<div id="toolbar">
-  <span id="toolbar-title">🖥 Homelab Blueprint — Kel</span>
-  <div class="sep"></div>
-  <div class="legend"><div class="ldot" style="background:#1D9E75"></div>Current</div>
-  <div class="legend"><div class="ldot" style="background:#BA7517"></div>In progress</div>
-  <div class="legend"><div class="ldot" style="background:#7F77DD"></div>Planned</div>
-  <div class="legend"><div class="ldot" style="background:#22c55e"></div>Done ✓</div>
-  <div class="sep"></div>
-  <button class="tbtn tbtn-ghost" id="btn-help">? Help</button>
-  <button class="tbtn tbtn-ghost" id="btn-reset-pos">↺ Positions</button>
-  <button class="tbtn tbtn-danger" id="btn-reset-all">✕ Reset all</button>
-  <button class="tbtn" id="btn-export">⬇ Export PNG</button>
-  <div class="prog-wrap">
-    <div id="prog-bg"><div id="prog-fill"></div></div>
-    <span class="prog-label" id="prog-label">0%</span>
+<!-- TOPBAR -->
+<div id="topbar">
+  <div id="topbar-logo">NET / LAB</div>
+
+  <!-- View tabs -->
+  <div id="view-tabs">
+    <div class="vtab active" data-view="all">All layers</div>
+    <div class="vtab" data-view="current">Current</div>
+    <div class="vtab" data-view="planned">Planned</div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="leg"><div class="ldot" style="background:var(--c-current)"></div>Current</div>
+  <div class="leg" style="margin-left:6px"><div class="ldot" style="background:var(--c-progress)"></div>In progress</div>
+  <div class="leg" style="margin-left:6px"><div class="ldot" style="background:var(--c-planned)"></div>Planned</div>
+  <div class="leg" style="margin-left:6px"><div class="ldot" style="background:var(--c-done)"></div>Done</div>
+
+  <div class="tb-sep"></div>
+
+  <button class="tbtn" id="btn-help">? HELP</button>
+  <button class="tbtn save-btn" id="btn-save">💾 SAVE</button>
+  <button class="tbtn" id="btn-reset-pos">↺ POSITIONS</button>
+  <button class="tbtn danger" id="btn-reset-all">✕ RESET ALL</button>
+  <button class="tbtn primary" id="btn-export">⬇ EXPORT PNG</button>
+
+  <div id="prog-wrap">
+    <div id="prog-track"><div id="prog-fill"></div></div>
+    <span id="prog-pct">0%</span>
+    <div id="save-dot" title="Unsaved changes"></div>
   </div>
 </div>
-<div id="hint-bar">
-  Double-click any title or subtitle to edit inline &nbsp;·&nbsp; Drag to move &nbsp;·&nbsp; Hover → click ✓ Done &nbsp;·&nbsp; Right-click for state &amp; delete options
+
+<!-- CANVAS -->
+<div id="canvas-wrap">
+  <div id="canvas">
+    <svg id="arrow-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ah-cur" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 2L8 5L2 8" fill="none" stroke="#1db87a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="ah-plan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 2L8 5L2 8" fill="none" stroke="#4a52bb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
 </div>
 
-<div id="canvas">
-  <svg id="arrows" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <marker id="ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-        <path d="M2 1.5L8.5 5L2 8.5" fill="none" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </marker>
-      <marker id="ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-        <path d="M2 1.5L8.5 5L2 8.5" fill="none" stroke="#6b64c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </marker>
-    </defs>
-  </svg>
-</div>
+<!-- CONTEXT MENU -->
+<div id="ctx"></div>
 
-<div id="ctx-menu">
-  <div class="ctx-item" id="ctx-edit-title">✏️ Edit title</div>
-  <div class="ctx-item" id="ctx-edit-sub">📝 Edit subtitle</div>
-  <div class="ctx-sep"></div>
-  <div class="ctx-item" id="ctx-mark-current">🟢 Mark as Current</div>
-  <div class="ctx-item" id="ctx-mark-progress">🟡 Mark as In Progress</div>
-  <div class="ctx-item" id="ctx-mark-planned">🟣 Mark as Planned</div>
-  <div class="ctx-item" id="ctx-mark-done">✅ Mark as Done</div>
-  <div class="ctx-sep"></div>
-  <div class="ctx-item danger" id="ctx-delete">🗑 Delete node</div>
-</div>
+<!-- TOAST -->
+<div id="toast"></div>
 
-<div id="modal-overlay">
+<!-- MODAL -->
+<div id="modal-bg">
   <div id="modal">
-    <h2>How to use this blueprint</h2>
-    <p><strong style="color:#e2e8f0">Drag</strong> any node to reposition it — layout saves automatically in your browser.</p>
-    <p><strong style="color:#e2e8f0">Double-click</strong> a title or subtitle to edit it inline. Press <kbd>Enter</kbd> or click away to save.</p>
-    <p><strong style="color:#e2e8f0">Hover</strong> a node and click <strong style="color:#22c55e">✓ Done</strong> to mark it complete. Click <em>Change state</em> to cycle through states.</p>
-    <p><strong style="color:#e2e8f0">Right-click</strong> any node to change its state, edit text, or delete it.</p>
-    <p><strong style="color:#e2e8f0">Export PNG</strong> saves the full canvas as a high-res image file.</p>
-    <p><kbd>↺ Positions</kbd> resets layout only. <strong style="color:#f87171">✕ Reset all</strong> clears everything including edits and done states.</p>
-    <div class="modal-footer"><button id="btn-close-modal">Got it</button></div>
+    <h2 id="modal-title">HELP</h2>
+    <div id="modal-body"></div>
+    <div class="row"><button id="modal-ok">OK</button></div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════
-// DEFAULT NODE DATA
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// DEFAULT DATA  (updated to reflect your actual setup)
+// ════════════════════════════════════════════════════
 const DEFAULTS = [
-  ['internet',  'Internet — Eastlink',       'Coax → Ethernet · Dynamic IP',                        'current',  370, 72  ],
-  ['ddns',      'Dynamic DNS',               'home.khennig.com → WAN IP (planned)',                  'planned',  660, 66  ],
-  ['fw-cur',    'OPNsense — Current PC',     'i5-4590 · Unbound · Zenarmor · ntopng\nNetdata · SMTP · ProtonVPN · 192.168.4.1','current', 80, 220],
-  ['fw-n100',   'OPNsense → N100 (planned)', 'Dozlzyp · N100 · 4× 2.5GbE NICs\nM.2 SSD · 8–16 GB DDR5 · fanless',          'planned', 480, 220],
-  ['protonvpn', 'ProtonVPN',                 'Firewall-level · kill switch\nAlias rules · Xbox bypass',                      'current',  80, 400],
-  ['wireguard', 'WireGuard (planned)',        'vpn.khennig.com endpoint\nPhone + laptop → LAN',                              'planned', 360, 400],
-  ['remote',    'Remote Clients',            'Phone · Laptop\nvia WireGuard VPN',                                           'planned', 640, 400],
-  ['eero',      'Eero Mesh — bridge mode',   '192.168.4.10 · .11\nOPNsense controls routing',                               'current',  80, 560],
-  ['switch',    'Managed Switch (planned)',   'VLANs · port mgmt · patch panel\n2.5GbE uplink to N100',                     'planned', 380, 560],
-  ['devices',   'Wireless Devices',          'Phones · PCs · Xbox (VPN bypass)',                                            'current',  80, 690],
-  ['vbox',      'VirtualBox VM',             'Debian 13 (Trixie) · 2 vCPU · 4 GB\n40 GB · test env · Docker lab',          'progress', 80, 830],
-  ['proxmox',   'Proxmox (planned)',          'Repurposed i5-4590 · Linux VM\nNAS VM · web services · monitoring',          'planned', 430, 830],
-  ['portainer', 'Portainer',                 'Docker management UI · current',                                              'current',  80, 990],
-  ['kuma',      'Uptime Kuma',               'Service + network monitoring\nGateway · DNS · sites · current',               'current', 310, 990],
-  ['speedtest', 'Speedtest Tracker',         'Hourly ISP checks · current\n35↓ / 9↑ Mbps · 29ms',                          'current', 560, 990],
-  ['npm',       'Nginx Proxy Manager',       'Reverse proxy · all subdomains\nSSL via Lets Encrypt (planned)',              'planned',  80,1120],
-  ['grafana',   'Grafana + Prometheus',      'Dashboards · metrics (planned)',                                              'planned', 330,1120],
-  ['netalertx', 'NetAlertX',                 'Device discovery · alerts (planned)',                                         'planned', 560,1120],
-  ['homepage',  'Homepage Dashboard',        'Central service launcher (planned)',                                          'planned', 780,1120],
-  ['nextcloud', 'Nextcloud',                 'Self-hosted cloud files (planned)',                                           'planned',  80,1250],
-  ['plex',      'Plex',                      'Media streaming server (planned)',                                            'planned', 310,1250],
-  ['domain',    'khennig.com',               'GitHub Pages · personal site\nexternal DNS · current',                        'current',  80,1390],
-  ['splitdns',  'Split DNS (planned)',        'OPNsense Unbound overrides\nrouter.home · portainer.home',                   'planned', 350,1390],
-  ['subdomains','Subdomains (planned)',       'lab · status · vpn · router\nkuma · speedtest · khennig.com',                'planned', 630,1390],
-  ['rack',      'Physical Rack (planned)',   'N100 · switch · patch panel · Proxmox\nUPS · cable mgmt · basement',         'planned',  80,1530],
-  ['ccna',      'Learning Goals',            'CCNA · routing · firewalls · VPN\nDNS · virt · containers · monitoring',     'current', 510,1530],
+  // id, title, sub, state(current/progress/planned/done), layer(current/planned/both), x, y
+  // ─── WAN
+  ['internet',   'Internet — Eastlink',        'Coax → Ethernet · Dynamic IP\nSouthwestern Ontario', 'current','both', 370, 70],
+  ['ddns',       'Dynamic DNS',                'home.khennig.com → WAN IP\nLive on temp VM',          'done',   'both', 680, 64],
+
+  // ─── Firewall
+  ['fw-cur',     'OPNsense — Current PC',      'i5-4590 · Unbound DNS · Zenarmor\nntopng · Netdata · SMTP · 192.168.4.1','current','current', 80,  218],
+  ['fw-n100',    'OPNsense → N100 (planned)',  'Dozlzyp · N100 · 4× 2.5GbE NICs\nM.2 SSD · 8–16 GB DDR5 · fanless',    'planned','planned', 490, 218],
+
+  // ─── VPN
+  ['protonvpn',  'ProtonVPN',                  'Firewall-level routing\nKill switch · alias rules · Xbox bypass',        'current','current',  80, 398],
+  ['wireguard',  'WireGuard',                  'vpn.khennig.com · live on temp VM\nPhone + laptop remote access',        'done',   'both',    370, 398],
+  ['remote',     'Remote Clients',             'Phone · Laptop\nWireGuard connected',                                   'done',   'both',    660, 398],
+
+  // ─── LAN
+  ['eero',       'Eero Mesh — bridge mode',    '192.168.4.10 · .11\nOPNsense controls routing',                         'current','current',  80, 558],
+  ['switch',     'Managed Switch',             'VLANs · port mgmt · patch panel\n2.5GbE uplink to N100',               'planned','planned', 390, 558],
+  ['devices',    'Wireless Devices',           'Phones · PCs · Xbox (VPN bypass)',                                      'current','current',  80, 686],
+
+  // ─── Servers
+  ['vbox',       'VirtualBox VM (temp)',        'Debian 13 (Trixie) · 2 vCPU\n4 GB RAM · 40 GB · services host',        'progress','current',  80, 826],
+  ['proxmox',    'Proxmox (planned)',           'Repurposed i5-4590 PC\nLinux VM · NAS VM · monitoring',                 'planned','planned', 430, 826],
+
+  // ─── Docker / Services  (all on temp VM now)
+  ['portainer',  'Portainer',                  'Docker management UI\nRunning on temp VM',                              'current','current',  80, 988],
+  ['kuma',       'Uptime Kuma',                'Service + network monitoring\nGateway · DNS · sites · uptime',           'current','current', 310, 988],
+  ['speedtest',  'Speedtest Tracker',          'Hourly ISP checks\n35↓ / 9↑ Mbps · 29ms',                               'current','current', 570, 988],
+  ['npm',        'Nginx Proxy Manager',        'Reverse proxy · all subdomains\nSSL via Lets Encrypt · LIVE',            'done',   'both',    80, 1110],
+  ['wireguard2', 'WireGuard Server',           'Running in Docker · vpn.khennig.com\nActive remote sessions',            'done',   'both',   330, 1110],
+  ['netalertx',  'NetAlertX',                  'Device discovery · active\nUnknown device alerts · asset inventory',     'done',   'both',   580, 1110],
+  ['grafana',    'Grafana + Prometheus',        'Dashboards · metrics\nPlanned: migrate to Proxmox',                     'planned','planned', 80, 1230],
+  ['homepage',   'Homepage Dashboard',         'Central service launcher\nPlanned: permanent install',                   'planned','planned',310, 1230],
+  ['nextcloud',  'Nextcloud',                  'Self-hosted cloud files\nPlanned: permanent install',                    'planned','planned',570, 1230],
+  ['plex',       'Plex',                       'Media streaming server\nPlanned: permanent install',                     'planned','planned', 80, 1340],
+
+  // ─── DNS
+  ['domain',     'khennig.com',                'GitHub Pages · personal site\nexternal DNS · current',                   'current','both',    80, 1470],
+  ['splitdns',   'Split DNS',                  'OPNsense Unbound overrides\nrouter.home · portainer.home · kuma.home',   'planned','planned',340, 1470],
+  ['subdomains', 'Subdomains',                 'lab · status · vpn · router\nkuma · speedtest — all LIVE via NPM',       'done',   'both',   620, 1470],
+
+  // ─── Rack
+  ['rack',       'Physical Rack',              'N100 · switch · patch panel · Proxmox\nUPS · cable mgmt · basement',     'planned','planned',  80, 1600],
+  ['ccna',       'Learning Goals',             'CCNA · routing · firewalls · VPN\nDNS · virt · containers · monitoring', 'current','both',   510, 1600],
 ];
 
 const ARROWS_DEF = [
   ['internet','ddns',true], ['internet','fw-cur'], ['fw-cur','fw-n100',true],
-  ['fw-cur','protonvpn'], ['fw-cur','eero'], ['fw-n100','switch',true],
-  ['fw-n100','wireguard',true], ['wireguard','remote',true],
-  ['eero','devices'], ['eero','vbox'], ['switch','eero',true],
-  ['vbox','portainer'], ['vbox','kuma'], ['vbox','speedtest'], ['vbox','proxmox',true],
-  ['proxmox','grafana',true], ['npm','kuma',true], ['npm','speedtest',true],
-  ['domain','splitdns',true], ['splitdns','subdomains',true],
+  ['fw-cur','protonvpn'], ['fw-cur','eero'], ['fw-cur','wireguard'],
+  ['fw-n100','switch',true], ['fw-n100','wireguard',true],
+  ['wireguard','remote'], ['eero','devices'], ['eero','vbox'],
+  ['switch','eero',true], ['vbox','portainer'], ['vbox','kuma'],
+  ['vbox','speedtest'], ['vbox','proxmox',true], ['vbox','npm'],
+  ['vbox','wireguard2'], ['vbox','netalertx'],
+  ['proxmox','grafana',true], ['npm','kuma',true],
+  ['domain','splitdns',true], ['splitdns','subdomains',true], ['npm','subdomains'],
 ];
 
 const SECTIONS = [
   { label:'WAN / Internet',        y: 52   },
-  { label:'Firewall / Router',     y: 200  },
-  { label:'VPN',                   y: 380  },
-  { label:'LAN — 192.168.4.0/24', y: 540  },
-  { label:'Server infrastructure', y: 810  },
-  { label:'Docker stack',          y: 970  },
-  { label:'DNS / Domain',          y: 1370 },
-  { label:'Physical rack',         y: 1510 },
+  { label:'Firewall / Router',     y: 198  },
+  { label:'VPN',                   y: 378  },
+  { label:'LAN — 192.168.4.0/24', y: 538  },
+  { label:'Server infrastructure', y: 806  },
+  { label:'Docker / Services',     y: 968  },
+  { label:'DNS / Domains',         y: 1450 },
+  { label:'Physical rack',         y: 1580 },
 ];
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════
-let nodeData = {}, nodeEls = {}, ctxTarget = null;
+// ════════════════════════════════════════════════════
+let nodeData   = {};
+let nodeEls    = {};
+let ctxTarget  = null;
+let clipboard  = null;
+let selection  = new Set();
+let currentView = 'all';
+let isDirty    = false;
 
-function getDefaultData() {
+const STORAGE_KEY = 'kel_homelab_v6';
+
+function getDefaults() {
   const d = {};
-  DEFAULTS.forEach(([id,title,sub,state,x,y]) => { d[id]={title,sub,state,x,y,done:false}; });
+  DEFAULTS.forEach(([id,title,sub,state,layer,x,y]) => {
+    d[id] = { title, sub, state, layer, x, y, done: state === 'done' };
+  });
   return d;
 }
 
 function loadState() {
   try {
-    const raw = localStorage.getItem('kel_homelab_v4');
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       nodeData = JSON.parse(raw);
-      DEFAULTS.forEach(([id,title,sub,state,x,y]) => {
-        if (!nodeData[id]) nodeData[id]={title,sub,state,x,y,done:false};
+      // backfill missing nodes
+      DEFAULTS.forEach(([id,title,sub,state,layer,x,y]) => {
+        if (!nodeData[id]) nodeData[id] = {title,sub,state,layer,x,y,done:state==='done'};
       });
       return;
     }
   } catch(e) {}
-  nodeData = getDefaultData();
+  nodeData = getDefaults();
 }
 
-function saveState() {
-  try { localStorage.setItem('kel_homelab_v4', JSON.stringify(nodeData)); } catch(e) {}
+function saveState(silent) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(nodeData)); } catch(e) {}
+  setDirty(false);
+  if (!silent) showToast('💾 Saved');
 }
 
-// ══════════════════════════════════════════
-// NODES
-// ══════════════════════════════════════════
+function setDirty(d) {
+  isDirty = d;
+  document.getElementById('save-dot').classList.toggle('dirty', d);
+}
+
+function markDirty() { setDirty(true); }
+
+// ════════════════════════════════════════════════════
+// VIEW / LAYER FILTERING
+// ════════════════════════════════════════════════════
+function nodeVisible(id) {
+  const d = nodeData[id];
+  if (!d) return false;
+  if (currentView === 'all') return true;
+  if (currentView === 'current') return d.layer === 'current' || d.layer === 'both';
+  if (currentView === 'planned') return d.layer === 'planned' || d.layer === 'both';
+  return true;
+}
+
+function applyView() {
+  Object.keys(nodeEls).forEach(id => {
+    const el = nodeEls[id];
+    if (!el) return;
+    const vis = nodeVisible(id);
+    el.style.display = vis ? '' : 'none';
+  });
+  drawArrows();
+}
+
+// ════════════════════════════════════════════════════
+// CANVAS + SECTIONS
+// ════════════════════════════════════════════════════
 const canvas = document.getElementById('canvas');
 
-function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function buildSections() {
+  SECTIONS.forEach(s => {
+    const lbl = document.createElement('div');
+    lbl.className = 'sec-label';
+    lbl.style.cssText = `top:${s.y - 16}px; left:40px`;
+    lbl.textContent = s.label;
+    canvas.appendChild(lbl);
+    const rule = document.createElement('div');
+    rule.className = 'sec-rule';
+    rule.style.top = s.y + 'px';
+    canvas.appendChild(rule);
+  });
+}
 
-function stateChipLabel(state, done) {
-  if (done) return 'Done';
-  return {current:'Current',planned:'Planned',progress:'In progress'}[state]||state;
+// ════════════════════════════════════════════════════
+// NODE RENDERING
+// ════════════════════════════════════════════════════
+function stateLabel(state, done) {
+  if (done) return 'DONE';
+  return {current:'LIVE',progress:'WIP',planned:'PLAN'}[state] || state.toUpperCase();
 }
 
 function makeNode(id) {
   const d = nodeData[id];
   const cls = d.done ? 'done' : d.state;
   const div = document.createElement('div');
-  div.id = 'n-'+id;
+  div.id = 'n-' + id;
   div.className = `node s-${cls}`;
   div.style.cssText = `left:${d.x}px;top:${d.y}px`;
+  if (!nodeVisible(id)) div.style.display = 'none';
 
   div.innerHTML = `
-    <span class="state-chip">${stateChipLabel(d.state,d.done)}</span>
-    <div class="node-title" contenteditable="false" data-f="title">${esc(d.title)}</div>
-    <div class="node-sub"   contenteditable="false" data-f="sub">${esc(d.sub).replace(/\n/g,'<br>')}</div>
-    ${d.done?'<div class="done-badge">✓ Done</div>':''}
-    <div class="node-controls">
-      <button class="nc-btn nc-done">${d.done?'↩ Undo done':'✓ Done'}</button>
-      <button class="nc-btn nc-state">Cycle state</button>
+    ${d.done ? '<div class="done-mark">✓</div>' : ''}
+    <div class="node-header">
+      <div class="node-title" contenteditable="false" data-f="title">${esc(d.title)}</div>
+    </div>
+    <div class="node-body">
+      <div class="node-sub" contenteditable="false" data-f="sub">${esc(d.sub).replace(/\n/g,'<br>')}</div>
+    </div>
+    <div class="node-foot">
+      <button class="nfbtn nfbtn-done">${d.done ? '↩ Undo' : '✓ Done'}</button>
+      <button class="nfbtn nfbtn-cycle">↻ State</button>
+      <button class="nfbtn nfbtn-dup">⎘ Dup</button>
+      <span class="state-badge">${stateLabel(d.state, d.done)}</span>
     </div>`;
 
-  // Inline editing on double-click
+  // Inline editing
   div.querySelectorAll('[data-f]').forEach(el => {
     el.addEventListener('dblclick', e => {
       e.stopPropagation();
       el.contentEditable = 'true'; el.focus();
-      const r = document.createRange(); r.selectNodeContents(el);
-      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      sel_all(el);
     });
     el.addEventListener('blur', () => {
       el.contentEditable = 'false';
       const f = el.dataset.f;
-      const val = f==='sub'
+      const val = f === 'sub'
         ? el.innerHTML.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')
         : el.textContent.trim();
-      nodeData[id][f==='sub'?'sub':'title'] = val;
-      if (f==='sub') el.innerHTML = esc(val).replace(/\n/g,'<br>');
-      saveState();
+      nodeData[id][f === 'sub' ? 'sub' : 'title'] = val;
+      if (f === 'sub') el.innerHTML = esc(val).replace(/\n/g,'<br>');
+      markDirty();
     });
     el.addEventListener('keydown', e => {
-      if (e.key==='Enter' && el.dataset.f==='title') { e.preventDefault(); el.blur(); }
+      if (e.key === 'Enter' && el.dataset.f === 'title') { e.preventDefault(); el.blur(); }
       e.stopPropagation();
     });
-    el.addEventListener('mousedown', e => { if (el.contentEditable==='true') e.stopPropagation(); });
+    el.addEventListener('mousedown', e => { if (el.contentEditable === 'true') e.stopPropagation(); });
   });
 
-  div.querySelector('.nc-done').addEventListener('click', e => { e.stopPropagation(); toggleDone(id); });
-  div.querySelector('.nc-state').addEventListener('click', e => { e.stopPropagation(); cycleState(id); });
-  div.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); ctxTarget=id; showCtx(e.clientX, e.clientY); });
+  div.querySelector('.nfbtn-done').addEventListener('click',  e => { e.stopPropagation(); toggleDone(id); });
+  div.querySelector('.nfbtn-cycle').addEventListener('click', e => { e.stopPropagation(); cycleState(id); });
+  div.querySelector('.nfbtn-dup').addEventListener('click',   e => { e.stopPropagation(); duplicateNode(id); });
+  div.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); showNodeCtx(e, id); });
+  div.addEventListener('mousedown', e => {
+    if (e.button === 1) { e.preventDefault(); toggleDone(id); } // middle-click = done
+  });
 
   makeDraggable(div, id);
   canvas.appendChild(div);
@@ -378,200 +573,436 @@ function makeNode(id) {
 
 function refreshNode(id) {
   const old = nodeEls[id]; if (old) old.remove();
-  makeNode(id); updateProgress(); drawArrows();
+  delete nodeEls[id];
+  makeNode(id);
+  updateProgress(); drawArrows();
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function sel_all(el) {
+  const r = document.createRange(); r.selectNodeContents(el);
+  const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
 }
 
 function toggleDone(id) {
   nodeData[id].done = !nodeData[id].done;
-  saveState(); refreshNode(id);
+  if (nodeData[id].done) nodeData[id].state = 'done';
+  markDirty(); refreshNode(id);
 }
 
 function cycleState(id) {
   const order = ['current','progress','planned'];
   const d = nodeData[id];
-  if (d.done) { d.done=false; d.state='current'; }
-  else { const i=order.indexOf(d.state); d.state=order[(i+1)%order.length]; }
-  saveState(); refreshNode(id);
+  if (d.done) { d.done = false; d.state = 'current'; }
+  else { d.state = order[(order.indexOf(d.state)+1) % order.length]; }
+  markDirty(); refreshNode(id);
 }
 
 function setNodeState(id, state) {
-  if (state==='done') { nodeData[id].done=true; }
-  else { nodeData[id].done=false; nodeData[id].state=state; }
-  saveState(); refreshNode(id);
+  nodeData[id].done = (state === 'done');
+  nodeData[id].state = state;
+  markDirty(); refreshNode(id);
 }
 
-// ══════════════════════════════════════════
+function setNodeLayer(id, layer) {
+  nodeData[id].layer = layer;
+  markDirty(); refreshNode(id); applyView();
+}
+
+function duplicateNode(id) {
+  const src = nodeData[id];
+  const newId = id + '_' + Date.now();
+  nodeData[newId] = { ...src, x: src.x + 30, y: src.y + 30, title: src.title + ' (copy)' };
+  makeNode(newId); markDirty(); updateProgress(); drawArrows();
+  showToast('Node duplicated');
+}
+
+function deleteNode(id) {
+  nodeEls[id]?.remove();
+  delete nodeEls[id]; delete nodeData[id];
+  markDirty(); drawArrows(); updateProgress();
+}
+
+function addNewNode(x, y) {
+  const id = 'node_' + Date.now();
+  nodeData[id] = {
+    title: 'New node', sub: 'Click to edit', state: 'planned', layer: 'both', x, y, done: false
+  };
+  makeNode(id); markDirty(); updateProgress(); drawArrows();
+  // immediately edit title
+  setTimeout(() => {
+    const el = nodeEls[id]?.querySelector('[data-f="title"]');
+    if (el) { el.contentEditable='true'; el.focus(); sel_all(el); }
+  }, 50);
+}
+
+// ════════════════════════════════════════════════════
 // DRAG
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════
 function makeDraggable(el, id) {
-  let sx,sy,ox,oy,moved=false;
+  let sx, sy, ox, oy, moved = false;
   el.addEventListener('mousedown', e => {
-    if (e.button!==0||e.target.contentEditable==='true'||e.target.tagName==='BUTTON') return;
-    moved=false; sx=e.clientX; sy=e.clientY; ox=nodeData[id].x; oy=nodeData[id].y;
-    el.style.zIndex=100; e.preventDefault();
+    if (e.button!==0 || e.target.contentEditable==='true' || e.target.tagName==='BUTTON') return;
+    moved = false;
+    sx = e.clientX; sy = e.clientY;
+    ox = nodeData[id].x; oy = nodeData[id].y;
+    el.style.zIndex = 100; e.preventDefault();
     const mv = e2 => {
-      const dx=e2.clientX-sx, dy=e2.clientY-sy;
-      if (Math.abs(dx)>3||Math.abs(dy)>3) moved=true;
-      nodeData[id].x=Math.max(0,ox+dx); nodeData[id].y=Math.max(0,oy+dy);
-      el.style.left=nodeData[id].x+'px'; el.style.top=nodeData[id].y+'px';
+      const dx = e2.clientX-sx, dy = e2.clientY-sy;
+      if (Math.abs(dx)>3||Math.abs(dy)>3) moved = true;
+      nodeData[id].x = Math.max(0, ox+dx);
+      nodeData[id].y = Math.max(0, oy+dy);
+      el.style.left = nodeData[id].x + 'px';
+      el.style.top  = nodeData[id].y + 'px';
       drawArrows(); expandCanvas();
     };
     const up = () => {
-      el.style.zIndex=10;
-      window.removeEventListener('mousemove',mv);
-      window.removeEventListener('mouseup',up);
-      if (moved) saveState();
+      el.style.zIndex = 10;
+      window.removeEventListener('mousemove', mv);
+      window.removeEventListener('mouseup', up);
+      if (moved) markDirty();
     };
-    window.addEventListener('mousemove',mv);
-    window.addEventListener('mouseup',up);
+    window.addEventListener('mousemove', mv);
+    window.addEventListener('mouseup', up);
   });
-  el.addEventListener('touchstart',e=>{
-    if(e.target.contentEditable==='true'||e.target.tagName==='BUTTON')return;
-    const t=e.touches[0]; sx=t.clientX; sy=t.clientY; ox=nodeData[id].x; oy=nodeData[id].y;
-    el.style.zIndex=100; e.preventDefault();
+  // Touch
+  el.addEventListener('touchstart', e => {
+    if (e.target.contentEditable==='true'||e.target.tagName==='BUTTON') return;
+    const t=e.touches[0]; sx=t.clientX; sy=t.clientY;
+    ox=nodeData[id].x; oy=nodeData[id].y; el.style.zIndex=100; e.preventDefault();
   },{passive:false});
-  el.addEventListener('touchmove',e=>{
+  el.addEventListener('touchmove', e => {
     const t=e.touches[0];
-    nodeData[id].x=Math.max(0,ox+(t.clientX-sx)); nodeData[id].y=Math.max(0,oy+(t.clientY-sy));
+    nodeData[id].x=Math.max(0,ox+(t.clientX-sx));
+    nodeData[id].y=Math.max(0,oy+(t.clientY-sy));
     el.style.left=nodeData[id].x+'px'; el.style.top=nodeData[id].y+'px';
     drawArrows(); e.preventDefault();
   },{passive:false});
-  el.addEventListener('touchend',()=>{ el.style.zIndex=10; saveState(); });
+  el.addEventListener('touchend',()=>{ el.style.zIndex=10; markDirty(); });
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════
 // ARROWS
-// ══════════════════════════════════════════
-const svgEl = document.getElementById('arrows');
+// ════════════════════════════════════════════════════
+const svgEl = document.getElementById('arrow-svg');
 
 function nodeCenter(id) {
-  const el=nodeEls[id]; if(!el)return null;
-  return { x:nodeData[id].x+el.offsetWidth/2, y:nodeData[id].y+el.offsetHeight/2 };
+  const el = nodeEls[id];
+  if (!el || el.style.display==='none') return null;
+  return { x: nodeData[id].x + el.offsetWidth/2, y: nodeData[id].y + el.offsetHeight/2 };
 }
 
 function drawArrows() {
   svgEl.querySelectorAll('line').forEach(e=>e.remove());
-  ARROWS_DEF.forEach(([from,to,planned])=>{
-    const a=nodeCenter(from), b=nodeCenter(to); if(!a||!b)return;
-    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  ARROWS_DEF.forEach(([from,to,planned]) => {
+    const a = nodeCenter(from), b = nodeCenter(to);
+    if (!a || !b) return;
+    const l = document.createElementNS('http://www.w3.org/2000/svg','line');
     l.setAttribute('x1',a.x); l.setAttribute('y1',a.y);
     l.setAttribute('x2',b.x); l.setAttribute('y2',b.y);
-    l.setAttribute('stroke', planned?'#6b64c8':'#1D9E75');
-    l.setAttribute('stroke-width','1.2');
-    l.setAttribute('stroke-opacity','0.4');
-    if(planned) l.setAttribute('stroke-dasharray','5 4');
-    l.setAttribute('marker-end',`url(#${planned?'ah-p':'ah-g'})`);
+    const col = planned ? '#4a52bb' : '#1db87a';
+    l.setAttribute('stroke', col);
+    l.setAttribute('stroke-width','1');
+    l.setAttribute('stroke-opacity','.4');
+    if (planned) l.setAttribute('stroke-dasharray','5 4');
+    l.setAttribute('marker-end', `url(#${planned?'ah-plan':'ah-cur'})`);
     svgEl.appendChild(l);
   });
 }
 
 function expandCanvas() {
-  let mx=900, my=1600;
-  Object.keys(nodeData).forEach(id=>{
-    const el=nodeEls[id]; if(!el)return;
-    mx=Math.max(mx,nodeData[id].x+el.offsetWidth+80);
-    my=Math.max(my,nodeData[id].y+el.offsetHeight+80);
+  let mx=900, my=1650;
+  Object.keys(nodeData).forEach(id => {
+    const el=nodeEls[id]; if(!el||el.style.display==='none') return;
+    mx=Math.max(mx,nodeData[id].x+el.offsetWidth+100);
+    my=Math.max(my,nodeData[id].y+el.offsetHeight+100);
   });
   canvas.style.minWidth=mx+'px'; canvas.style.minHeight=my+'px';
 }
 
-// ══════════════════════════════════════════
-// SECTIONS
-// ══════════════════════════════════════════
-function buildSections() {
-  SECTIONS.forEach(s=>{
-    const lbl=document.createElement('div');
-    lbl.className='sec-label'; lbl.textContent=s.label;
-    lbl.style.top=(s.y-14)+'px'; lbl.style.left='40px';
-    canvas.appendChild(lbl);
-    const line=document.createElement('div');
-    line.className='sec-line'; line.style.top=s.y+'px';
-    canvas.appendChild(line);
+// ════════════════════════════════════════════════════
+// CONTEXT MENU ENGINE
+// ════════════════════════════════════════════════════
+const ctxEl = document.getElementById('ctx');
+
+function buildCtxHTML(groups) {
+  return groups.map(g =>
+    `<div class="ctx-group">${g.map(item => {
+      if (item.sep) return '';
+      const cls = item.cls ? ` ${item.cls}` : '';
+      const sub = item.sub ? `<span class="ctx-sub">${item.sub}</span>` : '';
+      const disabled = item.disabled ? ' style="opacity:.4;pointer-events:none"' : '';
+      return `<div class="ctx-item${cls}" data-action="${item.action||''}"${disabled}>
+        <span class="ctx-icon">${item.icon||''}</span>${item.label}${sub}
+      </div>`;
+    }).join('')}</div>`
+  ).join('');
+}
+
+function showCtx(x, y, html, handlers) {
+  ctxEl.innerHTML = html;
+  ctxEl.classList.add('show');
+  // position
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let left = x, top = y;
+  if (left + 200 > vw) left = vw - 210;
+  if (top + ctxEl.offsetHeight + 20 > vh) top = y - ctxEl.offsetHeight - 4;
+  ctxEl.style.left = left + 'px'; ctxEl.style.top = top + 'px';
+  // bind
+  ctxEl.querySelectorAll('[data-action]').forEach(el => {
+    const a = el.dataset.action;
+    if (a && handlers[a]) el.addEventListener('click', () => { hideCtx(); handlers[a](); });
   });
 }
 
-// ══════════════════════════════════════════
-// CONTEXT MENU
-// ══════════════════════════════════════════
-function showCtx(x,y) {
-  const m=document.getElementById('ctx-menu');
-  m.style.left=x+'px'; m.style.top=y+'px'; m.classList.add('show');
+function hideCtx() { ctxEl.classList.remove('show'); ctxEl.innerHTML = ''; }
+document.addEventListener('click', () => hideCtx());
+document.addEventListener('keydown', e => { if(e.key==='Escape') hideCtx(); });
+
+// Node right-click
+function showNodeCtx(e, id) {
+  ctxTarget = id;
+  const d = nodeData[id];
+  const html = buildCtxHTML([
+    [
+      {icon:'✏️', label:'Edit title',    action:'edit-title'},
+      {icon:'📝', label:'Edit subtitle', action:'edit-sub'},
+    ],
+    [
+      {icon:'⎘',  label:'Duplicate',   action:'dup'},
+      {icon:'📋', label:'Copy node',   action:'copy', sub:'Ctrl+C'},
+      {icon:'',   label:'Paste node',  action:'paste', sub:'Ctrl+V', cls: clipboard?'ctx-accent':'', disabled:!clipboard},
+    ],
+    [
+      {icon:'🟢', label:'Mark Current',     action:'state-current'},
+      {icon:'🟡', label:'Mark In Progress', action:'state-progress'},
+      {icon:'🟣', label:'Mark Planned',     action:'state-planned'},
+      {icon:'✅', label:'Mark Done',        action:'state-done'},
+    ],
+    [
+      {icon:'📁', label:'Layer: Both',     action:'layer-both'},
+      {icon:'📗', label:'Layer: Current',  action:'layer-current'},
+      {icon:'📘', label:'Layer: Planned',  action:'layer-planned'},
+    ],
+    [
+      {icon:'🗑', label:'Delete node', action:'delete', cls:'ctx-danger'},
+    ],
+  ]);
+
+  showCtx(e.clientX, e.clientY, html, {
+    'edit-title':      () => startEdit(id, 'title'),
+    'edit-sub':        () => startEdit(id, 'sub'),
+    'dup':             () => duplicateNode(id),
+    'copy':            () => { clipboard = JSON.parse(JSON.stringify(nodeData[id])); showToast('Copied'); },
+    'paste':           () => { if(clipboard) pasteNode(e.clientX, e.clientY); },
+    'state-current':   () => setNodeState(id,'current'),
+    'state-progress':  () => setNodeState(id,'progress'),
+    'state-planned':   () => setNodeState(id,'planned'),
+    'state-done':      () => setNodeState(id,'done'),
+    'layer-both':      () => setNodeLayer(id,'both'),
+    'layer-current':   () => setNodeLayer(id,'current'),
+    'layer-planned':   () => setNodeLayer(id,'planned'),
+    'delete':          () => { if(confirm(`Delete "${d.title}"?`)) deleteNode(id); },
+  });
 }
-function hideCtx() { document.getElementById('ctx-menu').classList.remove('show'); }
 
-document.getElementById('ctx-edit-title').onclick = ()=>{ hideCtx(); const el=nodeEls[ctxTarget]?.querySelector('[data-f="title"]'); if(!el)return; el.contentEditable='true'; el.focus(); const r=document.createRange(); r.selectNodeContents(el); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); };
-document.getElementById('ctx-edit-sub').onclick   = ()=>{ hideCtx(); const el=nodeEls[ctxTarget]?.querySelector('[data-f="sub"]');   if(!el)return; el.contentEditable='true'; el.focus(); };
-document.getElementById('ctx-mark-current').onclick  = ()=>{ setNodeState(ctxTarget,'current');  hideCtx(); };
-document.getElementById('ctx-mark-progress').onclick = ()=>{ setNodeState(ctxTarget,'progress'); hideCtx(); };
-document.getElementById('ctx-mark-planned').onclick  = ()=>{ setNodeState(ctxTarget,'planned');  hideCtx(); };
-document.getElementById('ctx-mark-done').onclick     = ()=>{ setNodeState(ctxTarget,'done');     hideCtx(); };
-document.getElementById('ctx-delete').onclick = ()=>{
-  if(!ctxTarget)return; hideCtx();
-  if(!confirm(`Delete "${nodeData[ctxTarget]?.title}"?`))return;
-  nodeEls[ctxTarget]?.remove(); delete nodeEls[ctxTarget]; delete nodeData[ctxTarget];
-  saveState(); drawArrows(); updateProgress();
-};
-document.addEventListener('click',()=>hideCtx());
-document.addEventListener('contextmenu',e=>{ if(!e.target.closest('.node')) hideCtx(); });
+// Canvas right-click
+canvas.addEventListener('contextmenu', e => {
+  if (e.target.closest('.node')) return; // handled by node
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const cx = e.clientX - rect.left + canvas.parentElement.scrollLeft;
+  const cy = e.clientY - rect.top  + canvas.parentElement.scrollTop;
 
-// ══════════════════════════════════════════
+  const html = buildCtxHTML([
+    [
+      {icon:'➕', label:'Add new node here',  action:'add',      cls:'ctx-accent'},
+      {icon:'📋', label:'Paste node here',    action:'paste',    disabled:!clipboard},
+    ],
+    [
+      {icon:'🔍', label:'Zoom: 100%',         action:'zoom100'},
+      {icon:'↺',  label:'Reset positions',    action:'reset-pos'},
+    ],
+    [
+      {icon:'💾', label:'Save',               action:'save'},
+      {icon:'⬇',  label:'Export PNG',         action:'export'},
+    ],
+    [
+      {icon:'?',  label:'Help',               action:'help'},
+    ],
+  ]);
+
+  showCtx(e.clientX, e.clientY, html, {
+    'add':       () => addNewNode(cx - 90, cy - 40),
+    'paste':     () => pasteNode(cx, cy),
+    'zoom100':   () => { canvas.style.transform='scale(1)'; },
+    'reset-pos': () => resetPositions(),
+    'save':      () => saveState(),
+    'export':    () => doExport(),
+    'help':      () => showHelp(),
+  });
+});
+
+function startEdit(id, field) {
+  const el = nodeEls[id]?.querySelector(`[data-f="${field}"]`);
+  if (!el) return;
+  el.contentEditable = 'true'; el.focus(); sel_all(el);
+}
+
+function pasteNode(x, y) {
+  if (!clipboard) return;
+  const id = 'node_' + Date.now();
+  nodeData[id] = { ...clipboard, x: x - 90, y: y - 40, title: clipboard.title + ' (copy)' };
+  makeNode(id); markDirty(); updateProgress(); showToast('Pasted');
+}
+
+// ════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.contentEditable === 'true') return;
+  if ((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); saveState(); }
+  if ((e.ctrlKey||e.metaKey) && e.key === 'c') {
+    if (ctxTarget && nodeData[ctxTarget]) { clipboard = JSON.parse(JSON.stringify(nodeData[ctxTarget])); showToast('Copied'); }
+  }
+  if ((e.ctrlKey||e.metaKey) && e.key === 'v') {
+    if (clipboard) { pasteNode(200, 200); }
+  }
+  if ((e.ctrlKey||e.metaKey) && e.key === 'z') { /* future undo */ }
+  if (e.key === 'Delete' && ctxTarget) {
+    if (nodeData[ctxTarget] && confirm(`Delete "${nodeData[ctxTarget].title}"?`)) deleteNode(ctxTarget);
+  }
+});
+
+// ════════════════════════════════════════════════════
 // PROGRESS BAR
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════
 function updateProgress() {
-  const ids=Object.keys(nodeData);
-  const done=ids.filter(id=>nodeData[id].done).length;
-  const pct=ids.length?Math.round(done/ids.length*100):0;
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('prog-label').textContent=pct+'%';
+  const ids = Object.keys(nodeData);
+  const done = ids.filter(id => nodeData[id]?.done).length;
+  const pct = ids.length ? Math.round(done/ids.length*100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
 }
 
-// ══════════════════════════════════════════
-// TOOLBAR
-// ══════════════════════════════════════════
-document.getElementById('btn-reset-pos').addEventListener('click',()=>{
-  if(!confirm('Reset all positions to default?'))return;
-  DEFAULTS.forEach(([id,,,, x,y])=>{ if(!nodeData[id])return; nodeData[id].x=x; nodeData[id].y=y; if(nodeEls[id]){nodeEls[id].style.left=x+'px'; nodeEls[id].style.top=y+'px';} });
-  saveState(); drawArrows();
+// ════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ════════════════════════════════════════════════════
+// MODAL / HELP
+// ════════════════════════════════════════════════════
+function showModal(title, html) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-bg').classList.add('show');
+}
+function hideModal() { document.getElementById('modal-bg').classList.remove('show'); }
+document.getElementById('modal-ok').addEventListener('click', hideModal);
+document.getElementById('modal-bg').addEventListener('click', e => { if(e.target===document.getElementById('modal-bg')) hideModal(); });
+
+function showHelp() {
+  showModal('HOW TO USE', `
+    <p><strong style="color:var(--text)">Drag</strong> — move any node. Layout auto-saves when you click 💾 Save.</p>
+    <p><strong style="color:var(--text)">Double-click</strong> a title or subtitle to edit it inline.</p>
+    <p><strong style="color:var(--text)">Hover a node</strong> — ✓ Done, ↻ State cycle, ⎘ Duplicate appear.</p>
+    <p><strong style="color:var(--text)">Right-click a node</strong> — edit, change state/layer, copy, paste, delete.</p>
+    <p><strong style="color:var(--text)">Right-click canvas</strong> — add node, paste, export, save.</p>
+    <p><strong style="color:var(--text)">View tabs</strong> — filter to Current layer, Planned layer, or All.</p>
+    <p><strong style="color:var(--text)">Copy/Paste</strong> — <kbd>Ctrl+C</kbd> / <kbd>Ctrl+V</kbd> or via right-click.</p>
+    <p><strong style="color:var(--text)">Save</strong> — <kbd>Ctrl+S</kbd> or the 💾 button. Orange dot = unsaved changes.</p>
+    <p><strong style="color:var(--text)">Middle-click</strong> a node to toggle Done instantly.</p>
+    <p><strong style="color:var(--text)">Delete key</strong> deletes the last right-clicked node.</p>
+  `);
+}
+
+// ════════════════════════════════════════════════════
+// TOOLBAR BUTTONS
+// ════════════════════════════════════════════════════
+document.getElementById('btn-save').addEventListener('click', () => saveState());
+
+document.getElementById('btn-help').addEventListener('click', showHelp);
+
+document.getElementById('btn-reset-pos').addEventListener('click', () => {
+  if (!confirm('Reset all positions to default?')) return;
+  resetPositions();
 });
 
-document.getElementById('btn-reset-all').addEventListener('click',()=>{
-  if(!confirm('Reset everything — all edits, done states, and positions will be lost?'))return;
-  nodeData=getDefaultData();
-  Object.keys(nodeEls).forEach(id=>nodeEls[id]?.remove()); nodeEls={};
-  Object.keys(nodeData).forEach(id=>makeNode(id));
-  saveState(); drawArrows(); updateProgress();
+function resetPositions() {
+  DEFAULTS.forEach(([id,,,,, x,y]) => {
+    if (!nodeData[id]) return;
+    nodeData[id].x = x; nodeData[id].y = y;
+    if (nodeEls[id]) { nodeEls[id].style.left=x+'px'; nodeEls[id].style.top=y+'px'; }
+  });
+  markDirty(); drawArrows();
+}
+
+document.getElementById('btn-reset-all').addEventListener('click', () => {
+  if (!confirm('Reset EVERYTHING? All edits, done states, positions will be lost.')) return;
+  nodeData = getDefaults();
+  Object.keys(nodeEls).forEach(id => nodeEls[id]?.remove());
+  nodeEls = {};
+  Object.keys(nodeData).forEach(id => makeNode(id));
+  markDirty(); saveState(true); drawArrows(); updateProgress(); applyView();
 });
 
-document.getElementById('btn-export').addEventListener('click', async ()=>{
-  const btn=document.getElementById('btn-export');
-  btn.textContent='⏳ Rendering…'; btn.disabled=true;
-  // Temporarily hide hover-only UI
-  const tmpHide = canvas.querySelectorAll('.node-controls');
-  tmpHide.forEach(e=>{ e.dataset.wasOpacity=e.style.opacity; e.style.opacity='0'; e.style.pointerEvents='none'; });
+document.getElementById('btn-export').addEventListener('click', doExport);
+
+async function doExport() {
+  const btn = document.getElementById('btn-export');
+  btn.textContent = '⏳ RENDERING…'; btn.disabled = true;
+  // hide transient UI
+  document.querySelectorAll('.node-foot').forEach(e => { e._op=e.style.opacity; e.style.opacity='0'; e.style.pointerEvents='none'; });
   try {
-    const c=document.getElementById('canvas');
-    const cvs=await html2canvas(c,{
-      backgroundColor:'#0f1117', scale:1.5, useCORS:true, logging:false,
+    const c = document.getElementById('canvas');
+    const cvs = await html2canvas(c, {
+      backgroundColor:'#0b0d14', scale:1.5, useCORS:true, logging:false,
       width:c.scrollWidth, height:c.scrollHeight, scrollX:0, scrollY:0,
       windowWidth:c.scrollWidth, windowHeight:c.scrollHeight,
     });
-    const a=document.createElement('a'); a.href=cvs.toDataURL('image/png'); a.download='homelab_blueprint_kel.png'; a.click();
-  } catch(e){ alert('Export failed: '+e.message); }
-  tmpHide.forEach(e=>{ e.style.opacity=''; e.style.pointerEvents=''; });
-  btn.textContent='⬇ Export PNG'; btn.disabled=false;
+    const a = document.createElement('a');
+    a.href = cvs.toDataURL('image/png');
+    a.download = `homelab_blueprint_kel_${currentView}.png`;
+    a.click();
+    showToast('PNG saved');
+  } catch(e) { alert('Export failed: '+e.message); }
+  document.querySelectorAll('.node-foot').forEach(e => { e.style.opacity=e._op||''; e.style.pointerEvents=''; });
+  btn.textContent = '⬇ EXPORT PNG'; btn.disabled = false;
+}
+
+// View tabs
+document.getElementById('view-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.vtab');
+  if (!tab) return;
+  document.querySelectorAll('.vtab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentView = tab.dataset.view;
+  applyView();
 });
 
-document.getElementById('btn-help').addEventListener('click',()=>{ document.getElementById('modal-overlay').classList.add('show'); });
-document.getElementById('btn-close-modal').addEventListener('click',()=>{ document.getElementById('modal-overlay').classList.remove('show'); });
-document.getElementById('modal-overlay').addEventListener('click',e=>{ if(e.target===document.getElementById('modal-overlay')) document.getElementById('modal-overlay').classList.remove('show'); });
-
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════
 // INIT
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════════════
 loadState();
 buildSections();
-Object.keys(nodeData).forEach(id=>makeNode(id));
-requestAnimationFrame(()=>requestAnimationFrame(()=>{ drawArrows(); expandCanvas(); updateProgress(); }));
+Object.keys(nodeData).forEach(id => makeNode(id));
+
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  drawArrows(); expandCanvas(); updateProgress(); setDirty(false);
+}));
+
+// Auto-save reminder on close
+window.addEventListener('beforeunload', e => {
+  if (isDirty) { e.preventDefault(); e.returnValue='You have unsaved changes.'; }
+});
 </script>
 </body>
 </html>
