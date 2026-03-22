@@ -213,9 +213,15 @@ body{
   position:absolute;top:0;left:0;pointer-events:none;
   width:100%;height:100%;overflow:visible;z-index:5;
 }
-.arrow-line{pointer-events:stroke;cursor:pointer;}
+#arrow-hits{pointer-events:all;}
+.arrow-line{pointer-events:none;}
 .arrow-line:hover{stroke-opacity:1!important;}
 .arrow-sel{stroke-opacity:1!important;filter:drop-shadow(0 0 3px var(--accent));}
+.arrow-hit{
+  pointer-events:stroke;cursor:pointer;
+  stroke:transparent;stroke-width:22px;fill:none;
+}
+.arrow-hit:hover + .arrow-vis { stroke-opacity:1!important; }
 
 /* ── NOTE PANEL ── */
 #note-panel{
@@ -390,6 +396,8 @@ body.draw-mode .node{cursor:crosshair;}
           <path d="M2 2L8 5L2 8" fill="none" stroke="#738aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </marker>
       </defs>
+      <g id="arrow-vis-layer"></g>
+      <g id="arrow-hits"></g>
     </svg>
     <div id="sel-box"></div>
   </div>
@@ -896,37 +904,50 @@ function nodeCenter(id){
 }
 
 function drawArrows(){
-  svgEl.querySelectorAll('line').forEach(e=>e.remove());
+  // Clear both layers
+  const visLayer=document.getElementById('arrow-vis-layer');
+  const hitLayer=document.getElementById('arrow-hits');
+  while(visLayer.firstChild)visLayer.removeChild(visLayer.firstChild);
+  while(hitLayer.firstChild)hitLayer.removeChild(hitLayer.firstChild);
   arrowEls={};
+
   Object.keys(ad).forEach(id=>{
     const a=ad[id];
     const A=nodeCenter(a.from),B=nodeCenter(a.to);
     if(!A||!B)return;
     const isSel=selArrow===id;
-    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-    l.setAttribute('x1',A.x);l.setAttribute('y1',A.y);
-    l.setAttribute('x2',B.x);l.setAttribute('y2',B.y);
     const planned=a.type==='planned';
     const col=isSel?'#738aff':planned?'#4a52bb':'#1db87a';
-    l.setAttribute('stroke',col);
-    l.setAttribute('stroke-width',isSel?'2':'1.2');
-    l.setAttribute('stroke-opacity',isSel?'1':'.45');
-    if(planned)l.setAttribute('stroke-dasharray','6 4');
-    l.setAttribute('marker-end',`url(#${isSel?'ah-c-sel':planned?'ah-p':'ah-c'})`);
-    l.classList.add('arrow-line');
-    l.dataset.aid=id;
-    l.style.pointerEvents='stroke';
-    l.style.cursor='pointer';
-    // need a wider invisible hit area
+
+    // Visual line (no pointer events)
+    const vis=document.createElementNS('http://www.w3.org/2000/svg','line');
+    vis.setAttribute('x1',A.x);vis.setAttribute('y1',A.y);
+    vis.setAttribute('x2',B.x);vis.setAttribute('y2',B.y);
+    vis.setAttribute('stroke',col);
+    vis.setAttribute('stroke-width',isSel?'2.5':'1.4');
+    vis.setAttribute('stroke-opacity',isSel?'1':'.5');
+    if(planned)vis.setAttribute('stroke-dasharray','7 4');
+    vis.setAttribute('marker-end',`url(#${isSel?'ah-c-sel':planned?'ah-p':'ah-c'})`);
+    vis.classList.add('arrow-line');
+    visLayer.appendChild(vis);
+    arrowEls[id]=vis;
+
+    // Fat invisible hit line (pointer events active)
     const hit=document.createElementNS('http://www.w3.org/2000/svg','line');
     hit.setAttribute('x1',A.x);hit.setAttribute('y1',A.y);
     hit.setAttribute('x2',B.x);hit.setAttribute('y2',B.y);
-    hit.setAttribute('stroke','transparent');hit.setAttribute('stroke-width','12');
-    hit.style.cursor='pointer';hit.dataset.aid=id;
-    hit.addEventListener('click',e=>{e.stopPropagation();selectArrow(id);});
+    hit.setAttribute('stroke','transparent');
+    hit.setAttribute('stroke-width','28');
+    hit.setAttribute('fill','none');
+    hit.classList.add('arrow-hit');
+    hit.dataset.aid=id;
+    hit.style.cursor='pointer';
+
+    hit.addEventListener('mouseenter',()=>{vis.setAttribute('stroke-opacity','1');vis.setAttribute('stroke-width',isSel?'2.5':'2');});
+    hit.addEventListener('mouseleave',()=>{vis.setAttribute('stroke-opacity',isSel?'1':'.5');vis.setAttribute('stroke-width',isSel?'2.5':'1.4');});
+    hit.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();selectArrow(id);});
     hit.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();selectArrow(id);showArrowCtx(e,id);});
-    svgEl.appendChild(l);svgEl.appendChild(hit);
-    arrowEls[id]=l;
+    hitLayer.appendChild(hit);
   });
 }
 
@@ -1180,6 +1201,13 @@ function showArrowCtx(e,id){
 canvas.addEventListener('contextmenu',e=>{
   if(arrowMode)return;
   if(e.target.closest('.node')||e.target.closest('.sband'))return;
+  // If right-clicking an arrow hit area, let arrow handler deal with it
+  if(e.target.classList.contains('arrow-hit')||e.target.dataset.aid){
+    e.preventDefault();e.stopPropagation();
+    const aid=e.target.dataset.aid;
+    if(aid){selectArrow(aid);showArrowCtx(e,aid);}
+    return;
+  }
   e.preventDefault();
   const wrap=document.getElementById('cwrap');
   const r=canvas.getBoundingClientRect();
