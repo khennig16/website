@@ -42,7 +42,6 @@ body{
   text-transform:uppercase;padding-right:12px;border-right:1px solid var(--bdr);margin-right:4px;}
 .vsep{width:1px;height:20px;background:var(--bdr);margin:0 4px;flex-shrink:0;}
 
-/* view tabs */
 #vtabs{display:flex;gap:2px;}
 .vtab{
   padding:3px 11px;border-radius:5px;font-size:9.5px;font-weight:700;
@@ -52,7 +51,6 @@ body{
 .vtab.on{background:var(--accent);color:#fff;border-color:var(--accent);}
 .vtab:not(.on):hover{color:var(--txt);background:var(--bg3);}
 
-/* toolbar buttons */
 .tbtn{
   display:flex;align-items:center;gap:4px;
   padding:3px 10px;border-radius:5px;font-size:9.5px;font-weight:700;
@@ -67,15 +65,15 @@ body{
 .tbtn.grn:hover{background:#051a0f;}
 .tbtn.red{color:var(--red);border-color:#4a1515;}
 .tbtn.red:hover{background:#200f0f;}
+.tbtn.amber{color:var(--amber);border-color:#3a2a00;}
+.tbtn.amber:hover{background:#1a1200;}
 
-/* mode indicator */
 #mode-pill{
   margin-left:auto;padding:3px 10px;border-radius:4px;
   font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
   background:var(--bg3);border:1px solid var(--bdr);color:var(--muted);
 }
 
-/* progress */
 #prog-area{display:flex;align-items:center;gap:6px;margin-left:8px;}
 #prog-track{width:80px;height:4px;background:var(--bdr);border-radius:2px;overflow:hidden;}
 #prog-fill{height:4px;background:var(--done);border-radius:2px;transition:width .4s;width:0%;}
@@ -84,7 +82,7 @@ body{
 #dirty-dot.dirty{background:var(--amber);animation:blink .9s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── CANVAS WRAP ── */
+/* ── CANVAS ── */
 #cwrap{flex:1;overflow:auto;position:relative;}
 #canvas{
   position:relative;min-width:1300px;min-height:1800px;
@@ -95,284 +93,155 @@ body{
   background-size:40px 40px;
 }
 
-/* ── SECTION BANDS (moveable, editable) ── */
-.sband{
-  position:absolute;left:0;right:0;
-  border-top:1px solid var(--bdr);
-  pointer-events:all;
-  cursor:ns-resize;
-  z-index:1;
-}
-.sband-label{
-  position:absolute;left:10px;top:-10px;
-  font-size:8px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;color:var(--muted);
-  background:var(--bg);padding:0 6px;
-  cursor:text;outline:none;
-  white-space:nowrap;
-}
+/* ── SECTIONS ── */
+.sband{position:absolute;left:0;right:0;border-top:1px solid var(--bdr);pointer-events:all;cursor:ns-resize;z-index:1;}
+.sband-label{position:absolute;left:10px;top:-10px;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);background:var(--bg);padding:0 6px;cursor:text;outline:none;white-space:nowrap;}
 .sband-label:focus{color:var(--txt);background:var(--bg3);border-radius:3px;}
-.sband-handle{
-  position:absolute;right:10px;top:-9px;
-  font-size:9px;color:var(--bdr2);opacity:0;transition:opacity .15s;
-  cursor:pointer;user-select:none;
-}
+.sband-handle{position:absolute;right:10px;top:-9px;font-size:9px;color:var(--bdr2);opacity:0;transition:opacity .15s;cursor:pointer;user-select:none;}
 .sband:hover .sband-handle{opacity:1;}
 .sband-handle:hover{color:var(--red);}
 
 /* ── SELECTION BOX ── */
-#sel-box{
-  position:absolute;border:1.5px dashed var(--accent);
-  background:rgba(115,138,255,.06);pointer-events:none;
-  display:none;z-index:900;border-radius:2px;
-}
+#sel-box{position:absolute;border:1.5px dashed var(--accent);background:rgba(115,138,255,.06);pointer-events:none;display:none;z-index:900;border-radius:2px;}
 
-/* ── NODE ── */
-.node{
-  position:absolute;border-radius:8px;border:1px solid;
-  min-width:180px;max-width:280px;cursor:grab;
-  transition:box-shadow .15s;z-index:10;
-  display:flex;flex-direction:column;
-}
+/* ── NODES ── */
+.node{position:absolute;border-radius:8px;border:1px solid;min-width:180px;max-width:280px;cursor:grab;transition:box-shadow .15s;z-index:10;display:flex;flex-direction:column;}
 .node:active{cursor:grabbing;}
 .node:hover{z-index:60;box-shadow:0 0 0 1.5px var(--accent),0 6px 28px rgba(0,0,0,.6);}
 .node.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent)!important;z-index:70;}
-
-/* state colours */
 .s-current {background:#071a12;border-color:#1db87a;}
 .s-progress{background:#1c1205;border-color:#f5a623;}
 .s-planned {background:#0e0f22;border-color:#4a52bb;}
-
 .s-current  .ntitle{color:#4ade80;}
 .s-progress .ntitle{color:#fbbf24;}
 .s-planned  .ntitle{color:#a5b4fc;}
-
-/* node header */
-.nhead{
-  display:flex;align-items:flex-start;gap:6px;
-  padding:8px 10px 6px;border-bottom:1px solid rgba(255,255,255,.05);
-}
-.ncheck{
-  flex-shrink:0;width:14px;height:14px;border-radius:3px;
-  border:1.5px solid var(--muted);background:transparent;
-  cursor:pointer;margin-top:1px;display:flex;align-items:center;justify-content:center;
-  transition:all .15s;
-}
+.nhead{display:flex;align-items:flex-start;gap:6px;padding:8px 10px 6px;border-bottom:1px solid rgba(255,255,255,.05);}
+.ncheck{flex-shrink:0;width:14px;height:14px;border-radius:3px;border:1.5px solid var(--muted);background:transparent;cursor:pointer;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .ncheck.checked{background:var(--done);border-color:var(--done);}
 .ncheck.checked::after{content:'✓';font-size:9px;color:#000;font-weight:900;line-height:1;}
-.ntitle{
-  flex:1;font-size:11.5px;font-weight:700;line-height:1.3;
-  outline:none;
-}
-.ntitle[contenteditable=true]{
-  background:rgba(115,138,255,.1);border-radius:3px;padding:1px 3px;
-  box-shadow:0 0 0 1px var(--accent);cursor:text;
-}
-
-/* node body */
+.ntitle{flex:1;font-size:11.5px;font-weight:700;line-height:1.3;outline:none;}
+.ntitle[contenteditable=true]{background:rgba(115,138,255,.1);border-radius:3px;padding:1px 3px;box-shadow:0 0 0 1px var(--accent);cursor:text;}
 .nbody{padding:5px 10px 6px 30px;}
-.nsub{
-  font-size:10px;line-height:1.55;color:var(--muted);
-  outline:none;
-}
-.nsub[contenteditable=true]{
-  background:rgba(115,138,255,.08);border-radius:3px;padding:1px 3px;
-  box-shadow:0 0 0 1px var(--accent);cursor:text;color:var(--txt);
-}
-
-/* node footer */
-.nfoot{
-  display:flex;align-items:center;gap:4px;
-  padding:4px 8px 5px;
-  border-top:1px solid rgba(255,255,255,.04);
-  opacity:0;transition:opacity .15s;pointer-events:none;
-}
+.nsub{font-size:10px;line-height:1.55;color:var(--muted);outline:none;}
+.nsub[contenteditable=true]{background:rgba(115,138,255,.08);border-radius:3px;padding:1px 3px;box-shadow:0 0 0 1px var(--accent);cursor:text;color:var(--txt);}
+.nfoot{display:flex;align-items:center;gap:4px;padding:4px 8px 5px;border-top:1px solid rgba(255,255,255,.04);opacity:0;transition:opacity .15s;pointer-events:none;}
 .node:hover .nfoot{opacity:1;pointer-events:all;}
-.nfbtn{
-  font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:3px;
-  cursor:pointer;border:1px solid var(--bdr);background:transparent;
-  font-family:inherit;color:var(--muted);transition:all .12s;
-}
+.nfbtn{font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:3px;cursor:pointer;border:1px solid var(--bdr);background:transparent;font-family:inherit;color:var(--muted);transition:all .12s;}
 .nfbtn:hover{color:var(--txt);background:var(--bg3);}
 .nfbtn.note-btn{color:var(--accent);border-color:#2a3060;}
 .nfbtn.note-btn.has-note{background:rgba(115,138,255,.15);}
-.sbadge{
-  margin-left:auto;font-size:7.5px;font-weight:700;letter-spacing:.8px;
-  text-transform:uppercase;padding:1px 5px;border-radius:3px;
-}
+.sbadge{margin-left:auto;font-size:7.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:1px 5px;border-radius:3px;}
 .s-current  .sbadge{color:var(--green);background:rgba(29,184,122,.1);}
 .s-progress .sbadge{color:var(--amber);background:rgba(245,166,35,.1);}
 .s-planned  .sbadge{color:#8b9cf8;background:rgba(107,112,222,.1);}
-
-/* done overlay */
 .node.done-node{opacity:.65;}
 .node.done-node .ntitle{text-decoration:line-through;opacity:.6;}
 
 /* ── ARROWS ── */
-#arrow-svg{
-  position:absolute;top:0;left:0;pointer-events:none;
-  width:100%;height:100%;overflow:visible;z-index:5;
-}
+#arrow-svg{position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%;overflow:visible;z-index:5;}
 #arrow-hits{pointer-events:all;}
 .arrow-line{pointer-events:none;}
-.arrow-line:hover{stroke-opacity:1!important;}
-.arrow-sel{stroke-opacity:1!important;filter:drop-shadow(0 0 3px var(--accent));}
-.arrow-hit{
-  pointer-events:stroke;cursor:pointer;
-  stroke:transparent;stroke-width:22px;fill:none;
-}
-.arrow-hit:hover + .arrow-vis { stroke-opacity:1!important; }
+.arrow-hit{pointer-events:stroke;cursor:pointer;stroke:transparent;stroke-width:22px;fill:none;}
 
 /* ── NOTE PANEL ── */
-#note-panel{
-  position:fixed;right:0;top:44px;bottom:0;width:280px;
-  background:var(--bg2);border-left:1px solid var(--bdr2);
-  display:flex;flex-direction:column;z-index:200;
-  transform:translateX(100%);transition:transform .2s ease;
-}
+#note-panel{position:fixed;right:0;top:44px;bottom:0;width:280px;background:var(--bg2);border-left:1px solid var(--bdr2);display:flex;flex-direction:column;z-index:200;transform:translateX(100%);transition:transform .2s ease;}
 #note-panel.open{transform:translateX(0);}
-#note-hdr{
-  padding:10px 12px;border-bottom:1px solid var(--bdr);
-  display:flex;align-items:center;gap:8px;
-}
+#note-hdr{padding:10px 12px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;}
 #note-hdr-title{flex:1;font-size:11px;font-weight:700;color:var(--accent);}
 #note-close{cursor:pointer;color:var(--muted);font-size:14px;padding:2px 6px;border-radius:4px;}
 #note-close:hover{color:var(--txt);background:var(--bg3);}
-#note-textarea{
-  flex:1;background:transparent;border:none;color:var(--txt);
-  font-family:inherit;font-size:11px;line-height:1.7;
-  padding:12px;resize:none;outline:none;
-}
-#note-save-row{
-  padding:8px 12px;border-top:1px solid var(--bdr);
-  display:flex;gap:6px;
-}
-#note-save{
-  flex:1;padding:5px;border-radius:5px;border:1px solid var(--accent);
-  background:transparent;color:var(--accent);font-family:inherit;
-  font-size:10px;font-weight:700;cursor:pointer;
-}
+#note-textarea{flex:1;background:transparent;border:none;color:var(--txt);font-family:inherit;font-size:11px;line-height:1.7;padding:12px;resize:none;outline:none;}
+#note-save-row{padding:8px 12px;border-top:1px solid var(--bdr);display:flex;gap:6px;}
+#note-save{flex:1;padding:5px;border-radius:5px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;}
 #note-save:hover{background:rgba(115,138,255,.15);}
 
-/* ── ARROW EDIT BAR ── */
-#arrow-bar{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);
-  background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;
-  padding:6px 10px;display:flex;align-items:center;gap:8px;
-  box-shadow:0 8px 32px rgba(0,0,0,.7);
-  transition:transform .2s ease;z-index:500;white-space:nowrap;
-  font-size:10px;color:var(--muted);
-}
+/* ── HISTORY PANEL ── */
+#hist-panel{position:fixed;right:0;top:44px;bottom:0;width:320px;background:var(--bg2);border-left:1px solid var(--bdr2);display:flex;flex-direction:column;z-index:200;transform:translateX(100%);transition:transform .2s ease;}
+#hist-panel.open{transform:translateX(0);}
+#hist-hdr{padding:10px 12px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;}
+#hist-hdr-title{flex:1;font-size:11px;font-weight:700;color:var(--amber);}
+#hist-close{cursor:pointer;color:var(--muted);font-size:14px;padding:2px 6px;border-radius:4px;}
+#hist-close:hover{color:var(--txt);background:var(--bg3);}
+#hist-list{flex:1;overflow-y:auto;padding:8px;}
+.hist-item{padding:10px 12px;border-radius:6px;border:1px solid var(--bdr);margin-bottom:6px;cursor:pointer;transition:all .15s;}
+.hist-item:hover{border-color:var(--accent);background:var(--bg3);}
+.hist-item-time{font-size:10px;color:var(--accent);font-weight:700;}
+.hist-item-meta{font-size:9px;color:var(--muted);margin-top:3px;}
+.hist-item-actions{display:flex;gap:6px;margin-top:8px;}
+.hist-btn{font-size:8.5px;font-weight:700;padding:3px 8px;border-radius:3px;cursor:pointer;border:1px solid var(--bdr);background:transparent;font-family:inherit;color:var(--muted);transition:all .12s;}
+.hist-btn:hover{color:var(--txt);background:var(--bg3);}
+.hist-btn.restore{color:var(--done);border-color:#123a22;}
+.hist-btn.restore:hover{background:#051a0f;}
+.hist-btn.del{color:var(--red);border-color:#4a1515;}
+.hist-btn.del:hover{background:#200f0f;}
+#hist-empty{padding:20px 12px;font-size:10px;color:var(--muted);text-align:center;}
+
+/* ── ARROW BAR ── */
+#arrow-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.7);transition:transform .2s ease;z-index:500;white-space:nowrap;font-size:10px;color:var(--muted);}
 #arrow-bar.show{transform:translateX(-50%) translateY(0);}
-.abtn{
-  padding:3px 10px;border-radius:4px;border:1px solid var(--bdr2);
-  background:transparent;color:var(--muted);font-family:inherit;
-  font-size:9.5px;font-weight:700;cursor:pointer;
-}
+.abtn{padding:3px 10px;border-radius:4px;border:1px solid var(--bdr2);background:transparent;color:var(--muted);font-family:inherit;font-size:9.5px;font-weight:700;cursor:pointer;}
 .abtn:hover{color:var(--txt);background:var(--bg4);}
 .abtn.red{color:var(--red);border-color:#4a1515;}
 .abtn.red:hover{background:#200f0f;}
 
-/* ── ARROW DRAW MODE ── */
 body.draw-mode #canvas{cursor:crosshair;}
 body.draw-mode .node{cursor:crosshair;}
 
 /* ── CONTEXT MENU ── */
-#ctx{
-  position:fixed;z-index:1000;
-  background:var(--bg3);border:1px solid var(--bdr2);
-  border-radius:8px;padding:5px;min-width:190px;
-  box-shadow:0 12px 40px rgba(0,0,0,.7);
-  display:none;
-}
+#ctx{position:fixed;z-index:1000;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:5px;min-width:190px;box-shadow:0 12px 40px rgba(0,0,0,.7);display:none;}
 #ctx.show{display:block;animation:pop .1s ease;}
 @keyframes pop{from{opacity:0;transform:scale(.95) translateY(-3px)}to{opacity:1;transform:none}}
 .cgrp{padding:2px 0;}
 .cgrp+.cgrp{border-top:1px solid var(--bdr);margin-top:2px;padding-top:4px;}
-.citem{
-  display:flex;align-items:center;gap:8px;
-  padding:5px 10px;font-size:11px;border-radius:5px;
-  cursor:pointer;color:var(--muted);transition:all .1s;
-}
+.citem{display:flex;align-items:center;gap:8px;padding:5px 10px;font-size:11px;border-radius:5px;cursor:pointer;color:var(--muted);transition:all .1s;}
 .citem:hover{background:var(--bdr);color:var(--txt);}
 .citem.hi{color:var(--accent);}
 .citem.danger{color:var(--red);}
 .citem.danger:hover{background:#200f0f;}
 .cico{width:14px;text-align:center;font-size:11px;flex-shrink:0;}
 .csub{font-size:8.5px;color:var(--muted);margin-left:auto;}
+.cinput,.cselect{width:100%;background:var(--bg2);border:1px solid var(--bdr2);border-radius:4px;color:var(--txt);font-family:inherit;font-size:10px;padding:4px 7px;margin:2px 0;outline:none;}
+.cinput:focus,.cselect:focus{border-color:var(--accent);}
+.cinput::placeholder{color:var(--muted);}
 
 /* ── TOAST ── */
-#toast{
-  position:fixed;bottom:18px;left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:var(--bg3);border:1px solid var(--bdr2);border-radius:6px;
-  padding:6px 16px;font-size:10px;color:var(--txt);
-  box-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;
-  transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;z-index:900;
-}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--bdr2);border-radius:6px;padding:6px 16px;font-size:10px;color:var(--txt);box-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;z-index:900;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* ── MODAL ── */
-#mbg{
-  display:none;position:fixed;inset:0;z-index:1100;
-  background:rgba(0,0,0,.72);align-items:center;justify-content:center;
-}
+#mbg{display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,.72);align-items:center;justify-content:center;}
 #mbg.show{display:flex;}
-#mbox{
-  background:var(--bg3);border:1px solid var(--bdr2);border-radius:12px;
-  padding:24px 28px;width:460px;max-width:95vw;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-  animation:pop .15s ease;
-}
+#mbox{background:var(--bg3);border:1px solid var(--bdr2);border-radius:12px;padding:24px 28px;width:460px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:pop .15s ease;}
 #mbox h2{font-size:13px;color:var(--accent);margin-bottom:14px;letter-spacing:.5px;}
 #mbox p{font-size:10.5px;color:var(--muted);margin-bottom:7px;line-height:1.75;}
 #mbox strong{color:var(--txt);}
-#mbox kbd{
-  background:var(--bg);border:1px solid var(--bdr2);border-radius:3px;
-  padding:1px 5px;font-family:inherit;font-size:9px;color:var(--txt);
-}
+#mbox kbd{background:var(--bg);border:1px solid var(--bdr2);border-radius:3px;padding:1px 5px;font-family:inherit;font-size:9px;color:var(--txt);}
 .mrow{display:flex;gap:8px;margin-top:18px;}
-.mrow button{
-  flex:1;padding:8px;border-radius:6px;cursor:pointer;
-  font-size:10px;font-weight:700;font-family:inherit;
-}
+.mrow button{flex:1;padding:8px;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;}
 #mok{background:var(--accent);color:#fff;border:none;}
-
-/* ── INLINE CTX FORM FIELDS ── */
-.cinput,.cselect{
-  width:100%;background:var(--bg2);border:1px solid var(--bdr2);
-  border-radius:4px;color:var(--txt);font-family:inherit;font-size:10px;
-  padding:4px 7px;margin:2px 0;outline:none;
-}
-.cinput:focus,.cselect:focus{border-color:var(--accent);}
-.cinput::placeholder{color:var(--muted);}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div id="topbar">
   <div id="logo">NET/LAB</div>
-
   <div id="vtabs">
     <div class="vtab on" data-v="all">All</div>
     <div class="vtab" data-v="current">Current</div>
     <div class="vtab" data-v="planned">Planned</div>
   </div>
-
   <div class="vsep"></div>
-  <button class="tbtn" id="btn-draw-arrow" title="Draw a new arrow between nodes">✏ Arrow</button>
-  <button class="tbtn" id="btn-add-section" title="Add section band">＋ Section</button>
+  <button class="tbtn" id="btn-draw-arrow">✏ Arrow</button>
+  <button class="tbtn" id="btn-add-section">＋ Section</button>
   <div class="vsep"></div>
   <button class="tbtn" id="btn-selall">⬜ Select all</button>
   <button class="tbtn grn" id="btn-save">💾 Save</button>
+  <button class="tbtn amber" id="btn-history">🕐 History</button>
   <button class="tbtn" id="btn-reset-pos">↺ Positions</button>
   <button class="tbtn red" id="btn-reset-all">✕ Reset</button>
   <button class="tbtn blue" id="btn-export">⬇ PNG</button>
   <button class="tbtn" id="btn-help">? Help</button>
-
-  <div id="mode-pill" id="mpill">SELECT</div>
-
+  <div id="mode-pill">SELECT</div>
   <div class="vsep"></div>
   <div id="prog-area">
     <div id="prog-track"><div id="prog-fill"></div></div>
@@ -381,7 +250,6 @@ body.draw-mode .node{cursor:crosshair;}
   </div>
 </div>
 
-<!-- CANVAS -->
 <div id="cwrap">
   <div id="canvas">
     <svg id="arrow-svg" xmlns="http://www.w3.org/2000/svg">
@@ -403,19 +271,23 @@ body.draw-mode .node{cursor:crosshair;}
   </div>
 </div>
 
-<!-- NOTE PANEL -->
 <div id="note-panel">
   <div id="note-hdr">
     <div id="note-hdr-title">📝 Notes</div>
     <div id="note-close">✕</div>
   </div>
   <textarea id="note-textarea" placeholder="Add notes for this node…"></textarea>
-  <div id="note-save-row">
-    <button id="note-save">💾 Save note</button>
-  </div>
+  <div id="note-save-row"><button id="note-save">💾 Save note</button></div>
 </div>
 
-<!-- ARROW EDIT BAR -->
+<div id="hist-panel">
+  <div id="hist-hdr">
+    <div id="hist-hdr-title">🕐 Save History</div>
+    <div id="hist-close">✕</div>
+  </div>
+  <div id="hist-list"></div>
+</div>
+
 <div id="arrow-bar">
   <span id="arrow-bar-label">Arrow selected</span>
   <select id="arrow-type-sel" class="cselect" style="width:110px;margin:0;">
@@ -427,28 +299,13 @@ body.draw-mode .node{cursor:crosshair;}
   <button class="abtn" id="arrow-desel">✕</button>
 </div>
 
-<!-- CONTEXT MENU -->
 <div id="ctx"></div>
-
-<!-- TOAST -->
 <div id="toast"></div>
-
-<!-- MODAL -->
-<div id="mbg">
-  <div id="mbox">
-    <h2 id="mtitle"></h2>
-    <div id="mbody"></div>
-    <div class="mrow"><button id="mok">OK</button></div>
-  </div>
-</div>
+<div id="mbg"><div id="mbox"><h2 id="mtitle"></h2><div id="mbody"></div><div class="mrow"><button id="mok">OK</button></div></div></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-// DATA DEFAULTS
-// ══════════════════════════════════════════════════════
 const DEFS = {
   nodes: [
-    // [id, title, sub, state(current/progress/planned), layer(current/planned/both), x, y, done, note]
     ['internet',  'Internet — Eastlink',      'Coax → Ethernet · Dynamic IP\nSouthwestern Ontario',        'current','both',   370,80,  false,''],
     ['ddns',      'Dynamic DNS',              'home.khennig.com → WAN IP\nActive · auto-updates',          'current','both',   690,74,  true, 'Using ddclient on the OPNsense box. Updates every 5 min.'],
     ['fw-cur',    'OPNsense — Current PC',    'i5-4590 · Unbound DNS · Zenarmor\nntopng · Netdata · 192.168.4.1','current','current',80,230,false,''],
@@ -478,7 +335,6 @@ const DEFS = {
     ['ccna',      'Learning Goals',           'CCNA · routing · firewalls · VPN\nDNS · virt · containers', 'current','both',  520,1640,false,''],
   ],
   arrows: [
-    // [id, from, to, type(current/planned)]
     ['a1','internet','ddns','planned'],
     ['a2','internet','fw-cur','current'],
     ['a3','fw-cur','fw-n100','planned'],
@@ -504,7 +360,6 @@ const DEFS = {
     ['a23','splitdns','subdomains','planned'],
   ],
   sections: [
-    // [id, label, y]
     ['s1','WAN / Internet',52],
     ['s2','Firewall / Router',210],
     ['s3','VPN',395],
@@ -516,24 +371,108 @@ const DEFS = {
   ]
 };
 
-const SK = 'kel_homelab_v8';
+const SK = 'kel_homelab_v9';          // bumped version key — fresh start
+const SK_DELETED = 'kel_deleted_v9';  // tracks deleted node IDs
+const SK_HIST = 'kel_hist_v9';        // save history
+const MAX_HIST = 10;
 
-// ══════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════
-let nd={}, ad={}, sd={};   // node data, arrow data, section data
+let nd={}, ad={}, sd={}, deletedIds=new Set();
 let nodeEls={}, arrowEls={}, sectionEls={};
 let clipboard=null, selection=new Set(), curView='all';
-let isDirty=false, arrowMode=false;
-let arrowFrom=null;
-let selArrow=null;
-let noteTarget=null;
+let isDirty=false, arrowMode=false, arrowFrom=null, selArrow=null, noteTarget=null;
 
+// ── HISTORY ──────────────────────────────────────────
+function getHistory(){
+  try{return JSON.parse(localStorage.getItem(SK_HIST)||'[]');}catch(e){return[];}
+}
+
+function pushHistory(label){
+  const hist=getHistory();
+  const snap={
+    ts:Date.now(),
+    label:label||'Manual save',
+    nd:JSON.parse(JSON.stringify(nd)),
+    ad:JSON.parse(JSON.stringify(ad)),
+    sd:JSON.parse(JSON.stringify(sd)),
+    deleted:JSON.parse(JSON.stringify([...deletedIds])),
+    nodeCount:Object.keys(nd).length,
+    arrowCount:Object.keys(ad).length,
+  };
+  hist.unshift(snap);
+  if(hist.length>MAX_HIST)hist.splice(MAX_HIST);
+  try{localStorage.setItem(SK_HIST,JSON.stringify(hist));}catch(e){}
+}
+
+function restoreFromSnap(snap){
+  if(!confirm(`Restore to save from ${fmtTime(snap.ts)}? Current state will be saved to history first.`))return;
+  pushHistory('Before restore');
+  nd=JSON.parse(JSON.stringify(snap.nd));
+  ad=JSON.parse(JSON.stringify(snap.ad));
+  sd=JSON.parse(JSON.stringify(snap.sd));
+  deletedIds=new Set(snap.deleted||[]);
+  rebuildAll();
+  save(true);
+  closeHistPanel();
+  toast('✅ Restored');
+}
+
+function fmtTime(ts){
+  const d=new Date(ts);
+  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric'})
+    +' '+d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+}
+
+function renderHistPanel(){
+  const list=document.getElementById('hist-list');
+  const hist=getHistory();
+  if(!hist.length){
+    list.innerHTML='<div id="hist-empty">No saves yet.<br>Press 💾 Save to create a snapshot.</div>';
+    return;
+  }
+  list.innerHTML=hist.map((s,i)=>`
+    <div class="hist-item" data-i="${i}">
+      <div class="hist-item-time">${fmtTime(s.ts)}</div>
+      <div class="hist-item-meta">${s.label} · ${s.nodeCount} nodes · ${s.arrowCount} arrows</div>
+      <div class="hist-item-actions">
+        <button class="hist-btn restore" data-i="${i}">↩ Restore</button>
+        <button class="hist-btn del" data-i="${i}">🗑 Delete</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.hist-btn.restore').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const snap=getHistory()[+btn.dataset.i];
+      if(snap)restoreFromSnap(snap);
+    });
+  });
+  list.querySelectorAll('.hist-btn.del').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const hist=getHistory();
+      hist.splice(+btn.dataset.i,1);
+      try{localStorage.setItem(SK_HIST,JSON.stringify(hist));}catch(e){}
+      renderHistPanel();
+    });
+  });
+}
+
+function openHistPanel(){
+  closeNotePanel();
+  renderHistPanel();
+  document.getElementById('hist-panel').classList.add('open');
+}
+function closeHistPanel(){document.getElementById('hist-panel').classList.remove('open');}
+document.getElementById('hist-close').addEventListener('click',closeHistPanel);
+document.getElementById('btn-history').addEventListener('click',()=>{
+  const p=document.getElementById('hist-panel');
+  if(p.classList.contains('open'))closeHistPanel();
+  else openHistPanel();
+});
+
+// ── STATE LOAD/SAVE ───────────────────────────────────
 function getDefaults(){
   const n={},a={},s={};
-  DEFS.nodes.forEach(([id,title,sub,state,layer,x,y,done,note])=>{
-    n[id]={title,sub,state,layer,x,y,done,note};
-  });
+  DEFS.nodes.forEach(([id,title,sub,state,layer,x,y,done,note])=>{n[id]={title,sub,state,layer,x,y,done,note};});
   DEFS.arrows.forEach(([id,from,to,type])=>{a[id]={from,to,type};});
   DEFS.sections.forEach(([id,label,y])=>{s[id]={label,y};});
   return{n,a,s};
@@ -541,22 +480,28 @@ function getDefaults(){
 
 function loadState(){
   try{
-    const r=localStorage.getItem(SK);
-    if(r){const p=JSON.parse(r);nd=p.nd||{};ad=p.ad||{};sd=p.sd||{};
-      // backfill
-      DEFS.nodes.forEach(([id,title,sub,state,layer,x,y,done,note])=>{
-        if(!nd[id])nd[id]={title,sub,state,layer,x,y,done,note};
-        if(nd[id].note===undefined)nd[id].note='';
-      });
+    const raw=localStorage.getItem(SK);
+    const delRaw=localStorage.getItem(SK_DELETED);
+    deletedIds=new Set(delRaw?JSON.parse(delRaw):[]);
+    if(raw){
+      const p=JSON.parse(raw);
+      nd=p.nd||{};ad=p.ad||{};sd=p.sd||{};
+      // Only backfill sections, NOT nodes (so deletions persist)
       DEFS.sections.forEach(([id,label,y])=>{if(!sd[id])sd[id]={label,y};});
+      // Backfill note field if missing (for older saves)
+      Object.keys(nd).forEach(id=>{if(nd[id].note===undefined)nd[id].note='';});
       return;
     }
   }catch(e){}
-  const d=getDefaults();nd=d.n;ad=d.a;sd=d.s;
+  const d=getDefaults();nd=d.n;ad=d.a;sd=d.s;deletedIds=new Set();
 }
 
 function save(silent){
-  try{localStorage.setItem(SK,JSON.stringify({nd,ad,sd}));}catch(e){}
+  pushHistory(silent?'Auto-save':'Manual save');
+  try{
+    localStorage.setItem(SK,JSON.stringify({nd,ad,sd}));
+    localStorage.setItem(SK_DELETED,JSON.stringify([...deletedIds]));
+  }catch(e){}
   setDirty(false);
   if(!silent)toast('💾 Saved');
 }
@@ -564,9 +509,7 @@ function save(silent){
 function setDirty(v){isDirty=v;document.getElementById('dirty-dot').classList.toggle('dirty',v);}
 function dirty(){setDirty(true);}
 
-// ══════════════════════════════════════════════════════
-// CANVAS + HELPERS
-// ══════════════════════════════════════════════════════
+// ── CANVAS HELPERS ────────────────────────────────────
 const canvas=document.getElementById('canvas');
 const svgEl=document.getElementById('arrow-svg');
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -584,9 +527,7 @@ function expand(){
   canvas.style.minWidth=mx+'px';canvas.style.minHeight=my+'px';
 }
 
-// ══════════════════════════════════════════════════════
-// VIEW FILTER
-// ══════════════════════════════════════════════════════
+// ── VIEW FILTER ───────────────────────────────────────
 function nodeVis(id){
   const d=nd[id];if(!d)return false;
   if(curView==='all')return true;
@@ -602,96 +543,48 @@ function applyView(){
   Object.keys(arrowEls).forEach(id=>{
     const a=ad[id];if(!a)return;
     const el=arrowEls[id];if(!el)return;
-    const vis=nodeVis(a.from)&&nodeVis(a.to);
-    el.style.display=vis?'':'none';
+    el.style.display=(nodeVis(a.from)&&nodeVis(a.to))?'':'none';
   });
   drawArrows();
 }
 
-// ══════════════════════════════════════════════════════
-// SECTIONS — moveable + editable bands
-// ══════════════════════════════════════════════════════
+// ── SECTIONS ─────────────────────────────────────────
 function makeSection(id){
   const d=sd[id];
   const div=document.createElement('div');
   div.className='sband';div.id='sb-'+id;
   div.style.top=d.y+'px';
-
-  div.innerHTML=`
-    <span class="sband-label" contenteditable="false" title="Double-click to edit">${esc(d.label)}</span>
-    <span class="sband-handle" title="Delete section">✕</span>`;
-
+  div.innerHTML=`<span class="sband-label" contenteditable="false">${esc(d.label)}</span><span class="sband-handle">✕</span>`;
   const lbl=div.querySelector('.sband-label');
-  lbl.addEventListener('dblclick',e=>{
-    e.stopPropagation();
-    lbl.contentEditable='true';lbl.focus();selAll(lbl);
-  });
-  lbl.addEventListener('blur',()=>{
-    lbl.contentEditable='false';
-    sd[id].label=lbl.textContent.trim();dirty();
-  });
-  lbl.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){e.preventDefault();lbl.blur();}
-    e.stopPropagation();
-  });
+  lbl.addEventListener('dblclick',e=>{e.stopPropagation();lbl.contentEditable='true';lbl.focus();selAll(lbl);});
+  lbl.addEventListener('blur',()=>{lbl.contentEditable='false';sd[id].label=lbl.textContent.trim();dirty();});
+  lbl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();lbl.blur();}e.stopPropagation();});
   lbl.addEventListener('mousedown',e=>{if(lbl.contentEditable==='true')e.stopPropagation();});
-
   div.querySelector('.sband-handle').addEventListener('click',e=>{
     e.stopPropagation();
     if(!confirm('Delete this section band?'))return;
     div.remove();delete sectionEls[id];delete sd[id];dirty();
   });
-
-  // drag to move vertically
   let sy,oy,moving=false;
   div.addEventListener('mousedown',e=>{
     if(e.target===lbl&&lbl.contentEditable==='true')return;
     if(e.target.classList.contains('sband-handle'))return;
-    if(e.target===lbl&&e.detail===1){
-      // single click on label = select (not drag)
-    }
     moving=false;sy=e.clientY;oy=sd[id].y;
-    div.style.cursor='ns-resize';
     const mv=e2=>{
       const dy=e2.clientY-sy;
       if(Math.abs(dy)>3)moving=true;
-      sd[id].y=Math.max(0,oy+dy);
-      div.style.top=sd[id].y+'px';
+      sd[id].y=Math.max(0,oy+dy);div.style.top=sd[id].y+'px';
     };
-    const up=()=>{
-      div.style.cursor='';
-      window.removeEventListener('mousemove',mv);
-      window.removeEventListener('mouseup',up);
-      if(moving)dirty();
-    };
-    window.addEventListener('mousemove',mv);
-    window.addEventListener('mouseup',up);
+    const up=()=>{window.removeEventListener('mousemove',mv);window.removeEventListener('mouseup',up);if(moving)dirty();};
+    window.addEventListener('mousemove',mv);window.addEventListener('mouseup',up);
     e.preventDefault();
   });
-
-  div.addEventListener('contextmenu',e=>{
-    e.preventDefault();e.stopPropagation();
-    showCtx(e.clientX,e.clientY,[
-      [{icon:'✏️',label:'Edit label',action:'edit'},{icon:'🗑',label:'Delete section',action:'del',cls:'danger'}]
-    ],{
-      edit:()=>{lbl.contentEditable='true';lbl.focus();selAll(lbl);},
-      del:()=>{if(!confirm('Delete section?'))return;div.remove();delete sectionEls[id];delete sd[id];dirty();}
-    });
-  });
-
-  canvas.appendChild(div);
-  sectionEls[id]=div;
+  canvas.appendChild(div);sectionEls[id]=div;
 }
 
-function addSection(y){
-  const id=uid();
-  sd[id]={label:'New section',y:y};
-  makeSection(id);dirty();
-}
+function addSection(y){const id=uid();sd[id]={label:'New section',y};makeSection(id);dirty();}
 
-// ══════════════════════════════════════════════════════
-// NODES
-// ══════════════════════════════════════════════════════
+// ── NODES ─────────────────────────────────────────────
 function stateLabel(s){return{current:'LIVE',progress:'WIP',planned:'PLAN'}[s]||s.toUpperCase();}
 
 function makeNode(id){
@@ -701,10 +594,9 @@ function makeNode(id){
   div.className=`node s-${d.state}${d.done?' done-node':''}`;
   div.style.cssText=`left:${d.x}px;top:${d.y}px`;
   if(!nodeVis(id))div.style.display='none';
-
   div.innerHTML=`
     <div class="nhead">
-      <div class="ncheck${d.done?' checked':''}" title="Mark done"></div>
+      <div class="ncheck${d.done?' checked':''}"></div>
       <div class="ntitle" contenteditable="false" data-f="title">${esc(d.title)}</div>
     </div>
     <div class="nbody">
@@ -713,100 +605,54 @@ function makeNode(id){
     <div class="nfoot">
       <button class="nfbtn nfbtn-cycle">↻ State</button>
       <button class="nfbtn nfbtn-dup">⎘ Dup</button>
-      <button class="nfbtn note-btn${d.note?' has-note':''}" title="Notes">📝${d.note?' ●':''}</button>
+      <button class="nfbtn note-btn${d.note?' has-note':''}">📝${d.note?' ●':''}</button>
       <span class="sbadge">${stateLabel(d.state)}</span>
     </div>`;
-
-  // checkbox
   div.querySelector('.ncheck').addEventListener('click',e=>{e.stopPropagation();toggleDone(id);});
-
-  // editable fields
   div.querySelectorAll('[data-f]').forEach(el=>{
-    el.addEventListener('dblclick',e=>{
-      e.stopPropagation();
-      el.contentEditable='true';el.focus();selAll(el);
-    });
+    el.addEventListener('dblclick',e=>{e.stopPropagation();el.contentEditable='true';el.focus();selAll(el);});
     el.addEventListener('blur',()=>{
       el.contentEditable='false';
       const f=el.dataset.f;
-      const val=f==='sub'
-        ?el.innerHTML.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')
-        :el.textContent.trim();
-      nd[id][f==='sub'?'sub':'title']=val;
+      const val=f==='sub'?el.innerHTML.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,''):el.textContent.trim();
+      nd[id][f]=val;
       if(f==='sub')el.innerHTML=esc(val).replace(/\n/g,'<br>');
       dirty();
     });
-    el.addEventListener('keydown',e=>{
-      if(e.key==='Enter'&&el.dataset.f==='title'){e.preventDefault();el.blur();}
-      e.stopPropagation();
-    });
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'&&el.dataset.f==='title'){e.preventDefault();el.blur();}e.stopPropagation();});
     el.addEventListener('mousedown',e=>{if(el.contentEditable==='true')e.stopPropagation();});
   });
-
   div.querySelector('.nfbtn-cycle').addEventListener('click',e=>{e.stopPropagation();cycleState(id);});
-  div.querySelector('.nfbtn-dup').addEventListener('click',  e=>{e.stopPropagation();dupNode(id);});
-  div.querySelector('.note-btn').addEventListener('click',    e=>{e.stopPropagation();openNote(id);});
-
-  div.addEventListener('contextmenu',e=>{
-    if(arrowMode)return;
-    e.preventDefault();e.stopPropagation();
-    showNodeCtx(e,id);
-  });
-
-  // arrow draw mode — click node to set from/to
+  div.querySelector('.nfbtn-dup').addEventListener('click',e=>{e.stopPropagation();dupNode(id);});
+  div.querySelector('.note-btn').addEventListener('click',e=>{e.stopPropagation();openNote(id);});
+  div.addEventListener('contextmenu',e=>{if(arrowMode)return;e.preventDefault();e.stopPropagation();showNodeCtx(e,id);});
   div.addEventListener('click',e=>{
     if(!arrowMode)return;
     e.stopPropagation();
-    if(!arrowFrom){
-      arrowFrom=id;
-      div.style.boxShadow='0 0 0 2px var(--accent)';
-      toast('Now click the destination node');
-    } else {
+    if(!arrowFrom){arrowFrom=id;div.style.boxShadow='0 0 0 2px var(--accent)';toast('Now click the destination node');}
+    else{
       if(arrowFrom===id){arrowFrom=null;div.style.boxShadow='';return;}
       createArrow(arrowFrom,id,'current');
-      nodeEls[arrowFrom].style.boxShadow='';
-      arrowFrom=null;
-      toast('Arrow created — click again or press Esc to exit');
+      nodeEls[arrowFrom].style.boxShadow='';arrowFrom=null;toast('Arrow created');
     }
   });
-
   makeDraggable(div,id);
-  canvas.appendChild(div);
-  nodeEls[id]=div;
+  canvas.appendChild(div);nodeEls[id]=div;
 }
 
-function refreshNode(id){
-  const old=nodeEls[id];if(old)old.remove();
-  delete nodeEls[id];makeNode(id);
-  updateProg();drawArrows();
-}
-
+function refreshNode(id){const old=nodeEls[id];if(old)old.remove();delete nodeEls[id];makeNode(id);updateProg();drawArrows();}
 function toggleDone(id){nd[id].done=!nd[id].done;dirty();refreshNode(id);}
-
-function cycleState(id){
-  const order=['current','progress','planned'];
-  const d=nd[id];
-  d.state=order[(order.indexOf(d.state)+1)%order.length];
-  dirty();refreshNode(id);
-}
-
+function cycleState(id){const order=['current','progress','planned'];nd[id].state=order[(order.indexOf(nd[id].state)+1)%order.length];dirty();refreshNode(id);}
 function setNodeState(id,state){nd[id].state=state;dirty();refreshNode(id);}
 function setNodeLayer(id,layer){nd[id].layer=layer;dirty();refreshNode(id);applyView();}
-
-function dupNode(id){
-  const nid=uid();const s=nd[id];
-  nd[nid]={...s,x:s.x+30,y:s.y+30,title:s.title+' (copy)'};
-  makeNode(nid);dirty();updateProg();drawArrows();
-  toast('Duplicated');
-}
+function dupNode(id){const nid=uid();nd[nid]={...nd[id],x:nd[id].x+30,y:nd[id].y+30,title:nd[id].title+' (copy)'};makeNode(nid);dirty();updateProg();drawArrows();toast('Duplicated');}
 
 function delNode(id){
   nodeEls[id]?.remove();delete nodeEls[id];delete nd[id];
-  // remove connected arrows
+  // ── KEY FIX: track deleted IDs so they never get backfilled ──
+  deletedIds.add(id);
   Object.keys(ad).forEach(aid=>{
-    if(ad[aid].from===id||ad[aid].to===id){
-      arrowEls[aid]?.remove();delete arrowEls[aid];delete ad[aid];
-    }
+    if(ad[aid].from===id||ad[aid].to===id){arrowEls[aid]?.remove();delete arrowEls[aid];delete ad[aid];}
   });
   dirty();drawArrows();updateProg();
 }
@@ -815,47 +661,25 @@ function addNode(x,y){
   const id=uid();
   nd[id]={title:'New node',sub:'Double-click to edit',state:'planned',layer:'both',x,y,done:false,note:''};
   makeNode(id);dirty();updateProg();
-  setTimeout(()=>{
-    const el=nodeEls[id]?.querySelector('[data-f="title"]');
-    if(el){el.contentEditable='true';el.focus();selAll(el);}
-  },50);
+  setTimeout(()=>{const el=nodeEls[id]?.querySelector('[data-f="title"]');if(el){el.contentEditable='true';el.focus();selAll(el);}},50);
 }
 
 function pasteNode(x,y){
   if(!clipboard)return;
-  const id=uid();
-  nd[id]={...clipboard,x:x-90,y:y-40,title:clipboard.title+' (copy)'};
+  const id=uid();nd[id]={...clipboard,x:x-90,y:y-40,title:clipboard.title+' (copy)'};
   makeNode(id);dirty();updateProg();toast('Pasted');
 }
 
-// ══════════════════════════════════════════════════════
-// DRAG (nodes)
-// ══════════════════════════════════════════════════════
+// ── DRAG ──────────────────────────────────────────────
 function makeDraggable(el,id){
-  let sx,sy,ox,oy,moved=false;
+  let sx,sy,moved=false;
   el.addEventListener('mousedown',e=>{
     if(arrowMode)return;
     if(e.button!==0||e.target.contentEditable==='true'||e.target.tagName==='BUTTON')return;
-    moved=false;sx=e.clientX;sy=e.clientY;ox=nd[id].x;oy=nd[id].y;
+    moved=false;sx=e.clientX;sy=e.clientY;
     el.style.zIndex=100;e.preventDefault();
-    const mv=e2=>{
-      const dx=e2.clientX-sx,dy=e2.clientY-sy;
-      if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
-      nd[id].x=Math.max(0,ox+dx);nd[id].y=Math.max(0,oy+dy);
-      el.style.left=nd[id].x+'px';el.style.top=nd[id].y+'px';
-
-      // move entire selection together
-      if(selection.has(id)){
-        selection.forEach(sid=>{
-          if(sid===id)return;
-          nd[sid].x=Math.max(0,nd[sid].x+(e2.clientX-sx-0));
-          // actually track delta per frame
-        });
-      }
-      drawArrows();expand();
-    };
     let lastX=sx,lastY=sy;
-    const mv2=e2=>{
+    const mv=e2=>{
       const ddx=e2.clientX-lastX,ddy=e2.clientY-lastY;
       lastX=e2.clientX;lastY=e2.clientY;
       if(Math.abs(ddx)>0||Math.abs(ddy)>0)moved=true;
@@ -864,39 +688,18 @@ function makeDraggable(el,id){
       if(selection.has(id)){
         selection.forEach(sid=>{
           if(sid===id)return;
-          nd[sid].x=Math.max(0,nd[sid].x+ddx);
-          nd[sid].y=Math.max(0,nd[sid].y+ddy);
+          nd[sid].x=Math.max(0,nd[sid].x+ddx);nd[sid].y=Math.max(0,nd[sid].y+ddy);
           if(nodeEls[sid]){nodeEls[sid].style.left=nd[sid].x+'px';nodeEls[sid].style.top=nd[sid].y+'px';}
         });
       }
       drawArrows();expand();
     };
-    const up=()=>{
-      el.style.zIndex=selection.has(id)?70:10;
-      window.removeEventListener('mousemove',mv2);
-      window.removeEventListener('mouseup',up);
-      if(moved)dirty();
-    };
-    window.addEventListener('mousemove',mv2);
-    window.addEventListener('mouseup',up);
+    const up=()=>{el.style.zIndex=selection.has(id)?70:10;window.removeEventListener('mousemove',mv);window.removeEventListener('mouseup',up);if(moved)dirty();};
+    window.addEventListener('mousemove',mv);window.addEventListener('mouseup',up);
   });
-  el.addEventListener('touchstart',e=>{
-    if(arrowMode||e.target.contentEditable==='true'||e.target.tagName==='BUTTON')return;
-    const t=e.touches[0];sx=t.clientX;sy=t.clientY;ox=nd[id].x;oy=nd[id].y;
-    el.style.zIndex=100;e.preventDefault();
-  },{passive:false});
-  el.addEventListener('touchmove',e=>{
-    const t=e.touches[0];
-    nd[id].x=Math.max(0,ox+(t.clientX-sx));nd[id].y=Math.max(0,oy+(t.clientY-sy));
-    el.style.left=nd[id].x+'px';el.style.top=nd[id].y+'px';
-    drawArrows();e.preventDefault();
-  },{passive:false});
-  el.addEventListener('touchend',()=>{el.style.zIndex=10;dirty();});
 }
 
-// ══════════════════════════════════════════════════════
-// ARROWS
-// ══════════════════════════════════════════════════════
+// ── ARROWS ────────────────────────────────────────────
 function nodeCenter(id){
   const el=nodeEls[id];
   if(!el||el.style.display==='none')return null;
@@ -904,13 +707,11 @@ function nodeCenter(id){
 }
 
 function drawArrows(){
-  // Clear both layers
   const visLayer=document.getElementById('arrow-vis-layer');
   const hitLayer=document.getElementById('arrow-hits');
   while(visLayer.firstChild)visLayer.removeChild(visLayer.firstChild);
   while(hitLayer.firstChild)hitLayer.removeChild(hitLayer.firstChild);
   arrowEls={};
-
   Object.keys(ad).forEach(id=>{
     const a=ad[id];
     const A=nodeCenter(a.from),B=nodeCenter(a.to);
@@ -918,31 +719,16 @@ function drawArrows(){
     const isSel=selArrow===id;
     const planned=a.type==='planned';
     const col=isSel?'#738aff':planned?'#4a52bb':'#1db87a';
-
-    // Visual line (no pointer events)
     const vis=document.createElementNS('http://www.w3.org/2000/svg','line');
-    vis.setAttribute('x1',A.x);vis.setAttribute('y1',A.y);
-    vis.setAttribute('x2',B.x);vis.setAttribute('y2',B.y);
-    vis.setAttribute('stroke',col);
-    vis.setAttribute('stroke-width',isSel?'2.5':'1.4');
-    vis.setAttribute('stroke-opacity',isSel?'1':'.5');
+    vis.setAttribute('x1',A.x);vis.setAttribute('y1',A.y);vis.setAttribute('x2',B.x);vis.setAttribute('y2',B.y);
+    vis.setAttribute('stroke',col);vis.setAttribute('stroke-width',isSel?'2.5':'1.4');vis.setAttribute('stroke-opacity',isSel?'1':'.5');
     if(planned)vis.setAttribute('stroke-dasharray','7 4');
     vis.setAttribute('marker-end',`url(#${isSel?'ah-c-sel':planned?'ah-p':'ah-c'})`);
-    vis.classList.add('arrow-line');
-    visLayer.appendChild(vis);
-    arrowEls[id]=vis;
-
-    // Fat invisible hit line (pointer events active)
+    vis.classList.add('arrow-line');visLayer.appendChild(vis);arrowEls[id]=vis;
     const hit=document.createElementNS('http://www.w3.org/2000/svg','line');
-    hit.setAttribute('x1',A.x);hit.setAttribute('y1',A.y);
-    hit.setAttribute('x2',B.x);hit.setAttribute('y2',B.y);
-    hit.setAttribute('stroke','transparent');
-    hit.setAttribute('stroke-width','28');
-    hit.setAttribute('fill','none');
-    hit.classList.add('arrow-hit');
-    hit.dataset.aid=id;
-    hit.style.cursor='pointer';
-
+    hit.setAttribute('x1',A.x);hit.setAttribute('y1',A.y);hit.setAttribute('x2',B.x);hit.setAttribute('y2',B.y);
+    hit.setAttribute('stroke','transparent');hit.setAttribute('stroke-width','28');hit.setAttribute('fill','none');
+    hit.classList.add('arrow-hit');hit.dataset.aid=id;hit.style.cursor='pointer';
     hit.addEventListener('mouseenter',()=>{vis.setAttribute('stroke-opacity','1');vis.setAttribute('stroke-width',isSel?'2.5':'2');});
     hit.addEventListener('mouseleave',()=>{vis.setAttribute('stroke-opacity',isSel?'1':'.5');vis.setAttribute('stroke-width',isSel?'2.5':'1.4');});
     hit.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();selectArrow(id);});
@@ -951,228 +737,120 @@ function drawArrows(){
   });
 }
 
-function createArrow(from,to,type){
-  const id=uid();
-  ad[id]={from,to,type};
-  dirty();drawArrows();
-}
-
+function createArrow(from,to,type){const id=uid();ad[id]={from,to,type};dirty();drawArrows();}
 function selectArrow(id){
-  selArrow=id;
-  drawArrows();
-  const bar=document.getElementById('arrow-bar');
-  bar.classList.add('show');
-  const sel=document.getElementById('arrow-type-sel');
-  sel.value=ad[id]?.type||'current';
-  document.getElementById('arrow-bar-label').textContent=
-    `${nd[ad[id]?.from]?.title||'?'} → ${nd[ad[id]?.to]?.title||'?'}`;
+  selArrow=id;drawArrows();
+  const bar=document.getElementById('arrow-bar');bar.classList.add('show');
+  document.getElementById('arrow-type-sel').value=ad[id]?.type||'current';
+  document.getElementById('arrow-bar-label').textContent=`${nd[ad[id]?.from]?.title||'?'} → ${nd[ad[id]?.to]?.title||'?'}`;
 }
+function deselectArrow(){selArrow=null;drawArrows();document.getElementById('arrow-bar').classList.remove('show');}
+function deleteArrow(id){arrowEls[id]?.remove();delete arrowEls[id];delete ad[id];deselectArrow();dirty();drawArrows();}
 
-function deselectArrow(){
-  selArrow=null;drawArrows();
-  document.getElementById('arrow-bar').classList.remove('show');
-}
-
-function deleteArrow(id){
-  arrowEls[id]?.remove();delete arrowEls[id];delete ad[id];
-  deselectArrow();dirty();drawArrows();
-}
-
-document.getElementById('arrow-type-sel').addEventListener('change',e=>{
-  if(!selArrow||!ad[selArrow])return;
-  ad[selArrow].type=e.target.value;dirty();drawArrows();
-});
-document.getElementById('arrow-flip').addEventListener('click',()=>{
-  if(!selArrow||!ad[selArrow])return;
-  const a=ad[selArrow];[a.from,a.to]=[a.to,a.from];dirty();drawArrows();
-  selectArrow(selArrow);
-});
-document.getElementById('arrow-del').addEventListener('click',()=>{
-  if(selArrow)deleteArrow(selArrow);
-});
+document.getElementById('arrow-type-sel').addEventListener('change',e=>{if(!selArrow||!ad[selArrow])return;ad[selArrow].type=e.target.value;dirty();drawArrows();});
+document.getElementById('arrow-flip').addEventListener('click',()=>{if(!selArrow||!ad[selArrow])return;const a=ad[selArrow];[a.from,a.to]=[a.to,a.from];dirty();drawArrows();selectArrow(selArrow);});
+document.getElementById('arrow-del').addEventListener('click',()=>{if(selArrow)deleteArrow(selArrow);});
 document.getElementById('arrow-desel').addEventListener('click',deselectArrow);
 
-// ══════════════════════════════════════════════════════
-// ARROW DRAW MODE
-// ══════════════════════════════════════════════════════
+// ── ARROW DRAW MODE ───────────────────────────────────
 const drawBtn=document.getElementById('btn-draw-arrow');
 drawBtn.addEventListener('click',()=>{
   arrowMode=!arrowMode;arrowFrom=null;
   document.body.classList.toggle('draw-mode',arrowMode);
   drawBtn.classList.toggle('blue',arrowMode);
   document.getElementById('mode-pill').textContent=arrowMode?'DRAW ARROW':'SELECT';
-  if(!arrowMode)toast('Arrow mode off');
-  else toast('Click source node, then destination node');
+  toast(arrowMode?'Click source node, then destination':'Arrow mode off');
 });
 
-// ══════════════════════════════════════════════════════
-// BOX SELECT
-// ══════════════════════════════════════════════════════
+// ── BOX SELECT ────────────────────────────────────────
 const selBox=document.getElementById('sel-box');
 let selBoxing=false,sbx1,sby1;
-
 canvas.addEventListener('mousedown',e=>{
   if(arrowMode)return;
-  if(e.target!==canvas&&!e.target.classList.contains('sband')&&
-     !e.target.classList.contains('sec-rule')&&!svgEl.contains(e.target))return;
+  if(e.target!==canvas&&!e.target.classList.contains('sband')&&!svgEl.contains(e.target))return;
   if(e.button!==0)return;
-  deselectArrow();
-  selBoxing=true;
-  const r=canvas.getBoundingClientRect();
-  const wrap=document.getElementById('cwrap');
-  sbx1=e.clientX-r.left+wrap.scrollLeft;
-  sby1=e.clientY-r.top+wrap.scrollTop;
+  deselectArrow();selBoxing=true;
+  const r=canvas.getBoundingClientRect();const wrap=document.getElementById('cwrap');
+  sbx1=e.clientX-r.left+wrap.scrollLeft;sby1=e.clientY-r.top+wrap.scrollTop;
   selBox.style.cssText=`display:block;left:${sbx1}px;top:${sby1}px;width:0;height:0`;
   e.preventDefault();
 });
-
 window.addEventListener('mousemove',e=>{
   if(!selBoxing)return;
-  const r=canvas.getBoundingClientRect();
-  const wrap=document.getElementById('cwrap');
-  const cx=e.clientX-r.left+wrap.scrollLeft;
-  const cy=e.clientY-r.top+wrap.scrollTop;
+  const r=canvas.getBoundingClientRect();const wrap=document.getElementById('cwrap');
+  const cx=e.clientX-r.left+wrap.scrollLeft,cy=e.clientY-r.top+wrap.scrollTop;
   const x=Math.min(sbx1,cx),y=Math.min(sby1,cy);
-  const w=Math.abs(cx-sbx1),h=Math.abs(cy-sby1);
-  selBox.style.left=x+'px';selBox.style.top=y+'px';
-  selBox.style.width=w+'px';selBox.style.height=h+'px';
+  selBox.style.left=x+'px';selBox.style.top=y+'px';selBox.style.width=Math.abs(cx-sbx1)+'px';selBox.style.height=Math.abs(cy-sby1)+'px';
 });
-
-window.addEventListener('mouseup',e=>{
-  if(!selBoxing)return;
-  selBoxing=false;
-  selBox.style.display='none';
-  const bx=parseInt(selBox.style.left),by=parseInt(selBox.style.top);
-  const bw=parseInt(selBox.style.width),bh=parseInt(selBox.style.height);
+window.addEventListener('mouseup',()=>{
+  if(!selBoxing)return;selBoxing=false;selBox.style.display='none';
+  const bx=parseInt(selBox.style.left),by=parseInt(selBox.style.top),bw=parseInt(selBox.style.width),bh=parseInt(selBox.style.height);
   if(bw<5&&bh<5){clearSelection();return;}
   clearSelection();
   Object.keys(nd).forEach(id=>{
     const el=nodeEls[id];if(!el||el.style.display==='none')return;
     const nx=nd[id].x,ny=nd[id].y,nw=el.offsetWidth,nh=el.offsetHeight;
-    if(nx<bx+bw&&nx+nw>bx&&ny<by+bh&&ny+nh>by){
-      selection.add(id);el.classList.add('sel');
-    }
+    if(nx<bx+bw&&nx+nw>bx&&ny<by+bh&&ny+nh>by){selection.add(id);el.classList.add('sel');}
   });
   if(selection.size)toast(`${selection.size} node${selection.size>1?'s':''} selected`);
 });
+function clearSelection(){selection.forEach(id=>nodeEls[id]?.classList.remove('sel'));selection.clear();}
 
-function clearSelection(){
-  selection.forEach(id=>nodeEls[id]?.classList.remove('sel'));
-  selection.clear();
-}
-
-document.getElementById('btn-selall').addEventListener('click',()=>{
-  clearSelection();
-  Object.keys(nd).forEach(id=>{
-    const el=nodeEls[id];if(!el||el.style.display==='none')return;
-    selection.add(id);el.classList.add('sel');
-  });
-  toast(`All ${selection.size} nodes selected`);
-});
-
-// ══════════════════════════════════════════════════════
-// NOTES PANEL
-// ══════════════════════════════════════════════════════
+// ── NOTES ─────────────────────────────────────────────
 function openNote(id){
-  noteTarget=id;
-  const panel=document.getElementById('note-panel');
+  noteTarget=id;closeHistPanel();
   document.getElementById('note-hdr-title').textContent='📝 '+nd[id].title;
   document.getElementById('note-textarea').value=nd[id].note||'';
-  panel.classList.add('open');
+  document.getElementById('note-panel').classList.add('open');
   document.getElementById('note-textarea').focus();
 }
-
-document.getElementById('note-close').addEventListener('click',()=>{
-  document.getElementById('note-panel').classList.remove('open');
-  noteTarget=null;
-});
+function closeNotePanel(){document.getElementById('note-panel').classList.remove('open');noteTarget=null;}
+document.getElementById('note-close').addEventListener('click',closeNotePanel);
 document.getElementById('note-save').addEventListener('click',()=>{
   if(!noteTarget)return;
   nd[noteTarget].note=document.getElementById('note-textarea').value;
-  dirty();refreshNode(noteTarget);
-  document.getElementById('note-panel').classList.remove('open');
-  toast('Note saved');noteTarget=null;
+  dirty();refreshNode(noteTarget);closeNotePanel();toast('Note saved');
 });
 
-// ══════════════════════════════════════════════════════
-// CONTEXT MENUS
-// ══════════════════════════════════════════════════════
+// ── CONTEXT MENUS ─────────────────────────────────────
 const ctxEl=document.getElementById('ctx');
-
 function showCtx(x,y,groups,handlers){
-  ctxEl.innerHTML=groups.map(g=>
-    `<div class="cgrp">${g.map(it=>{
-      if(!it)return'';
-      const cls=it.cls?` ${it.cls}`:'';
-      const sub=it.sub?`<span class="csub">${it.sub}</span>`:'';
-      const dis=it.dis?' style="opacity:.4;pointer-events:none"':'';
-      return`<div class="citem${cls}"data-a="${it.action||''}"${dis}>
-        <span class="cico">${it.icon||''}</span>${it.label}${sub}</div>`;
-    }).join('')}</div>`
-  ).join('');
+  ctxEl.innerHTML=groups.map(g=>`<div class="cgrp">${g.map(it=>{
+    if(!it)return'';
+    const cls=it.cls?` ${it.cls}`:'';const sub=it.sub?`<span class="csub">${it.sub}</span>`:'';
+    const dis=it.dis?' style="opacity:.4;pointer-events:none"':'';
+    return`<div class="citem${cls}"data-a="${it.action||''}"${dis}><span class="cico">${it.icon||''}</span>${it.label}${sub}</div>`;
+  }).join('')}</div>`).join('');
   const vw=window.innerWidth,vh=window.innerHeight;
-  ctxEl.style.cssText=`left:${x}px;top:${y}px`;
-  ctxEl.classList.add('show');
-  // reposition if off-screen
+  ctxEl.style.cssText=`left:${x}px;top:${y}px`;ctxEl.classList.add('show');
   const r=ctxEl.getBoundingClientRect();
-  if(r.right>vw)ctxEl.style.left=(x-r.width)+'px';
-  if(r.bottom>vh)ctxEl.style.top=(y-r.height)+'px';
-  ctxEl.querySelectorAll('[data-a]').forEach(el=>{
-    const a=el.dataset.a;
-    if(a&&handlers[a])el.addEventListener('click',()=>{hideCtx();handlers[a]();});
-  });
+  if(r.right>vw)ctxEl.style.left=(x-r.width)+'px';if(r.bottom>vh)ctxEl.style.top=(y-r.height)+'px';
+  ctxEl.querySelectorAll('[data-a]').forEach(el=>{const a=el.dataset.a;if(a&&handlers[a])el.addEventListener('click',()=>{hideCtx();handlers[a]();});});
 }
-
 function hideCtx(){ctxEl.classList.remove('show');ctxEl.innerHTML='';}
 document.addEventListener('click',()=>{hideCtx();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideCtx();deselectArrow();if(arrowMode){arrowMode=false;arrowFrom=null;document.body.classList.remove('draw-mode');drawBtn.classList.remove('blue');document.getElementById('mode-pill').textContent='SELECT';}}});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){hideCtx();deselectArrow();if(arrowMode){arrowMode=false;arrowFrom=null;document.body.classList.remove('draw-mode');drawBtn.classList.remove('blue');document.getElementById('mode-pill').textContent='SELECT';}}
+});
 
 function showNodeCtx(e,id){
   const d=nd[id];
   showCtx(e.clientX,e.clientY,[
-    [
-      {icon:'✏️',label:'Edit title',action:'et'},
-      {icon:'📝',label:'Edit subtitle',action:'es'},
-      {icon:'📋',label:'Open notes',action:'note'},
-    ],
-    [
-      {icon:'⎘',label:'Duplicate',action:'dup'},
-      {icon:'📄',label:'Copy',action:'copy',sub:'Ctrl+C'},
-      {icon:'📋',label:'Paste',action:'paste',dis:!clipboard},
-    ],
-    [
-      {icon:'🟢',label:'Current',action:'sc'},
-      {icon:'🟡',label:'In progress',action:'sp'},
-      {icon:'🟣',label:'Planned',action:'sl'},
-    ],
-    [
-      {icon:'📗',label:'Layer: Both',action:'lb'},
-      {icon:'📘',label:'Layer: Current only',action:'lc'},
-      {icon:'📙',label:'Layer: Planned only',action:'lp'},
-    ],
-    [
-      {icon:'✏️',label:'Draw arrow from here',action:'draw',cls:'hi'},
-    ],
-    [
-      {icon:'🗑',label:'Delete node',action:'del',cls:'danger'},
-    ],
+    [{icon:'✏️',label:'Edit title',action:'et'},{icon:'📝',label:'Edit subtitle',action:'es'},{icon:'📋',label:'Open notes',action:'note'}],
+    [{icon:'⎘',label:'Duplicate',action:'dup'},{icon:'📄',label:'Copy',action:'copy',sub:'Ctrl+C'},{icon:'📋',label:'Paste',action:'paste',dis:!clipboard}],
+    [{icon:'🟢',label:'Current',action:'sc'},{icon:'🟡',label:'In progress',action:'sp'},{icon:'🟣',label:'Planned',action:'sl'}],
+    [{icon:'📗',label:'Layer: Both',action:'lb'},{icon:'📘',label:'Layer: Current only',action:'lc'},{icon:'📙',label:'Layer: Planned only',action:'lp'}],
+    [{icon:'✏️',label:'Draw arrow from here',action:'draw',cls:'hi'}],
+    [{icon:'🗑',label:'Delete node',action:'del',cls:'danger'}],
   ],{
-    et:()=>startEdit(id,'title'),
-    es:()=>startEdit(id,'sub'),
-    note:()=>openNote(id),
-    dup:()=>dupNode(id),
+    et:()=>startEdit(id,'title'),es:()=>startEdit(id,'sub'),note:()=>openNote(id),dup:()=>dupNode(id),
     copy:()=>{clipboard=JSON.parse(JSON.stringify(d));toast('Copied');},
     paste:()=>pasteNode(nd[id].x+30,nd[id].y+30),
-    sc:()=>setNodeState(id,'current'),
-    sp:()=>setNodeState(id,'progress'),
-    sl:()=>setNodeState(id,'planned'),
-    lb:()=>setNodeLayer(id,'both'),
-    lc:()=>setNodeLayer(id,'current'),
-    lp:()=>setNodeLayer(id,'planned'),
+    sc:()=>setNodeState(id,'current'),sp:()=>setNodeState(id,'progress'),sl:()=>setNodeState(id,'planned'),
+    lb:()=>setNodeLayer(id,'both'),lc:()=>setNodeLayer(id,'current'),lp:()=>setNodeLayer(id,'planned'),
     draw:()=>{
       if(!arrowMode){arrowMode=true;document.body.classList.add('draw-mode');drawBtn.classList.add('blue');document.getElementById('mode-pill').textContent='DRAW ARROW';}
-      arrowFrom=id;nodeEls[id].style.boxShadow='0 0 0 2px var(--accent)';
-      toast('Now click the destination node');
+      arrowFrom=id;nodeEls[id].style.boxShadow='0 0 0 2px var(--accent)';toast('Now click the destination node');
     },
     del:()=>{if(confirm(`Delete "${d.title}"?`))delNode(id);},
   });
@@ -1181,221 +859,132 @@ function showNodeCtx(e,id){
 function showArrowCtx(e,id){
   const a=ad[id];if(!a)return;
   showCtx(e.clientX,e.clientY,[
-    [
-      {icon:'⇄',label:'Flip direction',action:'flip'},
-      {icon:'◌',label:'Make planned (dashed)',action:'mkp'},
-      {icon:'●',label:'Make current (solid)',action:'mkc'},
-    ],
-    [
-      {icon:'🗑',label:'Delete arrow',action:'del',cls:'danger'},
-    ],
+    [{icon:'⇄',label:'Flip direction',action:'flip'},{icon:'◌',label:'Make planned (dashed)',action:'mkp'},{icon:'●',label:'Make current (solid)',action:'mkc'}],
+    [{icon:'🗑',label:'Delete arrow',action:'del',cls:'danger'}],
   ],{
     flip:()=>{[a.from,a.to]=[a.to,a.from];dirty();drawArrows();},
-    mkp:()=>{a.type='planned';dirty();drawArrows();},
-    mkc:()=>{a.type='current';dirty();drawArrows();},
+    mkp:()=>{a.type='planned';dirty();drawArrows();},mkc:()=>{a.type='current';dirty();drawArrows();},
     del:()=>deleteArrow(id),
   });
 }
 
-// canvas right-click
 canvas.addEventListener('contextmenu',e=>{
   if(arrowMode)return;
   if(e.target.closest('.node')||e.target.closest('.sband'))return;
-  // If right-clicking an arrow hit area, let arrow handler deal with it
   if(e.target.classList.contains('arrow-hit')||e.target.dataset.aid){
-    e.preventDefault();e.stopPropagation();
-    const aid=e.target.dataset.aid;
-    if(aid){selectArrow(aid);showArrowCtx(e,aid);}
-    return;
+    e.preventDefault();e.stopPropagation();const aid=e.target.dataset.aid;if(aid){selectArrow(aid);showArrowCtx(e,aid);}return;
   }
   e.preventDefault();
-  const wrap=document.getElementById('cwrap');
-  const r=canvas.getBoundingClientRect();
-  const cx=e.clientX-r.left+wrap.scrollLeft;
-  const cy=e.clientY-r.top+wrap.scrollTop;
+  const wrap=document.getElementById('cwrap');const r=canvas.getBoundingClientRect();
+  const cx=e.clientX-r.left+wrap.scrollLeft,cy=e.clientY-r.top+wrap.scrollTop;
   showCtx(e.clientX,e.clientY,[
-    [
-      {icon:'➕',label:'Add node here',action:'add',cls:'hi'},
-      {icon:'📋',label:'Paste here',action:'paste',dis:!clipboard},
-      {icon:'─',label:'Add section band',action:'sec'},
-    ],
-    [
-      {icon:'⬜',label:'Select all',action:'sall'},
-      {icon:'✕',label:'Clear selection',action:'clr',dis:!selection.size},
-    ],
-    [
-      {icon:'💾',label:'Save',action:'save'},
-      {icon:'⬇',label:'Export PNG',action:'exp'},
-    ],
-    [
-      {icon:'?',label:'Help',action:'help'},
-    ],
+    [{icon:'➕',label:'Add node here',action:'add',cls:'hi'},{icon:'📋',label:'Paste here',action:'paste',dis:!clipboard},{icon:'─',label:'Add section band',action:'sec'}],
+    [{icon:'⬜',label:'Select all',action:'sall'},{icon:'✕',label:'Clear selection',action:'clr',dis:!selection.size}],
+    [{icon:'💾',label:'Save',action:'save'},{icon:'🕐',label:'History',action:'hist'},{icon:'⬇',label:'Export PNG',action:'exp'}],
+    [{icon:'?',label:'Help',action:'help'}],
   ],{
-    add:()=>addNode(cx-90,cy-40),
-    paste:()=>pasteNode(cx,cy),
-    sec:()=>addSection(cy),
+    add:()=>addNode(cx-90,cy-40),paste:()=>pasteNode(cx,cy),sec:()=>addSection(cy),
     sall:()=>{clearSelection();Object.keys(nd).forEach(id=>{const el=nodeEls[id];if(!el||el.style.display==='none')return;selection.add(id);el.classList.add('sel');});toast(`${selection.size} nodes selected`);},
-    clr:()=>clearSelection(),
-    save:()=>save(),
-    exp:()=>doExport(),
-    help:()=>showHelp(),
+    clr:()=>clearSelection(),save:()=>save(),hist:()=>openHistPanel(),exp:()=>doExport(),help:()=>showHelp(),
   });
 });
 
-function startEdit(id,f){
-  const el=nodeEls[id]?.querySelector(`[data-f="${f}"]`);
-  if(!el)return;el.contentEditable='true';el.focus();selAll(el);
-}
+function startEdit(id,f){const el=nodeEls[id]?.querySelector(`[data-f="${f}"]`);if(!el)return;el.contentEditable='true';el.focus();selAll(el);}
 
-// ══════════════════════════════════════════════════════
-// KEYBOARD SHORTCUTS
-// ══════════════════════════════════════════════════════
+// ── KEYBOARD ──────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   const tag=document.activeElement.tagName;
   if(tag==='INPUT'||tag==='TEXTAREA'||document.activeElement.contentEditable==='true')return;
   if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();save();}
-  if((e.ctrlKey||e.metaKey)&&e.key==='a'){e.preventDefault();
-    clearSelection();Object.keys(nd).forEach(id=>{const el=nodeEls[id];if(!el||el.style.display==='none')return;selection.add(id);el.classList.add('sel');});
-    toast(`${selection.size} nodes selected`);
-  }
-  if((e.ctrlKey||e.metaKey)&&e.key==='d'){
-    e.preventDefault();
-    selection.forEach(id=>dupNode(id));
-  }
+  if((e.ctrlKey||e.metaKey)&&e.key==='a'){e.preventDefault();clearSelection();Object.keys(nd).forEach(id=>{const el=nodeEls[id];if(!el||el.style.display==='none')return;selection.add(id);el.classList.add('sel');});toast(`${selection.size} nodes selected`);}
+  if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();selection.forEach(id=>dupNode(id));}
   if(e.key==='Delete'||e.key==='Backspace'){
     if(selArrow){deleteArrow(selArrow);return;}
-    if(selection.size){
-      if(!confirm(`Delete ${selection.size} node(s)?`))return;
-      selection.forEach(id=>delNode(id));clearSelection();
-    }
+    if(selection.size){if(!confirm(`Delete ${selection.size} node(s)?`))return;selection.forEach(id=>delNode(id));clearSelection();}
   }
 });
 
-// ══════════════════════════════════════════════════════
-// PROGRESS
-// ══════════════════════════════════════════════════════
+// ── PROGRESS ──────────────────────────────────────────
 function updateProg(){
-  const ids=Object.keys(nd);
-  const done=ids.filter(id=>nd[id]?.done).length;
-  const pct=ids.length?Math.round(done/ids.length*100):0;
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('prog-pct').textContent=pct+'%';
+  const ids=Object.keys(nd);const done=ids.filter(id=>nd[id]?.done).length;const pct=ids.length?Math.round(done/ids.length*100):0;
+  document.getElementById('prog-fill').style.width=pct+'%';document.getElementById('prog-pct').textContent=pct+'%';
 }
 
-// ══════════════════════════════════════════════════════
-// TOAST / MODAL
-// ══════════════════════════════════════════════════════
+// ── TOAST / MODAL ─────────────────────────────────────
 let _tt;
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2000);
-}
-
-function showModal(title,html){
-  document.getElementById('mtitle').textContent=title;
-  document.getElementById('mbody').innerHTML=html;
-  document.getElementById('mbg').classList.add('show');
-}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2000);}
+function showModal(title,html){document.getElementById('mtitle').textContent=title;document.getElementById('mbody').innerHTML=html;document.getElementById('mbg').classList.add('show');}
 document.getElementById('mok').addEventListener('click',()=>document.getElementById('mbg').classList.remove('show'));
 document.getElementById('mbg').addEventListener('click',e=>{if(e.target===document.getElementById('mbg'))document.getElementById('mbg').classList.remove('show');});
 
 function showHelp(){
   showModal('KEYBOARD & MOUSE REFERENCE',`
     <p><strong>Double-click</strong> any title or subtitle → edit inline.</p>
-    <p><strong>Checkbox</strong> on each node → mark done (tracks progress %).</p>
-    <p><strong>Drag</strong> → move node. Box-select (drag empty canvas) → select multiple. Selected nodes move together.</p>
-    <p><strong>📝 button</strong> on node footer → open notes panel. Notes hidden unless opened.</p>
-    <p><strong>✏ Arrow mode</strong> → click source node, then destination. Press Esc to exit.</p>
-    <p><strong>Click an arrow</strong> → select it. Edit bar appears: change solid↔dashed, flip direction, delete.</p>
+    <p><strong>Checkbox</strong> → mark done (tracks progress %).</p>
+    <p><strong>Drag</strong> → move node. Box-select → select multiple.</p>
+    <p><strong>📝 button</strong> → notes panel.</p>
+    <p><strong>✏ Arrow mode</strong> → click source, then destination. Esc to exit.</p>
+    <p><strong>Click an arrow</strong> → edit bar: change type, flip, delete.</p>
     <p><strong>Right-click node</strong> → state, layer, copy/paste, draw arrow, delete.</p>
-    <p><strong>Right-click canvas</strong> → add node/section, paste, select all, save, export.</p>
-    <p><strong>Section bands</strong> → drag to reposition, double-click label to rename, ✕ to delete.</p>
-    <p><strong>View tabs</strong> → filter to Current or Planned layer.</p>
-    <p><kbd>Ctrl+S</kbd> Save &nbsp; <kbd>Ctrl+A</kbd> Select all &nbsp; <kbd>Ctrl+D</kbd> Duplicate selection</p>
-    <p><kbd>Delete</kbd> Delete selected nodes or selected arrow &nbsp; <kbd>Esc</kbd> Exit arrow mode / close menus</p>
+    <p><strong>Right-click canvas</strong> → add node/section, paste, select all, save, history.</p>
+    <p><strong>🕐 History</strong> → view last ${MAX_HIST} saves, restore any snapshot.</p>
+    <p><strong>Deleted nodes stay deleted</strong> even after reload.</p>
+    <p><kbd>Ctrl+S</kbd> Save &nbsp; <kbd>Ctrl+A</kbd> Select all &nbsp; <kbd>Ctrl+D</kbd> Duplicate &nbsp; <kbd>Delete</kbd> Delete selected &nbsp; <kbd>Esc</kbd> Exit mode</p>
   `);
 }
 
-// ══════════════════════════════════════════════════════
-// TOOLBAR BUTTONS
-// ══════════════════════════════════════════════════════
+// ── TOOLBAR ───────────────────────────────────────────
 document.getElementById('btn-save').addEventListener('click',()=>save());
 document.getElementById('btn-help').addEventListener('click',showHelp);
 document.getElementById('btn-selall').addEventListener('click',()=>{
-  clearSelection();
-  Object.keys(nd).forEach(id=>{const el=nodeEls[id];if(!el||el.style.display==='none')return;selection.add(id);el.classList.add('sel');});
-  toast(`${selection.size} nodes selected`);
+  clearSelection();Object.keys(nd).forEach(id=>{const el=nodeEls[id];if(!el||el.style.display==='none')return;selection.add(id);el.classList.add('sel');});toast(`${selection.size} nodes selected`);
 });
-document.getElementById('btn-add-section').addEventListener('click',()=>{
-  const wrap=document.getElementById('cwrap');
-  addSection(wrap.scrollTop+120);
-});
+document.getElementById('btn-add-section').addEventListener('click',()=>{const wrap=document.getElementById('cwrap');addSection(wrap.scrollTop+120);});
 document.getElementById('btn-reset-pos').addEventListener('click',()=>{
   if(!confirm('Reset all node positions to default?'))return;
-  DEFS.nodes.forEach(([id,,,,, x,y])=>{
-    if(!nd[id])return;nd[id].x=x;nd[id].y=y;
-    if(nodeEls[id]){nodeEls[id].style.left=x+'px';nodeEls[id].style.top=y+'px';}
-  });
-  DEFS.sections.forEach(([id,,y])=>{
-    if(!sd[id])return;sd[id].y=y;
-    if(sectionEls[id])sectionEls[id].style.top=y+'px';
-  });
+  DEFS.nodes.forEach(([id,,,,,x,y])=>{if(!nd[id])return;nd[id].x=x;nd[id].y=y;if(nodeEls[id]){nodeEls[id].style.left=x+'px';nodeEls[id].style.top=y+'px';}});
+  DEFS.sections.forEach(([id,,y])=>{if(!sd[id])return;sd[id].y=y;if(sectionEls[id])sectionEls[id].style.top=y+'px';});
   dirty();drawArrows();
 });
 document.getElementById('btn-reset-all').addEventListener('click',()=>{
-  if(!confirm('Reset EVERYTHING? All edits, done states, notes, and positions will be lost.'))return;
-  const d=getDefaults();nd=d.n;ad=d.a;sd=d.s;
-  Object.keys(nodeEls).forEach(id=>nodeEls[id]?.remove());
-  Object.keys(sectionEls).forEach(id=>sectionEls[id]?.remove());
-  nodeEls={};sectionEls={};
-  Object.keys(sd).forEach(id=>makeSection(id));
-  Object.keys(nd).forEach(id=>makeNode(id));
-  save(true);drawArrows();updateProg();applyView();clearSelection();
+  if(!confirm('Reset EVERYTHING? All edits, done states, notes, deletions, and positions will be lost.'))return;
+  const d=getDefaults();nd=d.n;ad=d.a;sd=d.s;deletedIds=new Set();
+  rebuildAll();save(true);
 });
 document.getElementById('btn-export').addEventListener('click',doExport);
 
 async function doExport(){
-  const btn=document.getElementById('btn-export');
-  btn.textContent='⏳…';btn.disabled=true;
+  const btn=document.getElementById('btn-export');btn.textContent='⏳…';btn.disabled=true;
   document.querySelectorAll('.nfoot').forEach(e=>{e._op=e.style.opacity;e.style.opacity='0';e.style.pointerEvents='none';});
   try{
     const c=document.getElementById('canvas');
-    const cv=await html2canvas(c,{
-      backgroundColor:'#090b11',scale:1.5,useCORS:true,logging:false,
-      width:c.scrollWidth,height:c.scrollHeight,scrollX:0,scrollY:0,
-      windowWidth:c.scrollWidth,windowHeight:c.scrollHeight,
-    });
-    const a=document.createElement('a');
-    a.href=cv.toDataURL('image/png');
-    a.download=`homelab_kel_${curView}_${new Date().toISOString().slice(0,10)}.png`;
-    a.click();toast('PNG exported');
+    const cv=await html2canvas(c,{backgroundColor:'#090b11',scale:1.5,useCORS:true,logging:false,width:c.scrollWidth,height:c.scrollHeight,scrollX:0,scrollY:0,windowWidth:c.scrollWidth,windowHeight:c.scrollHeight});
+    const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=`homelab_kel_${curView}_${new Date().toISOString().slice(0,10)}.png`;a.click();toast('PNG exported');
   }catch(e){alert('Export failed: '+e.message);}
   document.querySelectorAll('.nfoot').forEach(e=>{e.style.opacity=e._op||'';e.style.pointerEvents='';});
   btn.textContent='⬇ PNG';btn.disabled=false;
 }
 
-// view tabs
 document.getElementById('vtabs').addEventListener('click',e=>{
   const t=e.target.closest('.vtab');if(!t)return;
-  document.querySelectorAll('.vtab').forEach(x=>x.classList.remove('on'));
-  t.classList.add('on');curView=t.dataset.v;applyView();
+  document.querySelectorAll('.vtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');curView=t.dataset.v;applyView();
 });
 
-// ══════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════
+// ── REBUILD ALL ───────────────────────────────────────
+function rebuildAll(){
+  Object.keys(nodeEls).forEach(id=>nodeEls[id]?.remove());
+  Object.keys(sectionEls).forEach(id=>sectionEls[id]?.remove());
+  nodeEls={};sectionEls={};arrowEls={};
+  Object.keys(sd).forEach(id=>makeSection(id));
+  Object.keys(nd).forEach(id=>makeNode(id));
+  drawArrows();expand();updateProg();applyView();clearSelection();
+}
+
+// ── INIT ──────────────────────────────────────────────
 loadState();
-Object.keys(sd).forEach(id=>makeSection(id));
-Object.keys(nd).forEach(id=>makeNode(id));
-
-requestAnimationFrame(()=>requestAnimationFrame(()=>{
-  drawArrows();expand();updateProg();setDirty(false);
-}));
-
-window.addEventListener('beforeunload',e=>{
-  if(isDirty){e.preventDefault();e.returnValue='Unsaved changes.';}
-});
+rebuildAll();
+requestAnimationFrame(()=>requestAnimationFrame(()=>{setDirty(false);}));
+window.addEventListener('beforeunload',e=>{if(isDirty){e.preventDefault();e.returnValue='Unsaved changes.';}});
 </script>
 </body>
 </html>
