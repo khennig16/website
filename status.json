@@ -1,0 +1,11 @@
+{
+  "generated_at": "1970-01-01T00:00:00+00:00",
+  "overall": "down",
+  "services": [
+    {"name":"Homepage","url":"https://homepage.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
+    {"name":"Cameras / Frigate","url":"https://cam.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
+    {"name":"Home Assistant","url":"https://ha.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
+    {"name":"Speedtest Tracker","url":"https://speedtest.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
+    {"name":"Public website","url":"https://khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"}
+  ]
+}

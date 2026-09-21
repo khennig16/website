@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kel's Homelab Status</title>
+  <style>
+    :root{--bg:#080b12;--card:#111827;--border:#263858;--text:#e2e8f4;--muted:#8490aa;--teal:#00d4a0;--green:#22c55e;--amber:#f59e0b;--red:#ef4444}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 10%,#132954 0,transparent 34%),radial-gradient(circle at 85% 80%,#063d38 0,transparent 28%),var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+    main{width:min(980px,calc(100% - 32px));margin:0 auto;padding:48px 0 64px}.top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:36px}.eyebrow{font:11px ui-monospace,SFMono-Regular,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}h1{margin:7px 0 8px;font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.04em}p{color:var(--muted);margin:0}.monitor{border:1px solid var(--border);border-radius:999px;padding:9px 14px;font:12px ui-monospace,SFMono-Regular,monospace;white-space:nowrap}.monitor.ok{color:var(--green);border-color:#166534;background:#092d20}.monitor.warn{color:var(--amber);border-color:#854d0e;background:#2d1d08}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.service{background:linear-gradient(145deg,#172035,#0e1525);border:1px solid var(--border);border-radius:14px;padding:20px;transition:.2s}.service:hover{transform:translateY(-3px);border-color:#3b82f6;box-shadow:0 12px 35px #0008}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.name{font-size:18px;font-weight:700}.url{display:block;margin-top:7px;color:var(--muted);font:11px ui-monospace,SFMono-Regular,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.badge{font:11px ui-monospace,SFMono-Regular,monospace;padding:4px 9px;border-radius:99px}.up{color:var(--green);background:#14532d}.down{color:var(--red);background:#450a0a}.unknown{color:var(--amber);background:#451a03}.detail{margin-top:17px;color:var(--muted);font:11px ui-monospace,SFMono-Regular,monospace}.foot{margin-top:28px;color:var(--muted);font:12px ui-monospace,SFMono-Regular,monospace;text-align:center}
+    @media(max-width:650px){main{padding-top:28px}.top{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.monitor{white-space:normal}}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="top">
+      <div><div class="eyebrow">External homelab monitor</div><h1>Kel's Homelab Status</h1><p>This page and its checker live outside the house.</p></div>
+      <div id="monitor" class="monitor unknown">Loading checks…</div>
+    </section>
+    <section id="services" class="grid"><article class="service"><div class="name">Loading…</div></article></section>
+    <div id="foot" class="foot">Waiting for the first external check.</div>
+  </main>
+  <script>
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function age(iso){const m=Math.max(0,Math.round((Date.now()-new Date(iso).getTime())/60000));return m<1?'just now':m===1?'1 minute ago':`${m} minutes ago`}
+    async function load(){
+      const monitor=document.querySelector('#monitor'),services=document.querySelector('#services'),foot=document.querySelector('#foot');
+      try{
+        const d=await fetch(`status.json?_=${Date.now()}`,{cache:'no-store'}).then(r=>r.json()), stale=!d.generated_at||Date.now()-new Date(d.generated_at).getTime()>15*60*1000;
+        const allUp=d.overall==='up'&&!stale;monitor.className=`monitor ${allUp?'ok':'warn'}`;monitor.textContent=stale?'CHECKER STALE':allUp?'ALL SYSTEMS OPERATIONAL':'ATTENTION REQUIRED';
+        services.innerHTML=(d.services||[]).map(s=>`<article class="service"><div class="row"><div class="name">${esc(s.name)}</div><span class="badge ${s.up?'up':'down'}">${s.up?'ONLINE':'OFFLINE'}</span></div><a class="url" href="${esc(s.url)}">${esc(s.url)}</a><div class="detail">${s.up?`${s.http_code} response · ${s.latency_ms} ms`:(esc(s.error)||'No response')}</div></article>`).join('');
+        foot.textContent=`Last external check: ${age(d.generated_at)} · GitHub Actions`; 
+      }catch(e){monitor.className='monitor warn';monitor.textContent='STATUS DATA UNAVAILABLE';foot.textContent='The monitor data file could not be loaded.'}
+    }
+    load();setInterval(load,60000);
+  </script>
+</body>
+</html>
