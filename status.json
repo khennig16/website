@@ -1,11 +1,44 @@
 {
-  "generated_at": "1970-01-01T00:00:00+00:00",
-  "overall": "down",
+  "generated_at": "2026-09-21T23:13:07.792603+00:00",
+  "overall": "up",
   "services": [
-    {"name":"Homepage","url":"https://homepage.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
-    {"name":"Cameras / Frigate","url":"https://cam.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
-    {"name":"Home Assistant","url":"https://ha.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
-    {"name":"Speedtest Tracker","url":"https://speedtest.khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"},
-    {"name":"Public website","url":"https://khennig.com/","up":false,"http_code":null,"latency_ms":0,"error":"Waiting for first external check"}
+    {
+      "name": "Homepage",
+      "url": "https://homepage.khennig.com/",
+      "up": true,
+      "http_code": 403,
+      "latency_ms": 200,
+      "error": "HTTP response"
+    },
+    {
+      "name": "Cameras / Frigate",
+      "url": "https://cam.khennig.com/",
+      "up": true,
+      "http_code": 403,
+      "latency_ms": 210,
+      "error": "HTTP response"
+    },
+    {
+      "name": "Home Assistant",
+      "url": "https://ha.khennig.com/",
+      "up": true,
+      "http_code": 403,
+      "latency_ms": 231,
+      "error": "HTTP response"
+    },
+    {
+      "name": "Speedtest Tracker",
+      "url": "https://speedtest.khennig.com/",
+      "up": true,
+      "http_code": 200,
+      "latency_ms": 1248
+    },
+    {
+      "name": "Public website",
+      "url": "https://khennig.com/",
+      "up": true,
+      "http_code": 200,
+      "latency_ms": 53
+    }
   ]
 }
