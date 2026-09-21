@@ -1,0 +1,14 @@
+{
+  "generated_at": "1970-01-01T00:00:00+00:00",
+  "overall": "down",
+  "collector": {"name": "Docker VM", "address": "192.168.4.2"},
+  "hosts": [
+    {"name": "Proxmox host", "address": "192.168.4.5", "up": false, "latency_ms": null, "check": "waiting"},
+    {"name": "Docker VM", "address": "192.168.4.2", "up": false, "latency_ms": null, "check": "waiting"},
+    {"name": "OPNsense", "address": "192.168.4.1", "up": false, "latency_ms": null, "check": "waiting"},
+    {"name": "Main Eero", "address": "192.168.4.10", "up": false, "latency_ms": null, "check": "waiting"},
+    {"name": "Office Eero", "address": "192.168.4.11", "up": false, "latency_ms": null, "check": "waiting"},
+    {"name": "Nest thermostat", "address": "192.168.4.45", "up": false, "latency_ms": null, "check": "waiting"}
+  ],
+  "nest": {"configured": false, "available": false, "message": "Waiting for the Docker-side collector"}
+}
