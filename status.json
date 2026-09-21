@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T23:13:07.792603+00:00",
+  "generated_at": "2026-09-21T23:29:06.121896+00:00",
   "overall": "up",
   "services": [
     {
@@ -7,7 +7,7 @@
       "url": "https://homepage.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 200,
+      "latency_ms": 239,
       "error": "HTTP response"
     },
     {
@@ -15,7 +15,7 @@
       "url": "https://cam.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 210,
+      "latency_ms": 221,
       "error": "HTTP response"
     },
     {
@@ -23,7 +23,7 @@
       "url": "https://ha.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 231,
+      "latency_ms": 283,
       "error": "HTTP response"
     },
     {
@@ -31,14 +31,14 @@
       "url": "https://speedtest.khennig.com/",
       "up": true,
       "http_code": 200,
-      "latency_ms": 1248
+      "latency_ms": 1005
     },
     {
       "name": "Public website",
       "url": "https://khennig.com/",
       "up": true,
       "http_code": 200,
-      "latency_ms": 53
+      "latency_ms": 74
     }
   ]
 }
