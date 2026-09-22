@@ -1,9 +1,12 @@
 name: Check homelab services
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron:  "*/5 * * * *"
+    - cron: "2-59/5 * * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
