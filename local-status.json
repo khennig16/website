@@ -1,14 +1,65 @@
 {
-  "generated_at": "1970-01-01T00:00:00+00:00",
-  "overall": "down",
-  "collector": {"name": "Docker VM", "address": "192.168.4.2"},
+  "generated_at": "2026-09-22T00:25:02.819873+00:00",
+  "overall": "up",
+  "collector": {
+    "name": "Docker VM",
+    "address": "192.168.4.2"
+  },
   "hosts": [
-    {"name": "Proxmox host", "address": "192.168.4.5", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Docker VM", "address": "192.168.4.2", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "OPNsense", "address": "192.168.4.1", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Main Eero", "address": "192.168.4.10", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Office Eero", "address": "192.168.4.11", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Nest thermostat", "address": "192.168.4.45", "up": false, "latency_ms": null, "check": "waiting"}
+    {
+      "name": "Proxmox host",
+      "address": "192.168.4.5",
+      "up": true,
+      "latency_ms": 0.096,
+      "check": "icmp",
+      "description": "Proxmox hypervisor \u00b7 VM 100 and CT 101"
+    },
+    {
+      "name": "Docker VM",
+      "address": "192.168.4.2",
+      "up": true,
+      "latency_ms": 0.04,
+      "check": "icmp",
+      "description": "VM 100 \u00b7 local status collector"
+    },
+    {
+      "name": "OPNsense",
+      "address": "192.168.4.1",
+      "up": true,
+      "latency_ms": 0.4,
+      "check": "tcp/443",
+      "description": "LAN gateway \u00b7 HTTPS reachability"
+    },
+    {
+      "name": "Main Eero",
+      "address": "192.168.4.10",
+      "up": true,
+      "latency_ms": 0.462,
+      "check": "icmp",
+      "description": "Eero bridge/access point \u00b7 ICMP reachability"
+    },
+    {
+      "name": "Office Eero",
+      "address": "192.168.4.11",
+      "up": true,
+      "latency_ms": 2.92,
+      "check": "icmp",
+      "description": "Eero bridge/access point \u00b7 ICMP reachability"
+    },
+    {
+      "name": "Nest thermostat",
+      "address": "192.168.4.45",
+      "up": true,
+      "latency_ms": null,
+      "check": "home-assistant",
+      "description": "Status is based on Home Assistant, not ICMP ping"
+    }
   ],
-  "nest": {"configured": false, "available": false, "message": "Waiting for the Docker-side collector"}
+  "nest": {
+    "configured": true,
+    "available": true,
+    "temperature": 18.2,
+    "unit": "\u00b0C",
+    "state": "off"
+  }
 }
