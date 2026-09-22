@@ -1,6 +1,7 @@
 name: Check homelab services
 
 on:
+  on:
   workflow_dispatch:
   schedule:
     - cron: "*/5 * * * *"
