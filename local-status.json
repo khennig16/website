@@ -1,14 +1,59 @@
 {
-  "generated_at": "1970-01-01T00:00:00+00:00",
+  "generated_at": "2026-09-22T00:07:27.186897+00:00",
   "overall": "down",
-  "collector": {"name": "Docker VM", "address": "192.168.4.2"},
+  "collector": {
+    "name": "Docker VM",
+    "address": "192.168.4.2"
+  },
   "hosts": [
-    {"name": "Proxmox host", "address": "192.168.4.5", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Docker VM", "address": "192.168.4.2", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "OPNsense", "address": "192.168.4.1", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Main Eero", "address": "192.168.4.10", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Office Eero", "address": "192.168.4.11", "up": false, "latency_ms": null, "check": "waiting"},
-    {"name": "Nest thermostat", "address": "192.168.4.45", "up": false, "latency_ms": null, "check": "waiting"}
+    {
+      "name": "Proxmox host",
+      "address": "192.168.4.5",
+      "up": true,
+      "latency_ms": 0.14,
+      "check": "icmp"
+    },
+    {
+      "name": "Docker VM",
+      "address": "192.168.4.2",
+      "up": true,
+      "latency_ms": 0.025,
+      "check": "icmp"
+    },
+    {
+      "name": "OPNsense",
+      "address": "192.168.4.1",
+      "up": true,
+      "latency_ms": 2.0,
+      "check": "tcp/443"
+    },
+    {
+      "name": "Main Eero",
+      "address": "192.168.4.10",
+      "up": true,
+      "latency_ms": 1.46,
+      "check": "icmp"
+    },
+    {
+      "name": "Office Eero",
+      "address": "192.168.4.11",
+      "up": true,
+      "latency_ms": 3.06,
+      "check": "icmp"
+    },
+    {
+      "name": "Nest thermostat",
+      "address": "192.168.4.45",
+      "up": false,
+      "latency_ms": null,
+      "check": "unreachable"
+    }
   ],
-  "nest": {"configured": false, "available": false, "message": "Waiting for the Docker-side collector"}
+  "nest": {
+    "configured": true,
+    "available": true,
+    "temperature": 18.2,
+    "unit": "\u00b0C",
+    "state": "off"
+  }
 }
