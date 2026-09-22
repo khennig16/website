@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T00:07:27.186897+00:00",
+  "generated_at": "2026-09-22T00:10:16.466964+00:00",
   "overall": "down",
   "collector": {
     "name": "Docker VM",
@@ -10,35 +10,35 @@
       "name": "Proxmox host",
       "address": "192.168.4.5",
       "up": true,
-      "latency_ms": 0.14,
+      "latency_ms": 0.108,
       "check": "icmp"
     },
     {
       "name": "Docker VM",
       "address": "192.168.4.2",
       "up": true,
-      "latency_ms": 0.025,
+      "latency_ms": 0.031,
       "check": "icmp"
     },
     {
       "name": "OPNsense",
       "address": "192.168.4.1",
       "up": true,
-      "latency_ms": 2.0,
+      "latency_ms": 1.9,
       "check": "tcp/443"
     },
     {
       "name": "Main Eero",
       "address": "192.168.4.10",
       "up": true,
-      "latency_ms": 1.46,
+      "latency_ms": 0.438,
       "check": "icmp"
     },
     {
       "name": "Office Eero",
       "address": "192.168.4.11",
       "up": true,
-      "latency_ms": 3.06,
+      "latency_ms": 18.7,
       "check": "icmp"
     },
     {
