@@ -25,12 +25,11 @@ DEFAULT_BRANCH = "main"
 DEFAULT_REMOTE_PATH = "local-status.json"
 
 HOSTS = [
-    ("Proxmox host", "192.168.4.5", (8006,)),
-    ("Docker VM", "192.168.4.2", (80, 443)),
-    ("OPNsense", "192.168.4.1", (443,)),
-    ("Main Eero", "192.168.4.10", (80,)),
-    ("Office Eero", "192.168.4.11", (80,)),
-    ("Nest thermostat", "192.168.4.45", (80, 443)),
+    ("Proxmox host", "192.168.4.5", (8006,), "Proxmox hypervisor · VM 100 and CT 101"),
+    ("Docker VM", "192.168.4.2", (80, 443), "VM 100 · local status collector"),
+    ("OPNsense", "192.168.4.1", (443,), "LAN gateway · HTTPS reachability"),
+    ("Main Eero", "192.168.4.10", (80,), "Eero bridge/access point · ICMP reachability"),
+    ("Office Eero", "192.168.4.11", (80,), "Eero bridge/access point · ICMP reachability"),
 ]
 
 
@@ -82,7 +81,7 @@ def tcp_fallback(address, ports):
     return False, None, "unreachable"
 
 
-def check_host(name, address, ports):
+def check_host(name, address, ports, description):
     up, latency, method = ping(address)
     if not up:
         up, latency, method = tcp_fallback(address, ports)
@@ -92,6 +91,7 @@ def check_host(name, address, ports):
         "up": up,
         "latency_ms": latency,
         "check": method,
+        "description": description,
     }
 
 
@@ -196,13 +196,22 @@ def publish_to_github(payload):
 
 def main():
     load_env_file(os.getenv("STATUS_ENV_FILE", DEFAULT_ENV_FILE))
-    hosts = [check_host(name, address, ports) for name, address, ports in HOSTS]
+    nest = ha_temperature()
+    hosts = [check_host(name, address, ports, description) for name, address, ports, description in HOSTS]
+    hosts.append({
+        "name": "Nest thermostat",
+        "address": "192.168.4.45",
+        "up": nest["available"],
+        "latency_ms": None,
+        "check": "home-assistant",
+        "description": "Status is based on Home Assistant, not ICMP ping",
+    })
     payload = {
         "generated_at": now(),
         "overall": "up" if all(item["up"] for item in hosts) else "down",
         "collector": {"name": "Docker VM", "address": "192.168.4.2"},
         "hosts": hosts,
-        "nest": ha_temperature(),
+        "nest": nest,
     }
 
     output_path = Path(os.getenv("LOCAL_STATUS_OUTPUT", "/tmp/local-status.json"))
