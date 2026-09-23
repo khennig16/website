@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-23T09:20:28.825834+00:00",
-  "overall": "up",
+  "generated_at": "2026-09-23T09:25:43.999024+00:00",
+  "overall": "down",
   "collector": {
     "name": "Docker VM",
     "address": "192.168.4.2"
@@ -10,7 +10,7 @@
       "name": "Proxmox host",
       "address": "192.168.4.5",
       "up": true,
-      "latency_ms": 0.213,
+      "latency_ms": 0.178,
       "check": "icmp",
       "description": "Proxmox hypervisor \u00b7 VM 100 and CT 101"
     },
@@ -18,7 +18,7 @@
       "name": "Docker VM",
       "address": "192.168.4.2",
       "up": true,
-      "latency_ms": 0.024,
+      "latency_ms": 0.039,
       "check": "icmp",
       "description": "VM 100 \u00b7 local status collector"
     },
@@ -34,7 +34,7 @@
       "name": "Main Eero",
       "address": "192.168.4.10",
       "up": true,
-      "latency_ms": 3.69,
+      "latency_ms": 1.16,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
@@ -42,14 +42,14 @@
       "name": "Office Eero",
       "address": "192.168.4.11",
       "up": true,
-      "latency_ms": 4.7,
+      "latency_ms": 5.19,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
     {
       "name": "Nest thermostat",
       "address": "192.168.4.45",
-      "up": true,
+      "up": false,
       "latency_ms": null,
       "check": "home-assistant",
       "description": "Status is based on Home Assistant, not ICMP ping"
@@ -57,9 +57,7 @@
   ],
   "nest": {
     "configured": true,
-    "available": true,
-    "temperature": 18.2,
-    "unit": "\u00b0C",
-    "state": "off"
+    "available": false,
+    "message": "<urlopen error [Errno -3] Temporary failure in name resolution>"
   }
 }
