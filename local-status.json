@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T22:30:38.641974+00:00",
+  "generated_at": "2026-09-24T22:35:29.306023+00:00",
   "overall": "up",
   "collector": {
     "name": "Docker VM",
@@ -10,7 +10,7 @@
       "name": "Proxmox host",
       "address": "192.168.4.5",
       "up": true,
-      "latency_ms": 0.109,
+      "latency_ms": 0.112,
       "check": "icmp",
       "description": "Proxmox hypervisor \u00b7 VM 100 and CT 101"
     },
@@ -18,7 +18,7 @@
       "name": "Docker VM",
       "address": "192.168.4.2",
       "up": true,
-      "latency_ms": 0.023,
+      "latency_ms": 0.031,
       "check": "icmp",
       "description": "VM 100 \u00b7 local status collector"
     },
@@ -34,7 +34,7 @@
       "name": "Main Eero",
       "address": "192.168.4.10",
       "up": true,
-      "latency_ms": 0.545,
+      "latency_ms": 1.41,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
@@ -42,7 +42,7 @@
       "name": "Office Eero",
       "address": "192.168.4.11",
       "up": true,
-      "latency_ms": 2.82,
+      "latency_ms": 3.3,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
