@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T08:10:28.855134+00:00",
+  "generated_at": "2026-09-25T08:15:28.719272+00:00",
   "overall": "up",
   "collector": {
     "name": "Docker VM",
@@ -18,7 +18,7 @@
       "name": "Docker VM",
       "address": "192.168.4.2",
       "up": true,
-      "latency_ms": 0.02,
+      "latency_ms": 0.021,
       "check": "icmp",
       "description": "VM 100 \u00b7 local status collector"
     },
@@ -34,7 +34,7 @@
       "name": "Main Eero",
       "address": "192.168.4.10",
       "up": true,
-      "latency_ms": 1.23,
+      "latency_ms": 0.896,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
