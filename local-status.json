@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-25T06:25:36.850870+00:00",
-  "overall": "down",
+  "generated_at": "2026-09-25T06:30:39.382771+00:00",
+  "overall": "up",
   "collector": {
     "name": "Docker VM",
     "address": "192.168.4.2"
@@ -10,7 +10,7 @@
       "name": "Proxmox host",
       "address": "192.168.4.5",
       "up": true,
-      "latency_ms": 0.095,
+      "latency_ms": 0.128,
       "check": "icmp",
       "description": "Proxmox hypervisor \u00b7 VM 100 and CT 101"
     },
@@ -18,7 +18,7 @@
       "name": "Docker VM",
       "address": "192.168.4.2",
       "up": true,
-      "latency_ms": 0.028,
+      "latency_ms": 0.036,
       "check": "icmp",
       "description": "VM 100 \u00b7 local status collector"
     },
@@ -34,7 +34,7 @@
       "name": "Main Eero",
       "address": "192.168.4.10",
       "up": true,
-      "latency_ms": 0.795,
+      "latency_ms": 1.17,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
@@ -42,14 +42,14 @@
       "name": "Office Eero",
       "address": "192.168.4.11",
       "up": true,
-      "latency_ms": 6.03,
+      "latency_ms": 4.78,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
     {
       "name": "Nest thermostat",
       "address": "192.168.4.45",
-      "up": false,
+      "up": true,
       "latency_ms": null,
       "check": "home-assistant",
       "description": "Status is based on Home Assistant, not ICMP ping"
@@ -57,7 +57,9 @@
   ],
   "nest": {
     "configured": true,
-    "available": false,
-    "message": "The read operation timed out"
+    "available": true,
+    "temperature": 18.2,
+    "unit": "\u00b0C",
+    "state": "off"
   }
 }
