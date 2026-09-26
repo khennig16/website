@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T07:20:40.269453+00:00",
+  "generated_at": "2026-09-26T07:25:52.926707+00:00",
   "overall": "up",
   "services": [
     {
@@ -7,7 +7,7 @@
       "url": "https://homepage.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 217,
+      "latency_ms": 278,
       "description": "Dashboard endpoint behind the reverse proxy",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -17,7 +17,7 @@
       "url": "https://cam.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 236,
+      "latency_ms": 192,
       "description": "Camera portal and Frigate access point",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -27,7 +27,7 @@
       "url": "https://ha.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 190,
+      "latency_ms": 267,
       "description": "Home Assistant external endpoint",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -37,7 +37,7 @@
       "url": "https://speedtest.khennig.com/",
       "up": true,
       "http_code": 200,
-      "latency_ms": 1656,
+      "latency_ms": 1479,
       "description": "Speedtest results and API site",
       "status_text": "Reachable; endpoint allows automated access"
     },
@@ -46,7 +46,7 @@
       "url": "https://khennig.com/",
       "up": true,
       "http_code": 200,
-      "latency_ms": 138,
+      "latency_ms": 125,
       "description": "GitHub Pages public site",
       "status_text": "Reachable; endpoint allows automated access"
     }
