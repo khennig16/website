@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T00:25:37.250962+00:00",
+  "generated_at": "2026-09-26T00:30:44.390792+00:00",
   "overall": "down",
   "collector": {
     "name": "Docker VM",
@@ -10,7 +10,7 @@
       "name": "Proxmox host",
       "address": "192.168.4.5",
       "up": true,
-      "latency_ms": 0.102,
+      "latency_ms": 5.03,
       "check": "icmp",
       "description": "Proxmox hypervisor \u00b7 VM 100 and CT 101"
     },
@@ -18,7 +18,7 @@
       "name": "Docker VM",
       "address": "192.168.4.2",
       "up": true,
-      "latency_ms": 0.034,
+      "latency_ms": 0.036,
       "check": "icmp",
       "description": "VM 100 \u00b7 local status collector"
     },
@@ -26,7 +26,7 @@
       "name": "OPNsense",
       "address": "192.168.4.1",
       "up": true,
-      "latency_ms": 0.5,
+      "latency_ms": 0.6,
       "check": "tcp/443",
       "description": "LAN gateway \u00b7 HTTPS reachability"
     },
@@ -34,7 +34,7 @@
       "name": "Main Eero",
       "address": "192.168.4.10",
       "up": true,
-      "latency_ms": 0.844,
+      "latency_ms": 1.7,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
@@ -42,7 +42,7 @@
       "name": "Office Eero",
       "address": "192.168.4.11",
       "up": true,
-      "latency_ms": 17.3,
+      "latency_ms": 4.05,
       "check": "icmp",
       "description": "Eero bridge/access point \u00b7 ICMP reachability"
     },
@@ -58,6 +58,6 @@
   "nest": {
     "configured": true,
     "available": false,
-    "message": "The read operation timed out"
+    "message": "<urlopen error [Errno -3] Temporary failure in name resolution>"
   }
 }
