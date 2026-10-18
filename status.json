@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-18T19:31:40.381622+00:00",
-  "overall": "down",
+  "generated_at": "2026-10-18T19:35:40.411747+00:00",
+  "overall": "up",
   "services": [
     {
       "name": "Homepage",
       "url": "https://homepage.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 198,
+      "latency_ms": 292,
       "description": "Dashboard endpoint behind the reverse proxy",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -17,7 +17,7 @@
       "url": "https://cam.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 165,
+      "latency_ms": 286,
       "description": "Camera portal and Frigate access point",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -27,7 +27,7 @@
       "url": "https://ha.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 170,
+      "latency_ms": 303,
       "description": "Home Assistant external endpoint",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -35,19 +35,18 @@
     {
       "name": "Speedtest Tracker",
       "url": "https://speedtest.khennig.com/",
-      "up": false,
-      "http_code": null,
-      "latency_ms": 12146,
+      "up": true,
+      "http_code": 200,
+      "latency_ms": 1943,
       "description": "Speedtest results and API site",
-      "status_text": "No HTTP response",
-      "error": "The read operation timed out"
+      "status_text": "Reachable; endpoint allows automated access"
     },
     {
       "name": "Public website",
       "url": "https://khennig.com/",
       "up": true,
       "http_code": 200,
-      "latency_ms": 116,
+      "latency_ms": 180,
       "description": "GitHub Pages public site",
       "status_text": "Reachable; endpoint allows automated access"
     }
