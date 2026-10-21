@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T12:01:40.513675+00:00",
+  "generated_at": "2026-10-21T12:05:53.107286+00:00",
   "overall": "up",
   "services": [
     {
@@ -7,7 +7,7 @@
       "url": "https://homepage.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 169,
+      "latency_ms": 186,
       "description": "Dashboard endpoint behind the reverse proxy",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -27,7 +27,7 @@
       "url": "https://ha.khennig.com/",
       "up": true,
       "http_code": 403,
-      "latency_ms": 140,
+      "latency_ms": 166,
       "description": "Home Assistant external endpoint",
       "status_text": "Reachable; endpoint requires a browser/session",
       "error": "HTTP response"
@@ -37,7 +37,7 @@
       "url": "https://speedtest.khennig.com/",
       "up": true,
       "http_code": 200,
-      "latency_ms": 2238,
+      "latency_ms": 1274,
       "description": "Speedtest results and API site",
       "status_text": "Reachable; endpoint allows automated access"
     },
